@@ -61,12 +61,19 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "zapfe.jetzt") }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # Allow asset precompile during image build without real mail credentials.
+  resend_api_key = ENV["RESEND_API_KEY"]
+  building_assets = ENV["SECRET_KEY_BASE_DUMMY"].present?
+  if resend_api_key.blank? && !building_assets
+    raise "Missing RESEND_API_KEY in production environment"
+  end
+
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: ENV.fetch("SMTP_ADDRESS", "smtp.resend.com"),
     port: ENV.fetch("SMTP_PORT", 587).to_i,
     user_name: ENV.fetch("SMTP_USERNAME", "resend"),
-    password: ENV.fetch("RESEND_API_KEY"),
+    password: resend_api_key.presence || "dummy",
     authentication: :plain,
     enable_starttls_auto: true
   }
