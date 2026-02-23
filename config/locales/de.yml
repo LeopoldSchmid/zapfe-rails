@@ -1,4 +1,11 @@
 de:
+  activerecord:
+    errors:
+      models:
+        inquiry:
+          attributes:
+            privacy_accepted:
+              accepted: "muss akzeptiert werden"
   date:
     formats:
       default: "%d.%m.%Y"

@@ -71,3 +71,28 @@ SOURCE_ENV=/home/leo/dev/projects/zapfe/.env DRY_RUN=false bin/rails zapfe:sync_
 ## Mobile Referenz-Screenshots
 Die Vergleichsbilder liegen unter:
 - `documentation/Screenshots_old_website`
+
+## Deploy (Kamal)
+Aktueller Deploy-Target ist `staging.zapfe.jetzt` auf Hetzner.
+
+DNS:
+- `A staging.zapfe.jetzt -> 157.180.19.232`
+
+Benötigte Secrets in deiner Shell:
+```bash
+export KAMAL_REGISTRY_PASSWORD=...
+export SECRET_KEY_BASE=...
+export RESEND_API_KEY=...
+```
+
+Erstsetup und Deploy:
+```bash
+bin/kamal setup
+bin/kamal deploy
+```
+
+Späterer Cutover auf `zapfe.jetzt`:
+1. `config/deploy.yml` `proxy.hosts` auf `zapfe.jetzt` und `www.zapfe.jetzt` erweitern.
+2. `APP_HOST` auf `zapfe.jetzt` setzen.
+3. DNS für `@` und `www` auf Hetzner-IP umstellen.
+4. `bin/kamal deploy`.
