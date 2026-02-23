@@ -7,7 +7,7 @@ service: zapfe-rails-staging
 
 proxy:
   hosts:
-    - staging.zapfe.duzend.jetzt
+    - staging.zapfe.duzend.net
   ssl: true
 
 env:
@@ -19,7 +19,7 @@ env:
     RAILS_ENV: production
     RAILS_LOG_TO_STDOUT: true
     SOLID_QUEUE_IN_PUMA: true
-    APP_HOST: staging.zapfe.duzend.jetzt
+    APP_HOST: staging.zapfe.duzend.net
 
 volumes:
   - "zapfe_rails_staging_storage:/rails/storage"

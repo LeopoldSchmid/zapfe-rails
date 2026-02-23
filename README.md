@@ -73,10 +73,10 @@ Die Vergleichsbilder liegen unter:
 - `documentation/Screenshots_old_website`
 
 ## Deploy (Kamal)
-Aktueller Deploy-Target ist `staging.zapfe.duzend.jetzt` auf Hetzner.
+Aktueller Deploy-Target ist `staging.zapfe.duzend.net` auf Hetzner.
 
 DNS:
-- `A staging.zapfe.duzend.jetzt -> 157.180.19.232`
+- `A staging.zapfe.duzend.net -> 157.180.19.232`
 
 Benötigte Secrets in deiner Shell:
 ```bash

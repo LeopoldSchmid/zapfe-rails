@@ -28,9 +28,9 @@ Danach Dashboard öffnen:
 
 ## Monitore anlegen
 1. HTTP(s)-Monitor: `https://hausl.duzend.net/up`
-2. HTTP(s)-Monitor: `https://staging.zapfe.jetzt/up`
+2. HTTP(s)-Monitor: `https://staging.zapfe.duzend.net/up`
 3. Kritischer Zapfe-Flow:
-   - `https://staging.zapfe.jetzt/monitoring/inquiry_flow?token=<MONITORING_TOKEN>`
+   - `https://staging.zapfe.duzend.net/monitoring/inquiry_flow?token=<MONITORING_TOKEN>`
 
 Hinweis zu (3):
 - Die Route prüft, ob Inquiry-Validierung + Mail-Rendering funktionieren.

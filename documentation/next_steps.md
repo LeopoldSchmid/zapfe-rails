@@ -21,7 +21,7 @@
 
 ## 4. Staging Deploy (Hetzner)
 - DNS in der **autoritativen Zone** setzen:
-  - `A staging.zapfe.jetzt -> 157.180.19.232`
+  - `A staging.zapfe.duzend.net -> 157.180.19.232`
 - Secrets exportieren:
   - `KAMAL_REGISTRY_PASSWORD`
   - `SECRET_KEY_BASE`
