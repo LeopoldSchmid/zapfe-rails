@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ENV_FILE="${KAMAL_ENV_FILE:-.kamal/deploy.env}"
+
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "Missing secrets file: $ENV_FILE" >&2
+  echo "Copy .kamal/deploy.env.example to $ENV_FILE and set values." >&2
+  exit 1
+fi
+
+set -a
+# shellcheck disable=SC1090
+source "$ENV_FILE"
+set +a
+
+required_vars=(
+  KAMAL_REGISTRY_PASSWORD
+  RAILS_MASTER_KEY
+  SECRET_KEY_BASE
+)
+
+for var_name in "${required_vars[@]}"; do
+  if [[ -z "${!var_name:-}" ]]; then
+    echo "Missing required variable: $var_name (from $ENV_FILE)" >&2
+    exit 1
+  fi
+done
+
+if [[ ! "$RAILS_MASTER_KEY" =~ ^[0-9a-fA-F]{32}$ ]]; then
+  echo "Invalid RAILS_MASTER_KEY format. Expected exactly 32 hex chars (from config/master.key)." >&2
+  exit 1
+fi
+
+if [[ ${#SECRET_KEY_BASE} -lt 64 ]]; then
+  echo "Invalid SECRET_KEY_BASE format. Expected a long secret (use: bin/rails secret)." >&2
+  exit 1
+fi
+
+exec bin/kamal "$@"

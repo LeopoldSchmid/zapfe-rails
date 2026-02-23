@@ -80,19 +80,25 @@ DNS:
 
 Benötigte Secrets in deiner Shell:
 ```bash
-export KAMAL_REGISTRY_PASSWORD=...
-export SECRET_KEY_BASE=...
-export RESEND_API_KEY=...
+cp .kamal/deploy.env.example .kamal/deploy.env
+# Werte in .kamal/deploy.env eintragen
+set -a; source .kamal/deploy.env; set +a
 ```
 
 Erstsetup und Deploy:
 ```bash
-bin/kamal setup
-bin/kamal deploy
+script/kamal_with_env setup -d staging
+script/kamal_with_env deploy -d staging
+```
+
+Bequemer Wrapper (lädt `.kamal/deploy.env` automatisch):
+```bash
+script/kamal_with_env setup -d staging
+script/kamal_with_env deploy -d staging
 ```
 
 Späterer Cutover auf `zapfe.jetzt`:
 1. `config/deploy.yml` `proxy.hosts` auf `zapfe.jetzt` und `www.zapfe.jetzt` erweitern.
 2. `APP_HOST` auf `zapfe.jetzt` setzen.
 3. DNS für `@` und `www` auf Hetzner-IP umstellen.
-4. `bin/kamal deploy`.
+4. `script/kamal_with_env deploy -d staging`.
