@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Zapfe! Mobile Selbstbedienungs-Zapfanlage" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Premium mobile Zapfanlagen für Veranstaltungen aller Größen.">
+    <meta name="author" content="Zapfe!">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/zapfe_b_w.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/zapfe_b_w.svg">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-slate-50 text-slate-900">
+    <div id="site-header" data-turbo-permanent>
+      <%= render "shared/navbar" %>
+    </div>
+
+    <main id="page-content" class="min-h-[75vh] pt-14">
+      <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <% flash.each do |type, message| %>
+          <% tone = type.to_s == "alert" ? "bg-red-100 text-red-800" : "bg-emerald-100 text-emerald-800" %>
+          <div class="mt-4 rounded-lg px-4 py-3 text-sm <%= tone %>"><%= message %></div>
+        <% end %>
+      </div>
+      <%= yield %>
+    </main>
+
+    <%= render "shared/footer" %>
+  </body>
+</html>

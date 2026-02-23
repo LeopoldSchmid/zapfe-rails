@@ -1,0 +1,15 @@
+one:
+  product: one
+  sku: A100-20
+  size: 20.0
+  price: 89.99
+  is_available: true
+  availability: Instant
+
+two:
+  product: one
+  sku: A100-30
+  size: 30.0
+  price: 129.99
+  is_available: true
+  availability: Instant

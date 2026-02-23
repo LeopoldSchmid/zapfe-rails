@@ -1,0 +1,7 @@
+<h2>Vielen Dank für deine Anfrage!</h2>
+<p>Hallo <%= @inquiry.first_name %> <%= @inquiry.last_name %>,</p>
+<p>wir haben deine Anfrage erhalten und melden uns schnellstmöglich bei dir.</p>
+<p><strong>Typ:</strong> <%= @inquiry.source %></p>
+<% if @inquiry.event_date.present? %>
+  <p><strong>Eventdatum:</strong> <%= l(@inquiry.event_date) %></p>
+<% end %>

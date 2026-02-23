@@ -1,0 +1,9 @@
+one:
+  name: Beer
+  kind: Beer
+  description: Beer category
+
+two:
+  name: Soft
+  kind: Soft Drink
+  description: Soft category

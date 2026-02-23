@@ -1,0 +1,139 @@
+<section class="relative min-h-[88vh] overflow-hidden bg-[var(--color-zapfe-navy)]">
+  <img src="/Zapfe_01.jpg" alt="Hero" class="absolute inset-0 h-full w-full object-cover opacity-25" />
+  <div class="relative page-wrap flex min-h-[88vh] items-center justify-center py-16 text-center text-white">
+    <div class="max-w-3xl">
+      <h1 class="text-4xl font-bold leading-tight drop-shadow sm:text-6xl">
+        Frisch gezapfte Getränke
+        <span class="block text-[var(--color-zapfe-amber)]">überall und jederzeit</span>
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-100 sm:text-xl">
+        Flexibel, mobil, unkompliziert. Zapfe! bringt die mobile self-service Zapfanlage mit optionaler, kontaktloser Bezahlfunktion direkt zu Ihrem Event.
+      </p>
+      <div class="mt-8">
+        <%= link_to "Preisrechner & Reservierung", calculator_path, class: "btn-primary inline-flex items-center gap-2 px-6 py-3" %>
+      </div>
+      <%= link_to "#zur-zapfe", class: "scroll-cue mt-10 inline-flex flex-col items-center text-sm text-slate-200 hover:text-white" do %>
+        <span>zur Zapfe</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section id="zur-zapfe" class="bg-white py-10 reveal" data-controller="reveal">
+  <div class="page-wrap">
+    <img src="/zapfe_numbers.png" alt="Zapfe Features" class="mx-auto w-full md:hidden" />
+    <div class="mx-auto mt-8 max-w-md space-y-6 text-center text-slate-700 md:hidden">
+      <article>
+        <div class="mx-auto mb-2 grid h-14 w-14 place-content-center rounded-full bg-[var(--color-zapfe-navy)] text-3xl font-bold text-[var(--color-zapfe-amber)]">1</div>
+        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Optional mit Zapf & Pay, unserer kontaktlosen self-service Bezahlfunktion</h3>
+      </article>
+      <article>
+        <div class="mx-auto mb-2 grid h-14 w-14 place-content-center rounded-full bg-[var(--color-zapfe-navy)] text-3xl font-bold text-[var(--color-zapfe-amber)]">2</div>
+        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Vielfältige Getränkeauswahl - alles aus dem Fass</h3>
+      </article>
+      <article>
+        <div class="mx-auto mb-2 grid h-14 w-14 place-content-center rounded-full bg-[var(--color-zapfe-navy)] text-3xl font-bold text-[var(--color-zapfe-amber)]">3</div>
+        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Professionelle Zapfhähne für gleichzeitiges Zapfen von zwei Getränken</h3>
+      </article>
+      <article>
+        <div class="mx-auto mb-2 grid h-14 w-14 place-content-center rounded-full bg-[var(--color-zapfe-navy)] text-3xl font-bold text-[var(--color-zapfe-amber)]">4</div>
+        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Autarker Betrieb dank integriertem Akku - keine Steckdose erforderlich</h3>
+      </article>
+    </div>
+    <img src="/zapfe_incl_description.png" alt="Zapfe Features" class="mx-auto hidden w-full max-w-5xl md:block" />
+  </div>
+</section>
+
+<section class="bg-white py-12 reveal" data-controller="reveal">
+  <div class="page-wrap text-center">
+    <h2 class="text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">So funktioniert's</h2>
+    <p class="mx-auto mt-3 max-w-2xl text-slate-600">Einfach, schnell und zuverlässig – für dein perfektes Event.</p>
+
+    <div class="mt-10 grid gap-8 md:grid-cols-3">
+      <article class="rounded-xl p-4">
+        <div class="mx-auto mb-4 grid h-16 w-16 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]">
+          <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2v4m8-4v4M4 9h16M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Buche deine Veranstaltung</h3>
+        <p class="mt-2 text-slate-600">Kontaktiere uns mit deinen Veranstaltungsdetails und Anforderungen und wähle auf Wunsch Getränke aus.</p>
+      </article>
+      <article class="rounded-xl p-4">
+        <div class="mx-auto mb-4 grid h-16 w-16 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]">
+          <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17h2l2-7h7l2 7h5M9 10V6h6v4M6 17a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm12 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Wir liefern und bauen auf</h3>
+        <p class="mt-2 text-slate-600">Unser Team kommt zu deinem Veranstaltungsort, richtet das Zapfsystem ein und stellt sicher, dass alles funktioniert.</p>
+      </article>
+      <article class="rounded-xl p-4">
+        <div class="mx-auto mb-4 grid h-16 w-16 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]">
+          <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 12h12M12 6v12M4 4h16v16H4z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Genieße Selbstbedienung</h3>
+        <p class="mt-2 text-slate-600">Gäste bedienen sich selbst mit intuitivem Zapfsystem und optionaler Zahlungsfunktion.</p>
+      </article>
+    </div>
+
+    <div class="mt-8">
+      <%= link_to "Preisrechner & Reservierung", calculator_path, class: "btn-primary inline-flex items-center gap-2 px-6 py-3" %>
+    </div>
+  </div>
+</section>
+
+<section class="bg-[var(--color-zapfe-cream)] py-16 reveal" data-controller="reveal">
+  <div class="page-wrap">
+    <div class="mb-10 text-center">
+      <h2 class="text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Perfekt für jeden Anlass</h2>
+      <p class="mx-auto mt-3 max-w-2xl text-slate-600">Unser mobiler Zapfservice passt sich deinen spezifischen Bedürfnissen an.</p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      <% [
+        ["Firmenveranstaltungen", "Beeindrucke Kunden und Mitarbeitende mit Premium-Selbstbedienungsgetränken.", "/Zapfe_06.jpg"],
+        ["Hochzeiten", "Verleihe deinem besonderen Tag eine einzigartige, stilvolle Note.", "/Zapfe_03.jpg"],
+        ["Private Feiern", "Werte Gartenfeste oder Geburtstage mit unkompliziertem Service auf.", "/Zapfe_05.jpg"],
+        ["Festivals & öffentliche Events", "Reduziere Warteschlangen und erhöhe den Durchsatz.", "/Zapfe_02.jpg"]
+      ].each do |title, text, image| %>
+        <article class="group relative aspect-video overflow-hidden rounded-xl">
+          <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+          <img src="<%= image %>" alt="<%= title %>" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+          <div class="absolute inset-x-0 bottom-0 z-20 p-5">
+            <h3 class="text-2xl font-semibold text-white"><%= title %></h3>
+            <p class="mt-1 text-sm text-white/85"><%= text %></p>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="bg-white py-16 reveal" data-controller="reveal">
+  <div class="page-wrap text-center">
+    <h2 class="text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Was unsere Kunden bald sagen werden</h2>
+    <blockquote class="mx-auto mt-8 max-w-4xl text-xl italic text-slate-600">
+      "Die Zapfe! Mobile Zapfanlage war das Highlight unserer Firmenveranstaltung. Unsere Gäste liebten das Selbstbedienungskonzept, und die Bierqualität war ausgezeichnet. Sehr empfehlenswert!"
+    </blockquote>
+    <p class="mt-4 font-semibold text-[var(--color-zapfe-navy)]">— Max M., Potenzieller Kunde</p>
+  </div>
+</section>
+
+<section class="relative overflow-hidden py-16 reveal" data-controller="reveal">
+  <div class="absolute inset-0 z-0 bg-[var(--color-zapfe-navy)]"></div>
+  <img src="/Zapfe_01.jpg" alt="CTA" class="absolute inset-0 z-0 h-full w-full object-cover opacity-25" />
+  <div class="relative z-10 page-wrap text-center text-white">
+    <h2 class="text-3xl font-bold sm:text-4xl">Bereit, deine nächste Veranstaltung aufzuwerten?</h2>
+    <p class="mx-auto mt-4 max-w-3xl text-lg text-slate-200">Nimm Kontakt mit uns auf, um zu besprechen, wie unsere mobile Zapfanlage dein Event unvergesslich machen kann.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <%= link_to "Kontaktiere uns", contact_path, class: "btn-primary px-6 py-3" %>
+      <%= link_to "Preis berechnen", calculator_path, class: "btn-primary px-6 py-3" %>
+    </div>
+  </div>
+</section>

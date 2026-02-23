@@ -1,0 +1,21 @@
+one:
+  category: one
+  article_number: A100
+  name: Pils
+  brand: Rothaus
+  kind: Bier
+  subcategory: Pils
+  alcohol_content: 5.1
+  is_alcoholic: true
+  description: Test
+
+two:
+  category: two
+  article_number: A200
+  name: Cola
+  brand: Fritz
+  kind: Softdrink
+  subcategory: Cola
+  alcohol_content: 
+  is_alcoholic: false
+  description: Test

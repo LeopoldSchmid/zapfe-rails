@@ -1,0 +1,17 @@
+<h2>Neue Anfrage</h2>
+<p><strong>Quelle:</strong> <%= @inquiry.source %></p>
+<p><strong>Name:</strong> <%= @inquiry.first_name %> <%= @inquiry.last_name %></p>
+<p><strong>E-Mail:</strong> <%= @inquiry.email %></p>
+<p><strong>Telefon:</strong> <%= @inquiry.phone %></p>
+<% if @inquiry.event_type.present? %>
+  <p><strong>Eventtyp:</strong> <%= @inquiry.event_type %></p>
+<% end %>
+<% if @inquiry.message.present? %>
+  <p><strong>Nachricht:</strong><br><%= simple_format(@inquiry.message) %></p>
+<% end %>
+<% if @inquiry.selected_options.present? %>
+  <p><strong>Ausgewählte Optionen:</strong><br><%= simple_format(@inquiry.selected_options) %></p>
+<% end %>
+<% if @inquiry.total_price.present? %>
+  <p><strong>Preis:</strong> <%= number_to_currency(@inquiry.total_price, unit: "€", separator: ",", delimiter: ".") %></p>
+<% end %>

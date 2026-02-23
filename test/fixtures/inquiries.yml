@@ -1,0 +1,29 @@
+one:
+  source: contact
+  first_name: Max
+  last_name: Mustermann
+  email: max@example.com
+  phone: '+49123'
+  event_type: Hochzeit
+  event_date: 2026-01-01
+  guests: 50
+  message: Test
+  selected_options: ''
+  total_price: 0
+  pricing_snapshot: '{}'
+  privacy_accepted: true
+
+two:
+  source: calculator
+  first_name: Erika
+  last_name: Musterfrau
+  email: erika@example.com
+  phone: '+49124'
+  event_type: Firmenfeier
+  event_date: 2026-02-01
+  guests: 80
+  message: Test
+  selected_options: Zapf Option
+  total_price: 250
+  pricing_snapshot: '{}'
+  privacy_accepted: true

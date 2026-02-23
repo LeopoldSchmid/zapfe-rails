@@ -1,0 +1,57 @@
+<%= render "shared/form_errors", object: @event %>
+
+<%= form_with model: [ :admin, @event ], class: "space-y-4" do |f| %>
+  <div>
+    <%= f.label :title, class: "mb-1 block text-sm font-medium" %>
+    <%= f.text_field :title, required: true, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+  </div>
+
+  <div>
+    <%= f.label :subtitle, class: "mb-1 block text-sm font-medium" %>
+    <%= f.text_field :subtitle, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :date_from, class: "mb-1 block text-sm font-medium" %>
+      <%= f.date_field :date_from, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :date_to, class: "mb-1 block text-sm font-medium" %>
+      <%= f.date_field :date_to, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :location, class: "mb-1 block text-sm font-medium" %>
+      <%= f.text_field :location, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :instagram_url, class: "mb-1 block text-sm font-medium" %>
+      <%= f.url_field :instagram_url, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :position, class: "mb-1 block text-sm font-medium" %>
+      <%= f.number_field :position, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+    <label class="mt-7 inline-flex items-center gap-2">
+      <%= f.check_box :published %> Veröffentlicht
+    </label>
+  </div>
+
+  <div>
+    <%= f.label :description, class: "mb-1 block text-sm font-medium" %>
+    <%= f.text_area :description, rows: 4, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+  </div>
+
+  <div>
+    <%= f.label :image, "Bild", class: "mb-1 block text-sm font-medium" %>
+    <%= f.file_field :image, accept: "image/*", class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+  </div>
+
+  <%= f.submit class: "rounded bg-slate-900 px-4 py-2 text-white" %>
+<% end %>

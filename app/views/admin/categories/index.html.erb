@@ -1,0 +1,28 @@
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-2xl font-semibold">Kategorien</h1>
+  <%= link_to "Neue Kategorie", new_admin_category_path, class: "rounded bg-slate-900 px-3 py-2 text-sm text-white" %>
+</div>
+
+<div class="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-left text-slate-600">
+      <tr>
+        <th class="px-4 py-3">Name</th>
+        <th class="px-4 py-3">Typ</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @categories.each do |category| %>
+        <tr class="border-t border-slate-100">
+          <td class="px-4 py-3"><%= category.name %></td>
+          <td class="px-4 py-3"><%= category.kind %></td>
+          <td class="px-4 py-3 text-right">
+            <%= link_to "Bearbeiten", edit_admin_category_path(category), class: "mr-3 text-slate-700 hover:underline" %>
+            <%= button_to "Löschen", admin_category_path(category), method: :delete, class: "inline text-red-700", form: { class: "inline" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

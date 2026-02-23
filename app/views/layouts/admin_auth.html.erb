@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Zapfe Admin Login</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="flex min-h-screen items-center justify-center bg-slate-100 px-4">
+    <div class="w-full max-w-md rounded-xl bg-white p-8 shadow-sm">
+      <% flash.each do |type, message| %>
+        <% tone = type.to_s == "alert" ? "bg-red-100 text-red-800" : "bg-emerald-100 text-emerald-800" %>
+        <div class="mb-4 rounded-lg px-4 py-3 text-sm <%= tone %>"><%= message %></div>
+      <% end %>
+      <%= yield %>
+    </div>
+  </body>
+</html>

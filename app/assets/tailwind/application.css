@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --color-zapfe-amber: #f2c94c;
+  --color-zapfe-navy: #1e293b;
+  --color-zapfe-blue: #345995;
+  --color-zapfe-cream: #fff8e7;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-100 text-slate-900 antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply tracking-tight;
+  }
+}
+
+@layer components {
+  .page-wrap {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .card-soft {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .btn-primary {
+    @apply rounded-md bg-[var(--color-zapfe-amber)] px-4 py-2 font-semibold text-[var(--color-zapfe-navy)] transition hover:brightness-95;
+  }
+
+  .btn-dark {
+    @apply rounded-md bg-[var(--color-zapfe-navy)] px-4 py-2 font-semibold text-white transition hover:brightness-110;
+  }
+
+  .reveal-init {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 500ms ease, transform 500ms ease;
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .scroll-cue {
+    animation: cue-bounce 1.7s ease-in-out infinite;
+  }
+
+  .page-leave-active {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 140ms ease, transform 140ms ease;
+  }
+
+  .page-enter-active {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: page-enter 220ms ease-out forwards;
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cue-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(5px);
+  }
+}

@@ -1,0 +1,21 @@
+one:
+  title: Lichterfest
+  subtitle: Winter
+  description: Event description
+  date_from: 2024-11-29
+  date_to: 2024-11-29
+  location: Schopfheim
+  instagram_url: https://instagram.com/p/example1
+  position: 1
+  published: true
+
+two:
+  title: Sommerparty
+  subtitle: Sommer
+  description: Event description
+  date_from: 2024-07-15
+  date_to: 2024-07-15
+  location: Freiburg
+  instagram_url: https://instagram.com/p/example2
+  position: 2
+  published: true
