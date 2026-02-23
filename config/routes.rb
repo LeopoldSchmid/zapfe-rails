@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get "/contact", to: "pages#contact"
   get "/impressum", to: "pages#impressum"
   get "/datenschutz", to: "pages#datenschutz"
+  get "/monitoring/inquiry_flow", to: "monitoring#inquiry_flow"
 
   resources :inquiries, only: [ :create ]
 
