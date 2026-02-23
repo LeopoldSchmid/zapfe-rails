@@ -1,17 +1,41 @@
-<h2>Neue Anfrage</h2>
-<p><strong>Quelle:</strong> <%= @inquiry.source %></p>
-<p><strong>Name:</strong> <%= @inquiry.first_name %> <%= @inquiry.last_name %></p>
-<p><strong>E-Mail:</strong> <%= @inquiry.email %></p>
-<p><strong>Telefon:</strong> <%= @inquiry.phone %></p>
-<% if @inquiry.event_type.present? %>
-  <p><strong>Eventtyp:</strong> <%= @inquiry.event_type %></p>
-<% end %>
-<% if @inquiry.message.present? %>
-  <p><strong>Nachricht:</strong><br><%= simple_format(@inquiry.message) %></p>
-<% end %>
-<% if @inquiry.selected_options.present? %>
-  <p><strong>Ausgewählte Optionen:</strong><br><%= simple_format(@inquiry.selected_options) %></p>
-<% end %>
-<% if @inquiry.total_price.present? %>
-  <p><strong>Preis:</strong> <%= number_to_currency(@inquiry.total_price, unit: "€", separator: ",", delimiter: ".") %></p>
-<% end %>
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 5px;">
+  <h2 style="color: #1f2937; text-align: center;">Neue Kundenanfrage</h2>
+
+  <h3 style="color: #1f2937;">Kontaktinformationen:</h3>
+  <p><strong>Quelle:</strong> <%= @inquiry.source %></p>
+  <p><strong>Name:</strong> <%= @inquiry.first_name %> <%= @inquiry.last_name %></p>
+  <p><strong>E-Mail:</strong> <%= @inquiry.email %></p>
+  <% if @inquiry.phone.present? %>
+    <p><strong>Telefon:</strong> <%= @inquiry.phone %></p>
+  <% end %>
+
+  <div style="background-color: #f3f4f6; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h3 style="color: #1f2937; margin-top: 0;">Anfrage-Details:</h3>
+    <% if @inquiry.event_date.present? %>
+      <p><strong>Veranstaltungsdatum:</strong> <%= l(@inquiry.event_date) %></p>
+    <% end %>
+    <% if @inquiry.total_price.present? %>
+      <p><strong>Geschätzter Gesamtpreis:</strong> <%= number_to_currency(@inquiry.total_price, unit: "€", separator: ",", delimiter: ".") %></p>
+    <% end %>
+
+    <% option_lines = @inquiry.selected_options.to_s.lines.map(&:strip).reject(&:blank?) %>
+    <% if option_lines.any? %>
+      <h4 style="color: #1f2937;">Ausgewählte Optionen:</h4>
+      <ul style="padding-left: 20px;">
+        <% option_lines.each do |line| %>
+          <li><%= line %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+
+  <% if @inquiry.event_type.present? %>
+    <p><strong>Eventtyp:</strong> <%= @inquiry.event_type %></p>
+  <% end %>
+  <% if @inquiry.guests.present? %>
+    <p><strong>Anzahl Gäste:</strong> <%= @inquiry.guests %></p>
+  <% end %>
+  <% if @inquiry.message.present? %>
+    <p><strong>Nachricht:</strong><br><%= simple_format(@inquiry.message) %></p>
+  <% end %>
+</div>

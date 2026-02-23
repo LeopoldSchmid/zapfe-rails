@@ -13,22 +13,25 @@
 - Danach Stichprobe in `/drinks` und `/calculator` machen.
 
 ## 3. E-Mail-Funktionen testen (später)
-- Test-Submit über `/contact` und `/calculator`.
-- Prüfen:
-  - Admin-Benachrichtigung kommt an.
-  - Kundenbestätigung kommt an.
-  - Absender/Reply-To korrekt.
+- Status:
+  - Versand über `/contact` und `/calculator` auf Staging manuell erfolgreich getestet.
+  - Automatisierte Tests vorhanden:
+    - `test/controllers/inquiries_controller_test.rb`
+    - `test/mailers/inquiry_mailer_test.rb`
+- Optional:
+  - End-to-End Mail-Zustellung (Resend Dashboard + Spam-Ordner) periodisch prüfen.
 
 ## 4. Staging Deploy (Hetzner)
 - DNS in der **autoritativen Zone** setzen:
   - `A staging.zapfe.duzend.net -> 157.180.19.232`
 - Secrets exportieren:
   - `KAMAL_REGISTRY_PASSWORD`
+  - `RAILS_MASTER_KEY` (aus `config/master.key` dieses Repos)
   - `SECRET_KEY_BASE`
   - `RESEND_API_KEY`
 - Deploy:
-  - `bin/kamal setup`
-  - `bin/kamal deploy`
+  - `script/kamal_with_env setup -d staging`
+  - `script/kamal_with_env deploy -d staging`
 - Smoke-Test:
   - `/`, `/calculator`, `/drinks`, `/contact`, `/admin/login`
 
@@ -36,7 +39,7 @@
 - `config/deploy.yml`:
   - `proxy.hosts` auf `zapfe.jetzt` (+ optional `www.zapfe.jetzt`) ändern.
   - `APP_HOST` auf `zapfe.jetzt` setzen.
-- Neu deployen: `bin/kamal deploy`
+- Neu deployen: `script/kamal_with_env deploy`
 - DNS umstellen:
   - `@` und `www` von Netlify auf Hetzner-IP.
 - Danach finaler Smoke-Test + Mail-Test.

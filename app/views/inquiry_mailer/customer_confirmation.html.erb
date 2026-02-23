@@ -1,7 +1,31 @@
-<h2>Vielen Dank für deine Anfrage!</h2>
-<p>Hallo <%= @inquiry.first_name %> <%= @inquiry.last_name %>,</p>
-<p>wir haben deine Anfrage erhalten und melden uns schnellstmöglich bei dir.</p>
-<p><strong>Typ:</strong> <%= @inquiry.source %></p>
-<% if @inquiry.event_date.present? %>
-  <p><strong>Eventdatum:</strong> <%= l(@inquiry.event_date) %></p>
-<% end %>
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 5px;">
+  <h2 style="color: #1f2937; text-align: center;">Vielen Dank für deine Anfrage!</h2>
+  <p>Hallo <%= @inquiry.first_name %> <%= @inquiry.last_name %>,</p>
+  <p>
+    wir haben deine Anfrage für den Zapfe! mobilen Getränkeservice erhalten.
+    Unser Team wird sich so schnell wie möglich mit dir in Verbindung setzen.
+  </p>
+
+  <div style="background-color: #f3f4f6; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h3 style="color: #1f2937; margin-top: 0;">Deine Anfrage im Überblick:</h3>
+    <% if @inquiry.event_date.present? %>
+      <p><strong>Veranstaltungsdatum:</strong> <%= l(@inquiry.event_date) %></p>
+    <% end %>
+    <% if @inquiry.total_price.present? %>
+      <p><strong>Geschätzter Gesamtpreis:</strong> <%= number_to_currency(@inquiry.total_price, unit: "€", separator: ",", delimiter: ".") %></p>
+    <% end %>
+
+    <% option_lines = @inquiry.selected_options.to_s.lines.map(&:strip).reject(&:blank?) %>
+    <% if option_lines.any? %>
+      <h4 style="color: #1f2937;">Ausgewählte Optionen:</h4>
+      <ul style="padding-left: 20px;">
+        <% option_lines.each do |line| %>
+          <li><%= line %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+
+  <p>Solltest du Fragen haben, kannst du uns jederzeit unter <a href="mailto:info@zapfe.jetzt">info@zapfe.jetzt</a> kontaktieren.</p>
+  <p>Mit freundlichen Grüßen,<br>Dein Zapfe! Team</p>
+</div>
