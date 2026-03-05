@@ -1,2 +1,10 @@
-<h1 class="mb-4 text-2xl font-semibold">Produkt bearbeiten</h1>
-<%= render "form" %>
+<div class="admin-toolbar">
+  <div>
+    <p class="proof-kicker">Katalog</p>
+    <h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]">Produkt bearbeiten</h1>
+  </div>
+  <%= link_to "Zurück", admin_products_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+</div>
+<div class="admin-panel">
+  <%= render "form" %>
+</div>

@@ -12,5 +12,4 @@ class InquiryMailer < ApplicationMailer
     subject = @inquiry.source == "calculator" ? "Neue Preisrechner-Anfrage" : "Neue Kontaktanfrage"
     mail(to: admin_email, reply_to: @inquiry.email, subject: subject)
   end
-
 end

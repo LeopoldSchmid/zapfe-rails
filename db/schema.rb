@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_23_105308) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_27_170000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -75,23 +75,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_23_105308) do
   end
 
   create_table "inquiries", force: :cascade do |t|
+    t.boolean "bring_own_drinks", default: false, null: false
     t.datetime "created_at", null: false
+    t.string "delivery_city"
+    t.string "delivery_postcode"
+    t.string "delivery_street"
     t.string "email", null: false
+    t.string "end_time"
+    t.date "ends_on"
     t.date "event_date"
     t.string "event_type"
     t.string "first_name", null: false
+    t.boolean "glasses_requested", default: false, null: false
     t.integer "guests"
     t.string "last_name", null: false
     t.text "message"
     t.string "phone", null: false
     t.text "pricing_snapshot"
     t.boolean "privacy_accepted", default: false, null: false
+    t.integer "rental_days"
+    t.string "rental_mode"
     t.text "selected_options"
     t.string "source", null: false
+    t.string "start_time"
+    t.date "starts_on"
     t.decimal "total_price", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_inquiries_on_created_at"
+    t.index ["rental_mode"], name: "index_inquiries_on_rental_mode"
     t.index ["source"], name: "index_inquiries_on_source"
+    t.index ["starts_on"], name: "index_inquiries_on_starts_on"
   end
 
   create_table "product_variants", force: :cascade do |t|

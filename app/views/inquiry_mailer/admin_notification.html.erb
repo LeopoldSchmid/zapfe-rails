@@ -14,15 +14,29 @@
     <% if @inquiry.event_date.present? %>
       <p><strong>Veranstaltungsdatum:</strong> <%= l(@inquiry.event_date) %></p>
     <% end %>
+    <% if @inquiry.starts_on.present? && @inquiry.ends_on.present? %>
+      <p><strong>Mietzeitraum:</strong> <%= l(@inquiry.starts_on) %> bis <%= l(@inquiry.ends_on) %></p>
+    <% end %>
+    <% if @inquiry.time_window.present? %>
+      <p><strong>Uhrzeit:</strong> <%= @inquiry.time_window %></p>
+    <% end %>
+    <% if @inquiry.rental_mode.present? %>
+      <p><strong>Mietmodus:</strong> <%= @inquiry.rental_mode %></p>
+    <% end %>
+    <% if @inquiry.rental_days.present? %>
+      <p><strong>Mietdauer:</strong> <%= @inquiry.rental_days %> Tag(e)</p>
+    <% end %>
+    <% if @inquiry.delivery_address.present? %>
+      <p><strong>Lieferadresse:</strong> <%= @inquiry.delivery_address %></p>
+    <% end %>
     <% if @inquiry.total_price.present? %>
       <p><strong>Geschätzter Gesamtpreis:</strong> <%= number_to_currency(@inquiry.total_price, unit: "€", separator: ",", delimiter: ".") %></p>
     <% end %>
 
-    <% option_lines = @inquiry.selected_options.to_s.lines.map(&:strip).reject(&:blank?) %>
-    <% if option_lines.any? %>
+    <% if @inquiry.selected_option_lines.any? %>
       <h4 style="color: #1f2937;">Ausgewählte Optionen:</h4>
       <ul style="padding-left: 20px;">
-        <% option_lines.each do |line| %>
+        <% @inquiry.selected_option_lines.each do |line| %>
           <li><%= line %></li>
         <% end %>
       </ul>

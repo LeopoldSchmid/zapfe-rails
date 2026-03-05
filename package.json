@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "@types/node": "^22.13.8"
+  },
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "PLAYWRIGHT_HEADED=1 playwright test --project=chromium",
+    "test:e2e:ui": "playwright test --ui"
+  }
+}

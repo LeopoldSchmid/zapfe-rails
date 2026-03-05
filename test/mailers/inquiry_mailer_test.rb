@@ -10,6 +10,7 @@ class InquiryMailerTest < ActionMailer::TestCase
     assert_equal "Deine Anfrage bei Zapfe!", mail.subject
     assert_match inquiry.first_name, mail.body.encoded
     assert_match "Deine Anfrage im Überblick", mail.body.encoded
+    assert_match "Mietzeitraum", mail.body.encoded
     assert_match "Geschätzter Gesamtpreis", mail.body.encoded
   end
 
@@ -25,6 +26,7 @@ class InquiryMailerTest < ActionMailer::TestCase
       assert_equal [inquiry.email], mail.reply_to
       assert_equal "Neue Preisrechner-Anfrage", mail.subject
       assert_match inquiry.last_name, mail.body.encoded
+      assert_match "Lieferadresse", mail.body.encoded
       assert_match "Anfrage-Details", mail.body.encoded
     ensure
       ENV["ADMIN_INBOX_EMAIL"] = original_inbox

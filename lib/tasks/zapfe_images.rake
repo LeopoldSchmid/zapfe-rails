@@ -9,7 +9,15 @@ namespace :zapfe do
   task sync_supabase_images: :environment do
     source_env = ENV.fetch("SOURCE_ENV", "/home/leo/dev/projects/zapfe/.env")
     if File.exist?(source_env)
-      env_values = Dotenv.parse(source_env)
+      env_values = File.readlines(source_env, chomp: true).each_with_object({}) do |line, values|
+        next if line.strip.empty? || line.lstrip.start_with?("#")
+
+        key, raw_value = line.split("=", 2)
+        next if key.blank? || raw_value.nil?
+
+        values[key] = raw_value.strip.sub(/\A"/, "").sub(/"\z/, "")
+      end
+
       %w[SUPABASE_URL SUPABASE_STORAGE_URL SUPABASE_STORAGE_SERVICE_KEY SUPABASE_BUCKET].each do |key|
         ENV[key] ||= env_values[key]
       end

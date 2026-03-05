@@ -1,18 +1,30 @@
-<h1 class="mb-6 text-2xl font-semibold">Dashboard</h1>
+<div class="admin-toolbar">
+  <div>
+    <p class="proof-kicker">Übersicht</p>
+    <h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]">Dashboard</h1>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Produkt anlegen", new_admin_product_path, class: "admin-cta" %>
+    <%= link_to "Event anlegen", new_admin_event_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+  </div>
+</div>
 
 <div class="grid gap-4 md:grid-cols-3">
-  <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-    <p class="text-sm text-slate-500">Produkte</p>
+  <div class="admin-kpi">
+    <p class="proof-kicker">Katalog</p>
     <p class="mt-2 text-3xl font-bold text-slate-900"><%= @products_count %></p>
+    <p class="mt-1 text-sm text-slate-500">Produkte</p>
   </div>
 
-  <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-    <p class="text-sm text-slate-500">Events</p>
+  <div class="admin-kpi">
+    <p class="proof-kicker">Inhalte</p>
     <p class="mt-2 text-3xl font-bold text-slate-900"><%= @events_count %></p>
+    <p class="mt-1 text-sm text-slate-500">Events</p>
   </div>
 
-  <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-    <p class="text-sm text-slate-500">Anfragen</p>
+  <div class="admin-kpi">
+    <p class="proof-kicker">Eingang</p>
     <p class="mt-2 text-3xl font-bold text-slate-900"><%= @inquiries_count %></p>
+    <p class="mt-1 text-sm text-slate-500">Anfragen</p>
   </div>
 </div>

@@ -44,6 +44,19 @@
   - `@` und `www` von Netlify auf Hetzner-IP.
 - Danach finaler Smoke-Test + Mail-Test.
 
+## 5a. Produktionsdaten nach erstem Prod-Deploy einspielen
+- Wichtig: Staging- und Prod-Volumes sind getrennt. Produktdaten und Active-Storage-Bilder wandern nicht automatisch mit.
+- Nach dem ersten echten Prod-Deploy ausführen:
+  - `bin/rails zapfe:import_legacy_products`
+  - `bin/rails zapfe:sync_supabase_images`
+  - `bin/rails zapfe:normalize_beer_prices`
+- Erwartung nach dem Import:
+  - Produktdaten + Varianten sind in Prod vorhanden
+  - Produktbilder werden aus dem Supabase-Bucket übernommen
+  - Bierpreise werden auf den gewünschten Standard gesetzt
+- Bekannter Restfall:
+  - `Fürstl. Fürstenbergische Brauerei | Fürstenberg Indian Pale Ale` hat aktuell kein passendes Bild im Supabase-Bucket und muss manuell bebildert werden.
+
 ## 6. Betrieb
 - Regelmäßige Backups für `storage/` (SQLite + Active Storage).
 - Optional Monitoring/Alerting ergänzen (Uptime + Fehlertracking).

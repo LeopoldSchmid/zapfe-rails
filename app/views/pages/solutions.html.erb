@@ -1,0 +1,369 @@
+<div data-controller="anchor-nav">
+<section class="bg-slate-50 py-16 sm:py-20">
+  <div class="page-wrap">
+    <div class="mx-auto max-w-4xl text-center">
+      <span class="eyebrow-rule">Zapfe! für den laufenden Betrieb</span>
+      <h1 class="mt-4 text-4xl font-bold leading-[1.04] text-[var(--color-zapfe-navy)] sm:text-6xl">
+        Selbstbedienung für regelmäßigen Ausschank
+      </h1>
+      <p class="mx-auto mt-5 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
+        Optionale Bezahlfunktion. Autonomer Betrieb. Weniger Personaldruck. Mehr Durchsatz. 
+      </p>
+      <div class="mt-7 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <a href="#anfrage" data-action="anchor-nav#jump" class="btn-primary px-6 py-3">Anfragen</a>
+        <a href="#systeme" data-action="anchor-nav#jump" class="btn-dark px-6 py-3">Systeme ansehen</a>
+      </div>
+    </div>
+
+    <figure class="solutions-media-frame mt-10 shadow-xl">
+      <img
+        src="<%= asset_path('hoffest.jpg') %>"
+        alt="Selbstbedienungsausschank beim Hoffest – 16:9 Key Visual"
+        class="h-full w-full object-cover object-center"
+        loading="lazy"
+        width="1280"
+        height="720"
+      >
+    </figure>
+  </div>
+</section>
+
+<% solutions_film_url = ENV["SOLUTIONS_FILM_URL"].presence || "/videos/hochzeit_bier_horizontal_720.mp4" %>
+<% hugo_video_url = "/videos/hochzeit_hugo_vertical_720.mp4" %>
+<% content_for :head do %>
+  <link rel="preload" as="video" href="<%= solutions_film_url %>" type="video/mp4">
+<% end %>
+<section class="bg-[var(--color-zapfe-navy)] py-14 text-white sm:py-18">
+  <div class="page-wrap">
+    <div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.95fr)] lg:items-center">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-zapfe-amber)]">Produktfilm</p>
+        <h2 class="mt-3 text-4xl font-bold leading-[1.05] sm:text-5xl">
+          Liebe auf das erste Getränk.
+        </h2>
+        <p class="mt-4 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
+          Ausschank im echten Betrieb. Hochzeit mit deaktivierter Bezahlfunktion.
+        </p>
+      </div>
+
+      <div class="solutions-media-frame">
+        <video autoplay loop muted playsinline preload="auto" poster="<%= asset_path('hoffest.jpg') %>" class="aspect-video w-full object-cover" aria-label="Produktfilm Selbstbedienungsausschank">
+          <source src="<%= solutions_film_url %>" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-white py-14 sm:py-16">
+  <div class="page-wrap">
+    <div class="mb-8 max-w-3xl">
+      <span class="eyebrow-rule">Typische Engpässe</span>
+      <h2 class="mt-4 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Die Highlights.</h2>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-3">
+      <% [
+        {
+          kicker: "Stoßzeiten",
+          title: "Warteschlangen verkürzen",
+          body: "Stoßzeiten sauber abfangen. Ohne zusätzlichen Personalbedarf.",
+          image_file: "highlights_1.png"
+        },
+        {
+          kicker: "Ablauf",
+          title: "Weniger Mitarbeiterdruck",
+          body: "Mehr Durchsatz. Mehr Erlebnis für Gäste.",
+          image_file: "highlights_2.png"
+        },
+        {
+          kicker: "Einbau",
+          title: "Das passende Setup wählen",
+          body: "Kiosk, Multi, Wand oder Speziallösung. Je nach Ort und Anforderungen.",
+          image_file: "highlights_3.png"
+        }
+      ].each do |benefit| %>
+        <article class="benefit-visual-card">
+          <div class="solutions-media-frame mb-4 aspect-[16/10]">
+            <%= image_tag benefit[:image_file],
+              alt: benefit[:title],
+              class: "h-full w-full object-cover object-center" %>
+          </div>
+          <p class="proof-kicker"><%= benefit[:kicker] %></p>
+          <p class="proof-value mt-3"><%= benefit[:title] %></p>
+          <p class="mt-3 text-sm leading-6 text-slate-600"><%= benefit[:body] %></p>
+          <p class="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"><%= benefit[:detail] %></p>
+        </article>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<style>
+  .solutions-media-frame {
+    overflow: hidden;
+    border-radius: 1rem;
+  }
+
+  .solutions-media-frame > img,
+  .solutions-media-frame > video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+  }
+
+  .beverage-video-frame {
+    width: clamp(168px, 51vw, 228px);
+  }
+
+  .solutions-fab {
+    position: fixed;
+    right: 1.25rem;
+    z-index: 50;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.26);
+    animation: solutions-fab-float 3.8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .solutions-fab:hover {
+    transform: translateY(-1px);
+  }
+
+  .solutions-fab:focus-visible {
+    outline: 2px solid var(--color-zapfe-navy);
+    outline-offset: 2px;
+  }
+
+  .solutions-fab--back {
+    bottom: 5rem;
+    animation-delay: 0.18s;
+  }
+
+  .solutions-fab--contact {
+    bottom: 1.25rem;
+  }
+
+  @keyframes solutions-fab-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .solutions-fab {
+      animation: none;
+    }
+
+    .solutions-fab:hover {
+      transform: none;
+    }
+  }
+
+  #systeme,
+  #anfrage {
+    scroll-margin-top: 84px;
+  }
+
+  .visual-placeholder {
+    border: 1px solid rgb(226 232 240);
+    border-radius: 1rem;
+    background: rgb(248 250 252);
+    padding: 1rem;
+  }
+
+  .visual-placeholder img,
+  .visual-placeholder video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.9rem;
+    object-fit: cover;
+  }
+
+  .visual-placeholder-hero {
+    min-height: 280px;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 0.35rem;
+  }
+
+  .visual-placeholder-card {
+    min-height: 110px;
+    margin-bottom: 1rem;
+    display: grid;
+    align-content: center;
+    gap: 0.2rem;
+  }
+
+  .visual-placeholder-system {
+    min-height: 220px;
+    border-radius: 1.5rem;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 0.35rem;
+  }
+
+  .visual-placeholder-film {
+    min-height: 240px;
+    border-radius: 1.25rem;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 0.35rem;
+  }
+
+  .visual-placeholder-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(71 85 105);
+  }
+
+  .visual-placeholder-note {
+    max-width: 34ch;
+    margin: 0 auto;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: rgb(51 65 85);
+  }
+
+  .benefit-visual-card {
+    border-radius: 1.5rem;
+    border: 1px solid var(--color-slate-200);
+    background: white;
+    padding: 1.35rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 16px 36px rgba(30, 41, 59, 0.08);
+  }
+
+  @media (max-width: 1023px) {
+    .benefit-visual-card {
+      padding: 0.9rem;
+    }
+  }
+</style>
+
+<section id="systeme" class="bg-[var(--color-zapfe-cream)] py-14 sm:py-16">
+  <div class="page-wrap">
+    <div class="mb-8 max-w-3xl">
+      <span class="eyebrow-rule">Unsere Systeme</span>
+      <h2 class="mt-4 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Flexible Lösungen.</h2>
+      <p class="mt-3 text-slate-600">Kompakt oder groß. Standardisiert oder individuell. Mobil oder fest verbaut.</p>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-2">
+      <% [
+        {
+          title: "Zapfe! Kiosk",
+          image_file: "kiosk.png",
+          body: "Kompakt, schnell einsetzbar und personalschonend.",
+          bullets: ["1 Zapfhahn", "Kleine Fläche", "Schnell startklar"]
+        },
+        {
+          title: "Zapfe! Multi",
+          image_file: "multi.png",
+          body: "Mehr Durchsatz mit weniger Druck aufs Team.",
+          bullets: ["2 bis 3 Zapfhähne", "Für Stoßzeiten", "Bar-tauglich"]
+        },
+        {
+          title: "Zapfe! Wand",
+          image_file: "wand.png",
+          body: "Fester Einbau für hohe Frequenz und stabilen Personaleinsatz.",
+          bullets: ["3+ Zapfhähne", "Fester Einbau", "Hoher Durchsatz"]
+        },
+        {
+          title: "Zapfe! Individuell",
+          image_file: "individuell.png",
+          body: "Wenn Standard nicht reicht.",
+          bullets: ["Nach Bedarf", "Sonderflächen", "Individuell planbar"]
+        }
+      ].each do |system| %>
+        <article class="card-soft overflow-hidden">
+          <div class="border-b border-slate-200 p-4">
+            <div class="solutions-media-frame aspect-[16/10]">
+              <%= image_tag "products/#{system[:image_file]}",
+                alt: system[:title],
+                class: "h-full w-full object-cover object-center" %>
+            </div>
+          </div>
+
+          <div class="p-6">
+            <p class="mt-3 text-sm leading-6 text-slate-600"><%= system[:body] %></p>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <% system[:bullets].each do |bullet| %>
+                <span class="inline-flex items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-center text-xs font-semibold text-slate-600"><%= bullet %></span>
+              <% end %>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="bg-slate-50 py-14 sm:py-16">
+  <div class="page-wrap">
+    <div class="mx-auto max-w-5xl">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-zapfe-blue)]">Getränkevielfalt</p>
+      <h2 class="mt-3 text-4xl font-bold leading-[1.06] text-[var(--color-zapfe-navy)] sm:text-5xl">
+        Nahezu alles zapfbar.
+      </h2>
+      <p class="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
+        Bier. Sekt. Limonade. Hugo. Spritz. Und vieles mehr.
+      </p>
+      <p class="mt-2 text-base leading-7 text-slate-600 sm:text-lg">
+        Ein Setup, flexibel für euer Getränkekonzept.
+      </p>
+
+      <div class="solutions-media-frame beverage-video-frame mx-auto mt-8">
+        <video autoplay loop muted playsinline preload="auto" class="aspect-[9/16] w-full object-cover" aria-label="Hugo wird gezapft">
+          <source src="<%= hugo_video_url %>" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button
+  type="button"
+  data-anchor-nav-target="backButton"
+  data-action="anchor-nav#back"
+  class="btn-primary solutions-fab solutions-fab--back inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-semibold"
+  style="display:none;"
+>
+  Zurück
+</button>
+
+<a
+  href="#anfrage"
+  data-action="anchor-nav#jump"
+  class="btn-primary solutions-fab solutions-fab--contact inline-flex h-12 w-12 items-center justify-center rounded-xl p-0 text-[var(--color-zapfe-navy)] sm:h-14 sm:w-14"
+  aria-label="Zur Anfrage springen"
+>
+  <svg viewBox="0 0 24 24" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 6h16v12H4z" />
+    <path d="m4 8 8 5 8-5" />
+  </svg>
+</a>
+
+<section id="anfrage" class="bg-white py-14 sm:py-18">
+  <div class="page-wrap">
+    <div class="card-soft p-7 sm:p-10">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)] lg:items-start">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Lösungsanfrage</p>
+          <h2 class="mt-3 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Jetzt passende Lösung anfragen</h2>
+        <p class="mt-4 max-w-2xl text-slate-600">Frag uns an. Wir melden uns.</p>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-[var(--color-zapfe-cream)] p-5 sm:p-6">
+          <%= render "inquiry_form", source: "solutions" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>

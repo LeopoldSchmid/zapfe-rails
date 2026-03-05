@@ -1,0 +1,39 @@
+<%= form_with model: Inquiry.new(source: source), url: inquiries_path, class: "space-y-3" do |f| %>
+  <%= f.hidden_field :source, value: source %>
+
+  <div class="grid gap-3 sm:grid-cols-2">
+    <div>
+      <%= f.label :first_name, "Vorname *", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
+      <%= f.text_field :first_name, required: true, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :last_name, "Nachname *", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
+      <%= f.text_field :last_name, required: true, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :email, "E-Mail *", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
+      <%= f.email_field :email, required: true, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :phone, "Telefon *", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
+      <%= f.telephone_field :phone, required: true, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :company, "Firma", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
+    <%= f.text_field :company, required: false, placeholder: "Name des Unternehmens (optional)", class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
+  </div>
+
+  <div>
+    <%= f.label :message, "Worum geht es?", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
+    <%= f.text_area :message, rows: 4, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
+  </div>
+
+  <label class="flex items-start gap-2 text-xs text-slate-600">
+    <%= f.check_box :privacy_accepted, required: true, class: "mt-0.5" %>
+    <span>Mit dem Absenden erklärst du dich mit unserer <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> einverstanden.</span>
+  </label>
+
+  <%= f.submit "Lösungsanfrage senden", class: "btn-primary mt-2 w-full" %>
+<% end %>

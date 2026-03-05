@@ -6,4 +6,6 @@ class Event < ApplicationRecord
 
   scope :published, -> { where(published: true) }
   scope :ordered, -> { order(date_from: :asc, position: :asc, created_at: :desc) }
+  scope :public_listing, -> { published.ordered }
+  scope :preview_listing, ->(limit_count = 3) { public_listing.limit(limit_count) }
 end

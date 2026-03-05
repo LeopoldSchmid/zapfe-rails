@@ -1,0 +1,17 @@
+<section class="bg-white py-14 sm:py-18">
+  <div class="page-wrap">
+    <div class="card-soft p-7 sm:p-10">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]"><%= eyebrow %></p>
+          <h2 class="mt-3 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl"><%= title %></h2>
+          <p class="mt-4 max-w-2xl text-slate-600"><%= body %></p>
+        </div>
+        <div class="flex flex-wrap gap-3 lg:justify-end">
+          <%= link_to primary_label, primary_path, class: "btn-primary px-6 py-3" %>
+          <%= link_to secondary_label, secondary_path, class: "btn-dark px-6 py-3" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

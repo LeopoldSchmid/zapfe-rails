@@ -18,6 +18,17 @@ bin/rails db:seed
 bin/dev
 ```
 
+## Testing
+Setup und Konventionen stehen in:
+- `documentation/testing.md`
+
+Wichtige Kommandos:
+```bash
+bin/rails test
+bin/rails test test/system
+npx playwright test
+```
+
 ## Admin Login
 Der erste Admin wird per Seed erzeugt:
 ```bash

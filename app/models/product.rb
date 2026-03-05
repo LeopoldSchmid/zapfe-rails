@@ -7,4 +7,14 @@ class Product < ApplicationRecord
 
   validates :article_number, :name, :brand, :kind, presence: true
   validates :article_number, uniqueness: true
+
+  scope :catalog_listing, -> { includes(:category, :product_variants).order(:brand, :name) }
+
+  def self.catalog_brands
+    distinct.order(:brand).pluck(:brand).compact
+  end
+
+  def self.catalog_subcategories
+    distinct.order(:subcategory).pluck(:subcategory).compact
+  end
 end

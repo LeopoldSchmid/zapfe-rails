@@ -1,55 +1,74 @@
 <section class="bg-[var(--color-zapfe-navy)] py-14 text-white">
-  <div class="page-wrap max-w-4xl">
-    <h1 class="text-4xl font-bold">Impressum</h1>
-    <p class="mt-3 text-white/90">Angaben gemäß § 5 TMG</p>
+  <div class="page-wrap max-w-5xl">
+    <span class="eyebrow-rule text-[var(--color-zapfe-amber)]">Rechtliches</span>
+    <h1 class="mt-4 text-4xl font-bold">Impressum</h1>
+    <p class="mt-3 max-w-3xl text-white/90">Die rechtlichen Basisangaben in derselben klaren Struktur wie der Rest der Seite: ohne versteckte Informationen und ohne unnötige Textwüste.</p>
   </div>
 </section>
 
-<section class="bg-white py-10">
-  <div class="page-wrap max-w-4xl space-y-8 text-slate-700">
-    <div>
-      <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Unternehmensangaben</h2>
-      <p class="mt-2">
-        ape2tap UG (haftungsbeschränkt)<br>
-        Habsburgerstr. 38<br>
-        79104 Freiburg im Breisgau
-      </p>
+<section class="legal-shell">
+  <div class="legal-grid">
+    <div class="legal-stack text-slate-700">
+      <div class="legal-card">
+        <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Unternehmensangaben</h2>
+        <p class="mt-3">
+          ape2tap UG (haftungsbeschränkt)<br>
+          Habsburgerstr. 38<br>
+          79104 Freiburg im Breisgau
+        </p>
+      </div>
+
+      <div class="legal-card">
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Vertreten durch</h3>
+        <p class="mt-3">Leopold Schmid</p>
+      </div>
+
+      <div class="legal-card">
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Kontakt</h3>
+        <p class="mt-3">
+          Telefon: <a href="tel:+491623473520" class="font-semibold underline">+49 162 3473 520</a><br>
+          E-Mail: <a href="mailto:info@zapfe.jetzt" class="font-semibold underline">info@zapfe.jetzt</a>
+        </p>
+      </div>
+
+      <div class="legal-card">
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Registereintrag</h3>
+        <p class="mt-3">
+          Eintragung im Handelsregister<br>
+          Registergericht: Amtsgericht Freiburg<br>
+          Registernummer: HRB 7010520713
+        </p>
+      </div>
+
+      <div class="legal-card">
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Umsatzsteuer-ID</h3>
+        <p class="mt-3">DE369035041</p>
+      </div>
+
+      <div class="legal-card">
+        <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h3>
+        <p class="mt-3">
+          Leopold Schmid<br>
+          Habsburgerstr. 38<br>
+          79104 Freiburg im Breisgau
+        </p>
+      </div>
     </div>
 
-    <div>
-      <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Vertreten durch</h3>
-      <p class="mt-2">Leopold Schmid</p>
-    </div>
-
-    <div>
-      <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Kontakt</h3>
-      <p class="mt-2">
-        Telefon: <a href="tel:+491623473520" class="font-semibold underline">+49 162 3473 520</a><br>
-        E-Mail: <a href="mailto:info@zapfe.jetzt" class="font-semibold underline">info@zapfe.jetzt</a>
-      </p>
-    </div>
-
-    <div>
-      <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Registereintrag</h3>
-      <p class="mt-2">
-        Eintragung im Handelsregister<br>
-        Registergericht: Amtsgericht Freiburg<br>
-        Registernummer: HRB 7010520713
-      </p>
-    </div>
-
-    <div>
-      <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Umsatzsteuer-ID</h3>
-      <p class="mt-2">DE369035041</p>
-    </div>
-
-    <div>
-      <h3 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h3>
-      <p class="mt-2">
-        Leopold Schmid<br>
-        Habsburgerstr. 38<br>
-        79104 Freiburg im Breisgau
-      </p>
-    </div>
+    <aside class="legal-stack">
+      <div class="legal-card">
+        <p class="proof-kicker">Direkte Wege</p>
+        <div class="mt-4 space-y-3">
+          <%= link_to datenschutz_path, class: "link-panel block p-5" do %>
+            <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Zur Datenschutzerklärung</p>
+            <p class="mt-1 text-sm text-slate-600">Wenn du die Verarbeitung von Anfrage- und Browserdaten prüfen willst.</p>
+          <% end %>
+          <%= link_to contact_path, class: "link-panel block p-5" do %>
+            <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Zum Kontakt</p>
+            <p class="mt-1 text-sm text-slate-600">Wenn du nach den rechtlichen Angaben direkt eine Anfrage stellen willst.</p>
+          <% end %>
+        </div>
+      </div>
+    </aside>
   </div>
 </section>

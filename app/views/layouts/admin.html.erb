@@ -8,21 +8,24 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="bg-slate-100 text-slate-900">
-    <header class="sticky top-0 z-20 border-b border-slate-200 bg-white">
-      <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <%= link_to "Zapfe Admin", admin_root_path, class: "text-xl font-semibold text-slate-900" %>
-        <nav class="flex items-center gap-4 text-sm">
-          <%= link_to "Dashboard", admin_root_path, class: "text-slate-700 hover:text-slate-900" %>
-          <%= link_to "Produkte", admin_products_path, class: "text-slate-700 hover:text-slate-900" %>
-          <%= link_to "Kategorien", admin_categories_path, class: "text-slate-700 hover:text-slate-900" %>
-          <%= link_to "Events", admin_events_path, class: "text-slate-700 hover:text-slate-900" %>
-          <%= button_to "Logout", admin_logout_path, method: :delete, class: "rounded bg-slate-900 px-3 py-1.5 text-white" %>
+  <body class="admin-shell text-slate-900">
+    <header class="admin-topbar">
+      <div class="admin-container flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <%= link_to "Zapfe Admin", admin_root_path, class: "text-xl font-semibold text-slate-900" %>
+          <p class="mt-1 text-sm text-slate-500">Produkte, Events und Katalogdaten in einem klaren Arbeitsbereich.</p>
+        </div>
+        <nav class="flex flex-wrap items-center gap-3 text-sm">
+          <%= link_to "Dashboard", admin_root_path, class: "admin-link" %>
+          <%= link_to "Produkte", admin_products_path, class: "admin-link" %>
+          <%= link_to "Kategorien", admin_categories_path, class: "admin-link" %>
+          <%= link_to "Events", admin_events_path, class: "admin-link" %>
+          <%= button_to "Logout", admin_logout_path, method: :delete, class: "admin-cta" %>
         </nav>
       </div>
     </header>
 
-    <main class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <main class="admin-container py-6">
       <% flash.each do |type, message| %>
         <% tone = type.to_s == "alert" ? "bg-red-100 text-red-800" : "bg-emerald-100 text-emerald-800" %>
         <div class="mb-4 rounded-lg px-4 py-3 text-sm <%= tone %>"><%= message %></div>

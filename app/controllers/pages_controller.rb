@@ -1,22 +1,33 @@
 class PagesController < ApplicationController
   def home
-    @events_preview = Event.published.ordered.limit(3)
+    @events_preview = Event.preview_listing
   end
 
   def events
-    @events = Event.published.ordered
+    @events = Event.public_listing
+  end
+
+  def solutions
+  end
+
+  def zapfanlage_freiburg
+  end
+
+  def firmenveranstaltungen
+  end
+
+  def hochzeiten
   end
 
   def drinks
-    scope = Product.includes(:category, :product_variants).order(:brand, :name)
-    @categories = Category.order(:name)
-    @brands = Product.distinct.order(:brand).pluck(:brand).compact
-    @subcategories = Product.distinct.order(:subcategory).pluck(:subcategory).compact
-    @products = scope
+    @categories = Category.catalog_listing
+    @brands = Product.catalog_brands
+    @subcategories = Product.catalog_subcategories
+    @products = Product.catalog_listing
   end
 
   def calculator
-    @products = Product.includes(:product_variants).order(:brand, :name)
+    @products = Product.catalog_listing
   end
 
   def contact
@@ -26,5 +37,23 @@ class PagesController < ApplicationController
   end
 
   def datenschutz
+  end
+
+  def sitemap
+    @static_pages = [
+      root_url,
+      calculator_url,
+      drinks_url,
+      events_url,
+      contact_url,
+      solutions_url,
+      zapfanlage_mieten_freiburg_url,
+      loesungen_firmenveranstaltungen_url,
+      loesungen_hochzeiten_url,
+      impressum_url,
+      datenschutz_url
+    ]
+
+    render layout: false
   end
 end

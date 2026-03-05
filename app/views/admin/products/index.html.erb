@@ -1,11 +1,14 @@
-<div class="mb-4 flex items-center justify-between">
-  <h1 class="text-2xl font-semibold">Produkte</h1>
-  <%= link_to "Neues Produkt", new_admin_product_path, class: "rounded bg-slate-900 px-3 py-2 text-sm text-white" %>
+<div class="admin-toolbar">
+  <div>
+    <p class="proof-kicker">Katalog</p>
+    <h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]">Produkte</h1>
+  </div>
+  <%= link_to "Neues Produkt", new_admin_product_path, class: "admin-cta" %>
 </div>
 
 <div class="grid gap-4 md:grid-cols-2">
   <% @products.each do |product| %>
-    <article class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+    <article class="admin-panel">
       <div class="mb-3">
         <% if product.image.attached? %>
           <%= image_tag product.image, class: "h-32 w-full rounded-lg object-contain bg-slate-50" %>
@@ -21,7 +24,7 @@
         <% end %>
       </ul>
       <div class="mt-3 flex gap-3 text-sm">
-        <%= link_to "Bearbeiten", edit_admin_product_path(product), class: "text-slate-700 hover:underline" %>
+        <%= link_to "Bearbeiten", edit_admin_product_path(product), class: "font-medium text-slate-700 hover:underline" %>
         <%= button_to "Löschen", admin_product_path(product), method: :delete, class: "text-red-700", form: { class: "inline" } %>
       </div>
     </article>

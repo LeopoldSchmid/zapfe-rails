@@ -6,6 +6,17 @@ one:
   phone: '+49123'
   event_type: Hochzeit
   event_date: 2026-01-01
+  rental_mode: zapf
+  rental_days: 1
+  starts_on: 2026-01-01
+  ends_on: 2026-01-01
+  start_time: '18:00'
+  end_time: '22:00'
+  delivery_street: Musterweg 1
+  delivery_postcode: 79104
+  delivery_city: Freiburg
+  bring_own_drinks: false
+  glasses_requested: false
   guests: 50
   message: Test
   selected_options: ''
@@ -21,6 +32,17 @@ two:
   phone: '+49124'
   event_type: Firmenfeier
   event_date: 2026-02-01
+  rental_mode: self
+  rental_days: 2
+  starts_on: 2026-02-01
+  ends_on: 2026-02-02
+  start_time: '17:00'
+  end_time: '23:00'
+  delivery_street: Messeallee 2
+  delivery_postcode: 79108
+  delivery_city: Freiburg
+  bring_own_drinks: true
+  glasses_requested: true
   guests: 80
   message: Test
   selected_options: Zapf Option

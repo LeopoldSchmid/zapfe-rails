@@ -1,11 +1,14 @@
-<div class="mb-4 flex items-center justify-between">
-  <h1 class="text-2xl font-semibold">Events</h1>
-  <%= link_to "Neues Event", new_admin_event_path, class: "rounded bg-slate-900 px-3 py-2 text-sm text-white" %>
+<div class="admin-toolbar">
+  <div>
+    <p class="proof-kicker">Inhalte</p>
+    <h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]">Events</h1>
+  </div>
+  <%= link_to "Neues Event", new_admin_event_path, class: "admin-cta" %>
 </div>
 
 <div class="grid gap-4 md:grid-cols-2">
   <% @events.each do |event| %>
-    <article class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+    <article class="admin-panel">
       <h2 class="text-lg font-semibold"><%= event.title %></h2>
       <p class="mt-1 text-sm text-slate-600"><%= event.date_from ? l(event.date_from) : "Kein Datum" %></p>
       <p class="mt-2 text-sm text-slate-600"><%= event.description&.truncate(120) %></p>

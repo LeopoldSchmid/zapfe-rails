@@ -1,10 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
   <head>
-    <title><%= content_for(:title) || "Zapfe! Mobile Selbstbedienungs-Zapfanlage" %></title>
+    <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="Premium mobile Zapfanlagen für Veranstaltungen aller Größen.">
+    <meta name="description" content="<%= page_description %>">
     <meta name="author" content="Zapfe!">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="<%= canonical_url %>">
+    <meta property="og:site_name" content="Zapfe!">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= page_title %>">
+    <meta property="og:description" content="<%= page_description %>">
+    <meta property="og:url" content="<%= canonical_url %>">
+    <meta property="og:image" content="<%= og_image_url %>">
+    <meta property="og:locale" content="de_DE">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= page_title %>">
+    <meta name="twitter:description" content="<%= page_description %>">
+    <meta name="twitter:image" content="<%= og_image_url %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -13,9 +26,11 @@
     <link rel="apple-touch-icon" href="/zapfe_b_w.svg">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= yield :head %>
+    <script type="application/ld+json"><%= raw(json_escape(page_json_ld.to_json)) %></script>
   </head>
 
-  <body class="bg-slate-50 text-slate-900">
+  <body class="bg-slate-50 text-slate-900" data-controller="page-transition">
     <div id="site-header" data-turbo-permanent>
       <%= render "shared/navbar" %>
     </div>

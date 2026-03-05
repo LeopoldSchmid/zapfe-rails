@@ -1,4 +1,6 @@
-<h1 class="mb-6 text-2xl font-semibold text-slate-900">Admin Login</h1>
+<p class="proof-kicker">Geschützter Bereich</p>
+<h1 class="mb-2 mt-2 text-2xl font-semibold text-slate-900">Admin Login</h1>
+<p class="mb-6 text-sm text-slate-500">Melde dich an, um Katalog, Events und Inhalte zu bearbeiten.</p>
 
 <%= form_with url: admin_login_path, class: "space-y-4" do |f| %>
   <div>
@@ -11,5 +13,5 @@
     <%= f.password_field :password, required: true, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
   </div>
 
-  <%= f.submit "Einloggen", class: "w-full rounded-md bg-slate-900 px-4 py-2.5 font-semibold text-white hover:bg-slate-800" %>
+  <%= f.submit "Einloggen", class: "admin-cta w-full" %>
 <% end %>
