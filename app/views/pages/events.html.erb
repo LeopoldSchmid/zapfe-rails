@@ -28,7 +28,7 @@
 </section>
 
 <% solutions_film_url = ENV["SOLUTIONS_FILM_URL"].presence || "/videos/hochzeit_bier_horizontal_720.mp4" %>
-<% hugo_video_url = "/videos/hochzeit_hugo_vertical_720.mp4" %>
+<% hugo_video_url = ENV["HUGO_VIDEO_URL"].presence || "/videos/hochzeit_hugo_vertical_720.mp4" %>
 <% content_for :head do %>
   <link rel="preload" as="video" href="<%= solutions_film_url %>" type="video/mp4">
 <% end %>
