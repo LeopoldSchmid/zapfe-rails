@@ -1,0 +1,13 @@
+default:
+  - article_number: "01765301"
+    featured_position: 1
+    featured_note: "Klassische, sichere Bierwahl fur Feiern mit gemischtem Publikum."
+  - article_number: "019052"
+    featured_position: 2
+    featured_note: "Geradliniges Pils fur Veranstaltungen, bei denen ein vertrauter Stil gefragt ist."
+  - article_number: "019061"
+    featured_position: 3
+    featured_note: "Beliebt, wenn etwas markanteres Bier mit breiter Akzeptanz gesucht wird."
+  - article_number: "019060"
+    featured_position: 4
+    featured_note: "Empfehlung fur Gaste, die ein herberes Profil und etwas mehr Charakter mochten."

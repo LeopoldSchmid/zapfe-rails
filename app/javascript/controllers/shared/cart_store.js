@@ -12,6 +12,11 @@ export const saveCart = (cart) => {
   window.localStorage.setItem(CART_KEY, JSON.stringify(cart))
 }
 
+export const clearCart = () => {
+  saveCart([])
+  return []
+}
+
 export const upsertCartItem = (item) => {
   const cart = getCart()
   const existing = cart.find((entry) => entry.variantId === item.variantId)

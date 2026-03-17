@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_27_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -128,6 +128,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_170000) do
     t.integer "category_id"
     t.datetime "created_at", null: false
     t.text "description"
+    t.boolean "featured", default: false, null: false
+    t.string "featured_note"
+    t.integer "featured_position"
     t.boolean "is_alcoholic", default: true, null: false
     t.string "kind", null: false
     t.string "name", null: false
@@ -136,6 +139,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_170000) do
     t.index ["article_number"], name: "index_products_on_article_number", unique: true
     t.index ["brand", "name"], name: "index_products_on_brand_and_name"
     t.index ["category_id"], name: "index_products_on_category_id"
+    t.index ["featured", "featured_position"], name: "index_products_on_featured_and_featured_position"
+    t.index ["featured"], name: "index_products_on_featured"
     t.index ["kind"], name: "index_products_on_kind"
   end
 

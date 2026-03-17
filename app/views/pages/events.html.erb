@@ -1,28 +1,28 @@
 <div data-controller="anchor-nav">
-<section class="bg-slate-50 py-16 sm:py-20">
+<section class="bg-slate-50 pt-8 pb-16 sm:pt-12 sm:pb-20">
   <div class="page-wrap">
     <div class="mx-auto max-w-4xl text-center">
-      <span class="eyebrow-rule">Zapfe! Events</span>
+      <span class="eyebrow-rule">Zapfe! Veranstaltungen</span>
       <h1 class="mt-4 text-4xl font-bold leading-[1.04] text-[var(--color-zapfe-navy)] sm:text-6xl">
-        Frisch gezapfte Getränke für euer Event.
+        Frisch gezapfte Getränke für euere Veranstaltung
       </h1>
       <p class="mx-auto mt-5 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
         Minimale Betreuung. Optionale Bezahlfunktion. Schnell aufgebaut.
       </p>
       <p class="mx-auto mt-3 max-w-2xl text-sm font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-base">
-        Für kleine Feiern und große Events
+        Für kleine Feiern und große Veranstaltungen
       </p>
     </div>
 
     <figure class="solutions-media-frame mt-10 shadow-xl">
-      <img
-        src="<%= asset_path('hoffest.jpg') %>"
-        alt="Selbstbedienungsausschank beim Hoffest – 16:9 Key Visual"
-        class="h-full w-full object-cover object-center"
-        loading="lazy"
-        width="1280"
-        height="720"
-      >
+      <%= static_responsive_image_tag(
+        base_name: "zapfe-event-exhibition",
+        alt: "Zapfe! Piaggio Ape im Ausstellungsraum",
+        width: 1440,
+        height: 1176,
+        img_class: "h-full w-full object-cover object-center",
+        sizes: "(max-width: 1023px) 100vw, 896px"
+      ) %>
     </figure>
   </div>
 </section>
@@ -41,7 +41,7 @@
           Liebe auf das erste Getränk.
         </h2>
         <p class="mt-4 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
-          Ausschank im echten Betrieb. Hochzeit mit deaktivierter Bezahlfunktion.
+          Ausschank im echten Betrieb. Hier bei einer Hochzeit mit deaktivierter Bezahlfunktion.
         </p>
       </div>
 
@@ -59,19 +59,18 @@
     <div class="mb-8 max-w-3xl">
       <span class="eyebrow-rule">Mietoptionen</span>
       <h2 class="mt-4 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Was ihr mieten könnt.</h2>
-      <p class="mt-3 text-slate-600">Von der Ape für Feiern bis zu temporären Mehrhahn-Setups für Stoßzeiten und große Veranstaltungen.</p>
-      <div class="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white/80 p-2 text-slate-400 lg:hidden" aria-hidden="true">
-        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 12h12" />
-          <path d="m10 8-4 4 4 4" />
-          <path d="m14 8 4 4-4 4" />
-        </svg>
+      <p class="mt-3 text-slate-600">Einzelne Zapfhähne. Unsere Piaggio Ape mit zwei Zapfhähnen. Oder unsere Zapfe! Wand im Schiffscontainer für große Veranstaltungen.</p>
+      <div class="mt-5 max-w-2xl rounded-[1.4rem] border border-amber-200/80 bg-[linear-gradient(180deg,rgba(255,252,244,0.98),rgba(255,246,219,0.92))] px-5 py-4 shadow-[0_14px_34px_rgba(214,180,63,0.12)]">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Aktueller Stand</p>
+        <p class="mt-2 text-sm leading-6 text-slate-700">
+          Kurzfristig verfügbar ist aktuell unsere <strong>Piaggio Ape</strong> mit zwei Zapfhähnen. Andere Lösungen sind auf Anfrage in der Regel innerhalb weniger Wochen möglich.
+        </p>
       </div>
     </div>
 
     <div class="relative -mx-4">
       <div class="pointer-events-none absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-[var(--color-zapfe-cream)] to-transparent lg:hidden"></div>
-      <div class="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0">
+      <div class="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0 xl:grid-cols-3">
       <% [
         {
           title: "Zapfe! Kiosk",
@@ -88,19 +87,19 @@
         {
           title: "Zapfe! Wand",
           image_file: "wand.png",
-          body: "3+ Zapfhähne. Bspw. verbaut in Schiffscontainer. Eingeschränkte Mobilität. Nicht selbstständig bewegbar. Sehr hoher Durchsatz.",
+          body: "3+ Zapfhähne. Verbaut in Schiffscontainer. Eingeschränkte Mobilität. Nicht selbstständig bewegbar. Sehr hoher Durchsatz.",
           bullets: ["3+ Zapfhähne", "Weniger kompakt", "Hoher Durchsatz"]
         }
       ].each do |system| %>
-        <article class="card-soft flex-none snap-start overflow-hidden lg:w-auto lg:max-w-none" style="width:min(67vw,288px);min-width:min(67vw,288px);">
-          <div class="border-b border-slate-200 p-4">
+        <article class="card-soft flex-none snap-start overflow-hidden lg:flex lg:h-full lg:w-auto lg:max-w-none lg:flex-col" style="width:min(67vw,288px);min-width:min(67vw,288px);">
+          <div class="flex h-full flex-col border-b border-slate-200 p-4">
             <div class="solutions-media-frame aspect-[16/10]">
               <%= image_tag "products/#{system[:image_file]}",
                 alt: system[:title],
                 class: "h-full w-full object-cover object-center" %>
             </div>
-            <p class="text-lg font-semibold text-[var(--color-zapfe-navy)]"><%= system[:title] %></p>
-            <p class="mt-3 text-sm leading-6 text-slate-600"><%= system[:body] %></p>
+            <p class="mt-4 text-lg font-semibold text-[var(--color-zapfe-navy)]"><%= system[:title] %></p>
+            <p class="mt-3 flex-1 text-sm leading-6 text-slate-600"><%= system[:body] %></p>
             <div class="mt-5 grid grid-cols-2 gap-2">
               <% system[:bullets].each_with_index do |bullet, index| %>
                 <span class="<%= index.zero? ? 'col-span-2' : '' %> inline-flex items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-center text-xs font-semibold text-slate-600"><%= bullet %></span>
@@ -122,16 +121,16 @@
         Nahezu alles zapfbar.
       </h2>
       <p class="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
-        Bier. Sekt. Limonade. Hugo. Spritz. Und vieles mehr.
-      </p>
-      <p class="mt-2 text-base leading-7 text-slate-600 sm:text-lg">
-        Ein Setup, flexibel für euer Getränkekonzept.
+        Bier. Sekt. Limonade. Hugo. Spritz. Und vieles mehr. Flexibel für euer Getränkekonzept.
       </p>
 
       <div class="solutions-media-frame beverage-video-frame mx-auto mt-8">
         <video autoplay loop muted playsinline preload="auto" class="aspect-[9/16] w-full object-cover" aria-label="Hugo wird gezapft">
           <source src="<%= hugo_video_url %>" type="video/mp4">
         </video>
+      </div>
+      <div class="mt-6 text-center">
+        <%= link_to "-> zur Getränkeauswahl", drinks_path, class: "btn-dark px-4 py-2 text-sm" %>
       </div>
     </div>
   </div>
@@ -181,165 +180,21 @@
   </div>
 </section>
 
-<style>
-  .solutions-media-frame {
-    overflow: hidden;
-    border-radius: 1rem;
-  }
-
-  .solutions-media-frame > img,
-  .solutions-media-frame > video {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
-  }
-
-  .beverage-video-frame {
-    width: clamp(168px, 51vw, 228px);
-  }
-
-  .solutions-fab {
-    position: fixed;
-    right: 1.25rem;
-    z-index: 50;
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.26);
-    animation: solutions-fab-float 3.8s ease-in-out infinite;
-    will-change: transform;
-  }
-
-  .solutions-fab:hover {
-    transform: translateY(-1px);
-  }
-
-  .solutions-fab:focus-visible {
-    outline: 2px solid var(--color-zapfe-navy);
-    outline-offset: 2px;
-  }
-
-  .solutions-fab--back {
-    bottom: 5rem;
-    animation-delay: 0.18s;
-  }
-
-  .solutions-fab--contact {
-    bottom: 1.25rem;
-  }
-
-  @keyframes solutions-fab-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .solutions-fab {
-      animation: none;
-    }
-
-    .solutions-fab:hover {
-      transform: none;
-    }
-  }
-
-  #gross-event,
-  #anfrage {
-    scroll-margin-top: 84px;
-  }
-
-  .visual-placeholder {
-    border: 1px solid rgb(226 232 240);
-    border-radius: 1rem;
-    background: rgb(248 250 252);
-    padding: 1rem;
-  }
-
-  .visual-placeholder img,
-  .visual-placeholder video {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 0.9rem;
-    object-fit: cover;
-  }
-
-  .visual-placeholder-hero {
-    min-height: 280px;
-    display: grid;
-    place-content: center;
-    text-align: center;
-    gap: 0.35rem;
-  }
-
-  .visual-placeholder-card {
-    min-height: 110px;
-    margin-bottom: 1rem;
-    display: grid;
-    align-content: center;
-    gap: 0.2rem;
-  }
-
-  .visual-placeholder-system {
-    min-height: 220px;
-    border-radius: 1.5rem;
-    display: grid;
-    place-content: center;
-    text-align: center;
-    gap: 0.35rem;
-  }
-
-  .visual-placeholder-film {
-    min-height: 240px;
-    border-radius: 1.25rem;
-    display: grid;
-    place-content: center;
-    text-align: center;
-    gap: 0.35rem;
-  }
-
-  .visual-placeholder-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgb(71 85 105);
-  }
-
-  .visual-placeholder-note {
-    max-width: 34ch;
-    margin: 0 auto;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    color: rgb(51 65 85);
-  }
-
-  .benefit-visual-card {
-    border-radius: 1.5rem;
-    border: 1px solid var(--color-slate-200);
-    background: white;
-    padding: 1.35rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 16px 36px rgba(30, 41, 59, 0.08);
-  }
-
-  @media (max-width: 1023px) {
-    .benefit-visual-card {
-      padding: 0.9rem;
-    }
-  }
-</style>
-
 <button
   type="button"
   data-anchor-nav-target="backButton"
   data-action="anchor-nav#back"
-  class="btn-primary solutions-fab solutions-fab--back inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-semibold"
+  class="btn-primary solutions-fab solutions-fab--back inline-flex h-12 w-12 items-center justify-center rounded-xl p-0 text-white sm:h-14 sm:w-14"
   style="display:none;"
+  aria-label="Zurück"
 >
-  Zurück
+  <svg viewBox="0 0 24 24" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M15 18l-6-6 6-6" />
+  </svg>
 </button>
 
 <a
-  href="#anfrage"
+  href="#contact"
   data-action="anchor-nav#jump"
   class="btn-primary solutions-fab solutions-fab--contact inline-flex h-12 w-12 items-center justify-center rounded-xl p-0 text-[var(--color-zapfe-navy)] sm:h-14 sm:w-14"
   aria-label="Zur Anfrage springen"
@@ -350,18 +205,23 @@
   </svg>
 </a>
 
-<section id="anfrage" class="bg-white py-14 sm:py-18">
+<section id="contact" class="bg-white py-14 sm:py-18">
   <div class="page-wrap">
+    <div id="anfrage"></div>
     <div class="card-soft p-7 sm:p-10">
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)] lg:items-start">
         <div>
-          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Lösungsanfrage</p>
-          <h2 class="mt-3 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Jetzt passende Lösung anfragen</h2>
-        <p class="mt-4 max-w-2xl text-slate-600">Frag uns an. Wir melden uns.</p>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Anfrage</p>
+          <h2 class="mt-3 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Jetzt Vermietung anfragen</h2>
+          <p class="mt-4 max-w-2xl text-slate-600">Frag uns an. Wir melden uns bei dir. Detaillierte Preisinformationen findest du im Preisrechner</p>
+          
         </div>
 
         <div class="rounded-3xl border border-slate-200 bg-[var(--color-zapfe-cream)] p-5 sm:p-6">
-          <%= render "inquiry_form", source: "solutions" %>
+          <%= form_with model: Inquiry.new(source: "events"), url: inquiries_path, class: "space-y-4", data: { controller: "form-validation" }, lang: "de" do |f| %>
+            <%= f.hidden_field :source, value: "events" %>
+            <%= render "event_inquiry_fields", f: f, source: "events" %>
+          <% end %>
         </div>
       </div>
     </div>

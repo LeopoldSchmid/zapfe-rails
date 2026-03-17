@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { getCart, saveCart, upsertCartItem } from "controllers/shared/cart_store"
+import { clearCart, getCart, saveCart, upsertCartItem } from "controllers/shared/cart_store"
 import { renderDrinksCart } from "controllers/shared/cart_dom"
 import { filterCardsByQuery, formatCurrency, normalizeText, setElementVisibility, showToast } from "controllers/shared/ui_helpers"
 
@@ -17,9 +17,11 @@ export default class extends Controller {
     this.toggleFiltersButton = document.getElementById("toggle-drinks-filters")
     this.resetFiltersButton = document.getElementById("reset-drinks-filters")
     this.cards = Array.from(this.element.querySelectorAll(".drink-card"))
+    this.sections = Array.from(this.element.querySelectorAll("[data-drink-section]"))
     this.countEl = document.getElementById("drinks-count")
     this.emptyState = document.getElementById("drinks-no-results")
 
+    this.featuredFilter = document.getElementById("filter-featured")
     this.availableFilter = document.getElementById("filter-available")
     this.alcoholicRadios = Array.from(document.querySelectorAll('input[name="filter-alcoholic"]'))
     this.categoryFilters = Array.from(document.querySelectorAll(".filter-category"))
@@ -35,6 +37,7 @@ export default class extends Controller {
     this.cartSubtotal = document.getElementById("cart-subtotal")
     this.cartDeposit = document.getElementById("cart-deposit")
     this.cartTotal = document.getElementById("cart-total")
+    this.clearCartButton = document.getElementById("clear-cart")
   }
 
   bindEvents() {
@@ -58,11 +61,13 @@ export default class extends Controller {
     ;[...this.categoryFilters, ...this.subcategoryFilters, ...this.brandFilters, ...this.alcoholicRadios].forEach((input) => {
       input.addEventListener("change", () => this.applyFilters())
     })
+    this.featuredFilter?.addEventListener("change", () => this.applyFilters())
     this.availableFilter?.addEventListener("change", () => this.applyFilters())
 
     this.openCartButton?.addEventListener("click", () => this.openPanel())
     this.closeCartButton?.addEventListener("click", () => this.closePanel())
     this.overlay?.addEventListener("click", () => this.closePanel())
+    this.clearCartButton?.addEventListener("click", () => this.handleClearCart())
   }
 
   getSelectedValues(inputs) {
@@ -98,6 +103,7 @@ export default class extends Controller {
     const categories = this.getSelectedValues(this.categoryFilters)
     const subcategories = this.getSelectedValues(this.subcategoryFilters)
     const brands = this.getSelectedValues(this.brandFilters)
+    const featuredOnly = !!this.featuredFilter?.checked
     const availableOnly = !!this.availableFilter?.checked
     const alcoholic = this.alcoholicRadios.find((input) => input.checked)?.value || "all"
 
@@ -110,16 +116,18 @@ export default class extends Controller {
         const matchesCategory = categories.length === 0 || categories.includes(card.dataset.category)
         const matchesSubcategory = subcategories.length === 0 || subcategories.includes(card.dataset.subcategory)
         const matchesBrand = brands.length === 0 || brands.includes(card.dataset.brand)
+        const matchesFeatured = !featuredOnly || card.dataset.featured === "1"
         const matchesAvailable = !availableOnly || card.dataset.hasAvailable === "1"
 
         let matchesAlcoholic = true
         if (alcoholic === "alcoholic") matchesAlcoholic = card.dataset.alcoholic === "1"
         if (alcoholic === "non_alcoholic") matchesAlcoholic = card.dataset.alcoholic === "0"
 
-        return matchesCategory && matchesSubcategory && matchesBrand && matchesAvailable && matchesAlcoholic
+        return matchesCategory && matchesSubcategory && matchesBrand && matchesFeatured && matchesAvailable && matchesAlcoholic
       },
       afterFilter: (count) => {
         if (this.countEl) this.countEl.textContent = String(count)
+        this.updateSectionVisibility()
       }
     })
   }
@@ -143,14 +151,18 @@ export default class extends Controller {
   }
 
   renderCart() {
+    const cart = getCart()
+
     renderDrinksCart({
       container: this.cartItems,
       countElement: this.cartCount,
       subtotalElement: this.cartSubtotal,
       depositElement: this.cartDeposit,
       totalElement: this.cartTotal,
-      cart: getCart()
+      cart
     })
+
+    setElementVisibility(this.clearCartButton, cart.length > 0)
   }
 
   updateCartQuantity(event) {
@@ -181,10 +193,26 @@ export default class extends Controller {
       radio.checked = radio.value === "all"
     })
 
+    if (this.featuredFilter) this.featuredFilter.checked = false
     if (this.availableFilter) this.availableFilter.checked = true
     if (this.searchInput) this.searchInput.value = ""
 
     this.applyFilters()
+  }
+
+  updateSectionVisibility() {
+    this.sections.forEach((section) => {
+      const visibleCards = Array.from(section.querySelectorAll(".drink-card")).filter((card) => !card.hidden)
+      setElementVisibility(section, visibleCards.length > 0)
+    })
+  }
+
+  handleClearCart() {
+    if (!getCart().length) return
+
+    clearCart()
+    this.renderCart()
+    showToast("Warenkorb geleert")
   }
 
   openPanel() {

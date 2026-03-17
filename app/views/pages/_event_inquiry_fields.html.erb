@@ -1,0 +1,53 @@
+<% submit_label = "Eventanfrage senden" %>
+
+<div class="grid gap-4 sm:grid-cols-2">
+  <div>
+    <%= f.label :first_name, "Vorname *", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+    <%= f.text_field :first_name, required: true, autocomplete: "given-name", class: "w-full rounded-xl border border-slate-300 bg-[rgba(225,234,250,0.85)] px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+  </div>
+  <div>
+    <%= f.label :last_name, "Nachname *", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+    <%= f.text_field :last_name, required: true, autocomplete: "family-name", class: "w-full rounded-xl border border-slate-300 bg-[rgba(225,234,250,0.85)] px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+  </div>
+  <div>
+    <%= f.label :phone, "Telefon *", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+    <%= f.telephone_field :phone, required: true, autocomplete: "tel", class: "w-full rounded-xl border border-slate-300 bg-[rgba(225,234,250,0.85)] px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+  </div>
+  <div>
+    <%= f.label :guests, "Gästezahl", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+    <%= f.number_field :guests, min: 1, inputmode: "numeric", class: "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+  </div>
+</div>
+
+<div>
+  <%= f.label :email, "E-Mail *", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+  <%= f.email_field :email, required: true, autocomplete: "email", class: "w-full rounded-xl border border-slate-300 bg-[rgba(225,234,250,0.85)] px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+</div>
+
+<div>
+  <%= f.label :event_type, "Art der Veranstaltung", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+  <%= f.select :event_type,
+    [
+      ["Bitte wählen", ""],
+      ["Hochzeit", "Hochzeit"],
+      ["Geburtstag", "Geburtstag"],
+      ["Firmenfeier", "Firmenfeier"],
+      ["Vereinsfest", "Vereinsfest"],
+      ["Festival", "Festival"],
+      ["Sonstiges", "Sonstiges"]
+    ],
+    {},
+    class: "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+</div>
+
+<div>
+  <%= f.label :message, "Noch wichtig für uns?", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+  <%= f.text_area :message, rows: 5, class: "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+</div>
+
+<label class="flex items-start gap-2 text-sm text-slate-600">
+  <%= f.check_box :privacy_accepted, required: true, class: "mt-0.5" %>
+  <span>Mit dem Absenden erklärst du dich mit unserer <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> einverstanden.</span>
+</label>
+
+<%= f.submit submit_label, class: "btn-primary mt-2 w-full" %>

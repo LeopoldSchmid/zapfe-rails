@@ -7,6 +7,9 @@ one:
   subcategory: Pils
   alcohol_content: 5.1
   is_alcoholic: true
+  featured: true
+  featured_position: 2
+  featured_note: "Klassiker fur Feste mit gemischtem Publikum."
   description: Test
 
 two:
@@ -18,4 +21,5 @@ two:
   subcategory: Cola
   alcohol_content: 
   is_alcoholic: false
+  featured: false
   description: Test

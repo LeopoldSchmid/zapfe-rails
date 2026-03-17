@@ -1,5 +1,5 @@
 class Inquiry < ApplicationRecord
-  SOURCES = %w[contact calculator solutions].freeze
+  SOURCES = %w[contact calculator solutions events].freeze
 
   before_validation :normalize_structured_fields
 

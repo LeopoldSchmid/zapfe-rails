@@ -4,11 +4,17 @@ const clearNode = (node) => {
   if (node) node.replaceChildren()
 }
 
-const buildButton = ({ text, dataset = {}, className = "", type = "button" }) => {
+const buildButton = ({ text = "", html = "", dataset = {}, className = "", type = "button", ariaLabel = "" }) => {
   const button = document.createElement("button")
   button.type = type
   button.className = className
-  button.textContent = text
+  if (ariaLabel) button.setAttribute("aria-label", ariaLabel)
+
+  if (html) {
+    button.innerHTML = html
+  } else {
+    button.textContent = text
+  }
 
   Object.entries(dataset).forEach(([key, value]) => {
     button.dataset[key] = String(value)
@@ -25,7 +31,8 @@ const buildQuantityControls = (index, qty) => {
     buildButton({
       text: "-",
       dataset: { dec: index },
-      className: "rounded border border-slate-300 px-2"
+      className: "grid h-8 w-8 place-content-center rounded border border-slate-300 text-slate-600",
+      ariaLabel: "Menge verringern"
     })
   )
 
@@ -37,7 +44,8 @@ const buildQuantityControls = (index, qty) => {
     buildButton({
       text: "+",
       dataset: { inc: index },
-      className: "rounded border border-slate-300 px-2"
+      className: "grid h-8 w-8 place-content-center rounded border border-slate-300 text-slate-600",
+      ariaLabel: "Menge erhöhen"
     })
   )
 
@@ -82,9 +90,17 @@ export const renderCalculatorCart = ({ container, hint, cart, ownDrinksSelected 
     titleWrap.append(title, size)
 
     const remove = buildButton({
-      text: "Entfernen",
+      html: `
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 6h18" />
+          <path d="M8 6V4h8v2" />
+          <path d="M19 6l-1 14H6L5 6" />
+          <path d="M10 11v6M14 11v6" />
+        </svg>
+      `,
       dataset: { remove: index },
-      className: "rounded border border-slate-300 px-2 py-1 text-xs"
+      className: "grid h-8 w-8 place-content-center rounded border border-slate-300 text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+      ariaLabel: "Getränk entfernen"
     })
 
     header.append(titleWrap, remove)
@@ -165,9 +181,17 @@ export const renderDrinksCart = ({ container, countElement, subtotalElement, dep
     const removeWrap = document.createElement("div")
     removeWrap.append(
       buildButton({
-        text: "Entfernen",
+        html: `
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h18" />
+            <path d="M8 6V4h8v2" />
+            <path d="M19 6l-1 14H6L5 6" />
+            <path d="M10 11v6M14 11v6" />
+          </svg>
+        `,
         dataset: { remove: index },
-        className: "text-xs text-slate-500 underline"
+        className: "grid h-8 w-8 place-content-center rounded border border-slate-300 text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+        ariaLabel: "Getränk entfernen"
       })
     )
 

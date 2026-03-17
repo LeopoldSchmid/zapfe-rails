@@ -1,4 +1,13 @@
-<%= form_with model: Inquiry.new(source: source), url: inquiries_path, class: "space-y-3" do |f| %>
+<% submit_label = case source
+when "events"
+  "Eventanfrage senden"
+when "solutions"
+  "Produktanfrage senden"
+else
+  "Nachricht senden"
+end %>
+
+<%= form_with model: Inquiry.new(source: source), url: inquiries_path, class: "space-y-3", data: { controller: "form-validation" }, lang: "de" do |f| %>
   <%= f.hidden_field :source, value: source %>
 
   <div class="grid gap-3 sm:grid-cols-2">
@@ -35,5 +44,5 @@
     <span>Mit dem Absenden erklärst du dich mit unserer <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> einverstanden.</span>
   </label>
 
-  <%= f.submit "Lösungsanfrage senden", class: "btn-primary mt-2 w-full" %>
+  <%= f.submit submit_label, class: "btn-primary mt-2 w-full" %>
 <% end %>

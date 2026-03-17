@@ -4,14 +4,12 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "should get home" do
     get root_url
     assert_response :success
-    assert_match "<title>Mobile Zapfanlage mieten in Freiburg | Zapfe!</title>", response.body
-    assert_match "property=\"og:title\" content=\"Mobile Zapfanlage mieten in Freiburg | Zapfe!\"", response.body
+    assert_match "<title>Mobile Zapfanlagen zur Selbstbedienung | Zapfe!</title>", response.body
+    assert_match "property=\"og:title\" content=\"Mobile Zapfanlagen zur Selbstbedienung | Zapfe!\"", response.body
     assert_match "rel=\"canonical\" href=\"http://www.example.com/\"", response.body
     assert_match "\"@type\":\"LocalBusiness\"", response.body
-    assert_match "/optimized/zapfe-hero-desktop.jpg", response.body
-    assert_match "/optimized/zapfe-features-desktop.png", response.body
-    assert_no_match "/zapfe_incl_description.png", response.body
-    assert_no_match "/zapfe_numbers.png", response.body
+    assert_match "Temporär", response.body
+    assert_match "Dauerhaft", response.body
   end
 
   test "should get events" do
@@ -19,20 +17,11 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get local seo landing pages" do
-    get zapfanlage_mieten_freiburg_url
-    assert_response :success
-
-    get loesungen_firmenveranstaltungen_url
-    assert_response :success
-
-    get loesungen_hochzeiten_url
-    assert_response :success
-  end
-
   test "should get drinks" do
     get drinks_url
     assert_response :success
+    assert_match "Getränkeauswahl", response.body
+    assert_match "Zum Preisrechner", response.body
     assert_match "drinks-no-results", response.body
   end
 
@@ -51,15 +40,25 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "should get calculator" do
     get calculator_url
     assert_response :success
-    assert_match "<title>Preisrechner für mobile Zapfanlage | Zapfe!</title>", response.body
+    assert_match "<title>Preisrechner für Selbstbedienungs-Zapfanlagen | Zapfe!</title>", response.body
     assert_match "\"@type\":\"FAQPage\"", response.body
-    assert_match "calc-no-results", response.body
+    assert_match "Event-Rechner", response.body
+    assert_match "calc-own-drinks-note", response.body
   end
 
   test "should get solutions" do
     get solutions_url
     assert_response :success
-    assert_match "<title>Self-Service Lösungen für Ausschank und Verkauf | Zapfe!</title>", response.body
+    assert_match "<title>Selbstbedienungs-Zapfanlagen für den dauerhaften Betrieb | Zapfe!</title>", response.body
+  end
+
+  test "should get cta preview" do
+    get "/cta-preview"
+    assert_response :success
+    assert_match "CTA Studien", response.body
+    assert_match "Compact Pill", response.body
+    assert_match "Split Button", response.body
+    assert_match "Mini Card CTA", response.body
   end
 
   test "should get contact" do
@@ -75,6 +74,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get "/sitemap.xml"
     assert_response :success
     assert_match "<urlset", response.body
-    assert_match "zapfanlage-mieten-freiburg", response.body
+    assert_match "solutions", response.body
+    assert_no_match "zapfanlage-mieten-freiburg", response.body
   end
 end

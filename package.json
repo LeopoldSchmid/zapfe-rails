@@ -5,8 +5,10 @@
     "@types/node": "^22.13.8"
   },
   "scripts": {
-    "test:e2e": "playwright test",
-    "test:e2e:headed": "PLAYWRIGHT_HEADED=1 playwright test --project=chromium",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 playwright test --project=chromium",
+    "test:e2e:headed": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 PLAYWRIGHT_HEADED=1 playwright test --project=chromium",
+    "test:e2e:ui": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 playwright test --ui --project=chromium",
+    "test:e2e:local": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 PLAYWRIGHT_SKIP_WEBSERVER=1 PLAYWRIGHT_PORT=3001 playwright test --project=chromium --workers=1",
+    "test:e2e:local:headed": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 PLAYWRIGHT_SKIP_WEBSERVER=1 PLAYWRIGHT_PORT=3001 PLAYWRIGHT_HEADED=1 playwright test --project=chromium --workers=1"
   }
 }

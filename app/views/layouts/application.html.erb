@@ -31,11 +31,11 @@
   </head>
 
   <body class="bg-slate-50 text-slate-900" data-controller="page-transition">
-    <div id="site-header" data-turbo-permanent>
+    <div id="site-header">
       <%= render "shared/navbar" %>
     </div>
 
-    <main id="page-content" class="min-h-[75vh] pt-14">
+    <main id="page-content" class="<%= main_container_classes %>">
       <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <% flash.each do |type, message| %>
           <% tone = type.to_s == "alert" ? "bg-red-100 text-red-800" : "bg-emerald-100 text-emerald-800" %>

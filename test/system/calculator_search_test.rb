@@ -13,6 +13,9 @@ class CalculatorSearchTest < ApplicationSystemTestCase
       subcategory: "Hell",
       alcohol_content: 4.9,
       is_alcoholic: true,
+      featured: true,
+      featured_position: 1,
+      featured_note: "Beliebt fur schnelle Bierauswahl.",
       description: "Suchtest"
     )
     @matching_product.product_variants.create!(
@@ -32,6 +35,7 @@ class CalculatorSearchTest < ApplicationSystemTestCase
       subcategory: "Pils",
       alcohol_content: 5.1,
       is_alcoholic: true,
+      featured: false,
       description: "Suchtest"
     )
     @other_product.product_variants.create!(
@@ -57,5 +61,14 @@ class CalculatorSearchTest < ApplicationSystemTestCase
     assert_no_selector ".calc-drink-card", text: "Zapf Such"
     assert_no_selector ".calc-drink-card", text: "Fremdmarke"
     assert_selector "#calc-no-results", text: "Kein Getränk gefunden"
+  end
+
+  test "can show only featured drinks in calculator" do
+    visit calculator_path
+
+    find("label.filter-pill").click
+
+    assert_selector ".calc-drink-card", text: "Suchbier Hell"
+    assert_no_selector ".calc-drink-card", text: "Fremdmarke"
   end
 end

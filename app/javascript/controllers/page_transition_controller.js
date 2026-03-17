@@ -4,11 +4,19 @@ export default class extends Controller {
   connect() {
     document.documentElement.classList.add("js")
     this.beforeRenderHandler = this.beforeRender.bind(this)
+    this.resetHandler = this.resetPageState.bind(this)
     document.addEventListener("turbo:before-render", this.beforeRenderHandler)
+    document.addEventListener("turbo:render", this.resetHandler)
+    document.addEventListener("turbo:before-cache", this.resetHandler)
+    window.addEventListener("pageshow", this.resetHandler)
+    this.resetPageState()
   }
 
   disconnect() {
     document.removeEventListener("turbo:before-render", this.beforeRenderHandler)
+    document.removeEventListener("turbo:render", this.resetHandler)
+    document.removeEventListener("turbo:before-cache", this.resetHandler)
+    window.removeEventListener("pageshow", this.resetHandler)
   }
 
   beforeRender(event) {
@@ -28,6 +36,13 @@ export default class extends Controller {
         entered.classList.add("page-enter-active")
         setTimeout(() => entered.classList.remove("page-enter-active"), 260)
       })
-    }, 140)
+      }, 140)
+  }
+
+  resetPageState() {
+    const page = document.getElementById("page-content")
+    if (!page) return
+
+    page.classList.remove("page-leave-active", "page-enter-active")
   }
 }

@@ -7,8 +7,21 @@ class Product < ApplicationRecord
 
   validates :article_number, :name, :brand, :kind, presence: true
   validates :article_number, uniqueness: true
+  validates :featured_position, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
 
-  scope :catalog_listing, -> { includes(:category, :product_variants).order(:brand, :name) }
+  scope :with_catalog_includes, -> { includes(:category, :product_variants) }
+  scope :featured_only, -> { where(featured: true) }
+  scope :featured_first, lambda {
+    order(Arel.sql(<<~SQL.squish))
+      CASE WHEN products.featured THEN 0 ELSE 1 END ASC,
+      CASE WHEN products.featured_position IS NULL THEN 1 ELSE 0 END ASC,
+      products.featured_position ASC,
+      products.brand ASC,
+      products.name ASC
+    SQL
+  }
+  scope :catalog_listing, -> { with_catalog_includes.featured_first }
+  scope :catalog_featured_listing, -> { with_catalog_includes.featured_only.featured_first }
 
   def self.catalog_brands
     distinct.order(:brand).pluck(:brand).compact

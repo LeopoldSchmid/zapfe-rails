@@ -22,6 +22,7 @@ Stand: 2026-02-23
 - Bestehende Informationsarchitektur (Seiten/Flows) beibehalten, sofern kein funktionaler Grund dagegen spricht.
 - Abweichungen nur, wenn sie Wartbarkeit verbessern oder Abhängigkeiten reduzieren.
 - Calculator in V1 bewusst vereinfacht (kein Geo-Dienst), Layout/Bedienlogik möglichst ähnlich.
+- Bei Design-, Layout- oder reinen Styling-Aufgaben werden keine Texte, Labels oder sonstige Copy geändert, ergänzt oder umgeschrieben, außer das ist ausdrücklich angefordert.
 
 ## Datenmodell (V1, schlank)
 - Category

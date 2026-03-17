@@ -1,4 +1,10 @@
 module ApplicationHelper
+  def nav_link_classes(path, base_classes: nil, active_classes: "underline underline-offset-8")
+    classes = [ base_classes ]
+    classes << active_classes if request&.path == path
+    classes.compact.join(" ")
+  end
+
   def responsive_picture_tag(sources:, fallback:, alt:, img_class: nil, picture_class: nil, loading: "lazy", fetchpriority: nil, width: nil, height: nil, sizes: nil)
     picture_options = picture_class.present? ? { class: picture_class } : {}
 
@@ -72,19 +78,25 @@ module ApplicationHelper
   end
 
   def short_product_label(product)
-    brand = product.brand.to_s.squish
     name = product.name.to_s.squish
     name = product.subcategory.to_s.squish if name.blank?
     name = product.kind.to_s.squish if name.blank?
-
-    if brand.present? && name.present?
-      name = name.sub(/\A#{Regexp.escape(brand)}\s*/i, "").squish
-    end
+    brand = product.brand.to_s.squish
 
     return brand if name.blank?
-    return name if brand.blank?
 
-    [brand, name].join(" ").strip
+    name
+  end
+
+  def product_featured_note(product)
+    return product.featured_note if product.featured_note.present?
+    return unless product.featured?
+
+    if product.is_alcoholic?
+      "Von uns empfohlen für unkomplizierte Ausschanke mit hoher Trefferquote."
+    else
+      "Von uns empfohlen als zugängliche alkoholfreie Option vom Fass."
+    end
   end
 
   def page_title
@@ -186,6 +198,22 @@ module ApplicationHelper
     end
 
     data
+  end
+
+  def main_container_classes
+    if controller_name == "pages" && action_name == "home"
+      "pt-14"
+    else
+      "min-h-[75vh] pt-14"
+    end
+  end
+
+  def footer_classes
+    if controller_name == "pages" && action_name == "home"
+      "bg-[var(--color-zapfe-navy)] text-white"
+    else
+      "mt-20 bg-[var(--color-zapfe-navy)] text-white"
+    end
   end
 
   private

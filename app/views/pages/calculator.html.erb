@@ -1,23 +1,25 @@
+<% quick_products = (Array(@featured_products) + Array(@catalog_products)).uniq.first(12) %>
+
 <section class="py-6 sm:py-10" data-controller="calculator">
   <div class="page-wrap max-w-5xl">
-    <div class="mb-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+    <div class="mb-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
       <div>
-        <span class="eyebrow-rule">Preisrechner</span>
-        <h1 class="mt-4 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Plane Zeitraum, Auswahl und Anfrage in einem Ablauf</h1>
-        <p class="mt-3 max-w-3xl text-slate-600">Der Rechner führt dich Schritt für Schritt durch Setup, Getränke und Kontaktdaten. Die Summe ist eine Orientierung, kein verbindliches Angebot.</p>
+        <span class="eyebrow-rule">Event-Rechner</span>
+        <h1 class="mt-4 text-3xl font-bold text-[var(--color-zapfe-navy)] sm:text-4xl">Preis kalkulieren</h1>
       </div>
       <aside class="card-soft p-5">
-        <p class="proof-kicker">Vor dem Start</p>
-        <p class="mt-3 text-sm leading-6 text-slate-600">Wenn du deine Getränke zuerst zusammenstellen willst, nutze die <%= link_to "Getränkeseite", drinks_path, class: "font-semibold text-[var(--color-zapfe-blue)]" %>. Der Warenkorb wird automatisch übernommen.</p>
+        <p class="proof-kicker">Wichtig</p>
+        <p class="mt-3 text-sm leading-6 text-slate-600">Dieser Rechner ist nur für Veranstaltungen gedacht. Für dauerhaften Betrieb nutze bitte direkt <%= link_to "Solutions", "#{solutions_path}#contact", class: "font-semibold text-[var(--color-zapfe-blue)]" %>.</p>
       </aside>
     </div>
 
-    <%= form_with model: Inquiry.new(source: "calculator"), url: inquiries_path, data: { turbo: false }, id: "calculator-form", class: "space-y-5 pb-28 md:pb-0" do |f| %>
+    <%= form_with model: Inquiry.new(source: "calculator"), url: inquiries_path, data: { turbo: false, controller: "form-validation" }, id: "calculator-form", class: "space-y-5 pb-28 md:pb-0", lang: "de" do |f| %>
       <%= f.hidden_field :source, value: "calculator" %>
+      <%= hidden_field_tag "inquiry[selected_product]", "Piaggio Ape", id: "selected-product-hidden" %>
       <%= f.hidden_field :rental_mode, id: "rental-mode-hidden" %>
       <%= f.hidden_field :rental_days, id: "rental-days-hidden" %>
-      <%= f.hidden_field :start_time, id: "start-time-hidden" %>
-      <%= f.hidden_field :end_time, id: "end-time-hidden" %>
+      <%= f.hidden_field :start_time, id: "start-time-hidden", value: "" %>
+      <%= f.hidden_field :end_time, id: "end-time-hidden", value: "" %>
       <%= f.hidden_field :bring_own_drinks, id: "bring-own-drinks-hidden", value: "0" %>
       <%= f.hidden_field :glasses_requested, id: "glasses-requested-hidden", value: "0" %>
       <%= f.hidden_field :selected_options, id: "selected-options" %>
@@ -25,136 +27,155 @@
       <%= f.hidden_field :pricing_snapshot, id: "pricing-snapshot" %>
       <%= f.hidden_field :event_date, id: "event-date-hidden" %>
 
-      <div class="card-soft p-5">
-        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Schritt 1</p>
-        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Optionen</h2>
-        <p class="mb-4 text-sm text-slate-600">Wähle zuerst den Betriebsmodus. Alles Weitere baut auf dieser Entscheidung auf.</p>
-        <div class="space-y-3">
-          <label class="flex items-start gap-2 rounded-md border border-slate-200 p-3">
-            <input type="radio" name="rental_option" value="zapf" data-base="250" checked class="mt-1">
-            <span><strong>Zapf (250€/Tag)</strong><br><span class="text-sm text-slate-500">Professionelle Zapfanlage mit zwei Zapfhähnen</span></span>
-          </label>
-          <label class="flex items-start gap-2 rounded-md border border-slate-200 p-3">
-            <input type="radio" name="rental_option" value="self" data-base="350" class="mt-1">
-            <span><strong>Zapf & Pay (350€/Tag)</strong><br><span class="text-sm text-slate-500">Professionelle Zapfanlage mit digitalem, self-service Bezahlsystem</span></span>
-          </label>
-          <label class="flex items-center justify-between gap-3 rounded-md border border-slate-200 px-3 py-3">
-            <span>
-              <strong>Gläser mieten</strong>
-              <span class="mt-1 block text-xs text-slate-500">Wir bringen auf Wunsch passende Gläser für dein Event mit.</span>
+      <div id="calculator-contact" class="card-soft p-5 sm:p-6">
+        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Schritt 0</p>
+        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Produkt wählen</h2>
+        <div class="grid gap-3 md:grid-cols-3">
+          <div class="relative rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
+            <div class="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-700 shadow-sm ring-1 ring-slate-200">
+              Auf Anfrage in wenigen Wochen
+            </div>
+            <div class="flex items-start gap-4 opacity-55">
+              <div class="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-2 ring-1 ring-slate-200">
+                <%= image_tag "products/kiosk.png", alt: "Zapfe! Kiosk", class: "max-h-20 w-full object-contain object-center" %>
+              </div>
+              <div class="flex-1">
+                <p class="text-lg font-semibold text-slate-500">Zapfe! Kiosk</p>
+                <p class="mt-2 text-sm leading-6 text-slate-500">Einzelner Zapfhahn im kompakten Korpus.</p>
+              </div>
+            </div>
+          </div>
+
+          <label class="rounded-[1.4rem] border border-[var(--color-zapfe-amber)] bg-[linear-gradient(180deg,#fffaf0_0%,#fff3d5_100%)] p-4 shadow-[0_12px_30px_rgba(214,180,63,0.14)]">
+            <input type="radio" name="product_option" value="Zapfe! Multi" checked class="sr-only">
+            <span class="flex items-start gap-4">
+              <span class="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white/80 p-2 ring-1 ring-amber-200">
+                <%= image_tag "products/multi.png", alt: "Zapfe! Multi", class: "max-h-20 w-full object-contain object-center" %>
+              </span>
+              <span class="flex-1">
+                <span class="block text-lg font-semibold text-[var(--color-zapfe-navy)]">Zapfe! Multi</span>
+                <span class="mt-2 block text-sm leading-6 text-slate-600">Mobile Lösung mit zwei Zapfhähnen in einer stilvollen Piaggio Ape.</span>
+              </span>
             </span>
-            <%= render "shared/toggle_switch", id: "glasses-rental", checked: false %>
+          </label>
+
+          <div class="relative rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
+            <div class="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-700 shadow-sm ring-1 ring-slate-200">
+              Auf Anfrage in wenigen Wochen
+            </div>
+            <div class="flex items-start gap-4 opacity-55">
+              <div class="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-2 ring-1 ring-slate-200">
+                <%= image_tag "products/wand.png", alt: "Zapfe! Wand", class: "max-h-20 w-full object-contain object-center" %>
+              </div>
+              <div class="flex-1">
+                <p class="text-lg font-semibold text-slate-500">Zapfe! Wand</p>
+                <p class="mt-2 text-sm leading-6 text-slate-500">Größere Lösung für hohe Frequenz.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-soft p-5 sm:p-6">
+        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Schritt 1</p>
+        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Variante wählen</h2>
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 rounded-md border border-slate-200 p-3">
+            <input type="radio" name="rental_option" value="zapf" data-base="250" checked class="mt-1">
+            <span><strong>Zapf (250€/Tag)</strong><br><span class="text-sm text-slate-500">Zapfanlage zur Selbstbedienung mit zwei Zapfhähnen</span></span>
+          </label>
+          <label class="flex items-start gap-3 rounded-md border border-slate-200 p-3">
+            <input type="radio" name="rental_option" value="self" data-base="350" class="mt-1">
+            <span><strong>Zapf & Pay (350€/Tag)</strong><br><span class="text-sm text-slate-500">Zapfanlage zur Selbstbedienung mit kontaktlosem Bezahlsystem</span></span>
           </label>
         </div>
       </div>
 
-      <div class="card-soft p-5">
-        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Datum & Uhrzeit</h2>
-        <p class="mb-4 text-sm text-slate-600">Hier definierst du den tatsächlichen Einsatzrahmen, nicht nur ein grobes Wunschdatum.</p>
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <label class="mb-1 block text-sm font-medium">Startdatum</label>
-            <%= date_field_tag "inquiry[starts_on]", nil, id: "rental-start-date", class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2" %>
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Enddatum</label>
-            <%= date_field_tag "inquiry[ends_on]", nil, id: "rental-end-date", class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2" %>
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Startzeit</label>
-            <div class="grid grid-cols-2 gap-2">
-              <select id="start-hour" class="rounded-md border border-slate-300 bg-slate-50 px-2 py-2 text-sm">
-                <option value="">HH</option>
-                <% (8..18).each do |hour| %>
-                  <option value="<%= format('%02d', hour) %>"><%= format('%02d', hour) %></option>
-                <% end %>
-              </select>
-              <select id="start-minute" class="rounded-md border border-slate-300 bg-slate-50 px-2 py-2 text-sm">
-                <option value="00">00</option>
-                <option value="15">15</option>
-                <option value="30">30</option>
-                <option value="45">45</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Endzeit</label>
-            <div class="grid grid-cols-2 gap-2">
-              <select id="end-hour" class="rounded-md border border-slate-300 bg-slate-50 px-2 py-2 text-sm">
-                <option value="">HH</option>
-                <% (8..23).each do |hour| %>
-                  <option value="<%= format('%02d', hour) %>"><%= format('%02d', hour) %></option>
-                <% end %>
-              </select>
-              <select id="end-minute" class="rounded-md border border-slate-300 bg-slate-50 px-2 py-2 text-sm">
-                <option value="00">00</option>
-                <option value="15">15</option>
-                <option value="30">30</option>
-                <option value="45">45</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <p id="rental-summary" class="mt-3 text-sm text-slate-600"></p>
-      </div>
-
-      <div class="card-soft p-5">
-        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Lieferadresse</h2>
-        <div class="mb-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600">
-          Lieferung, Aufbau und Abholung sind aktuell immer Teil des Angebots.
-        </div>
-        <input id="delivery-enabled" type="checkbox" checked class="hidden" aria-hidden="true" tabindex="-1">
-        <div id="delivery-fields" class="grid gap-2 sm:grid-cols-3">
-          <div>
-            <label class="mb-1 block text-xs font-semibold">Straße, Hausnr.</label>
-            <%= f.text_field :delivery_street, id: "delivery-street", class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-          <div>
-            <label class="mb-1 block text-xs font-semibold">PLZ</label>
-            <%= f.text_field :delivery_postcode, id: "delivery-postcode", class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-          <div>
-            <label class="mb-1 block text-xs font-semibold">Ort</label>
-            <%= f.text_field :delivery_city, id: "delivery-city", class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-soft p-5">
+      <div class="card-soft p-5 sm:p-6">
         <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Schritt 2</p>
-        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Getränkeauswahl</h2>
-        <p class="mb-4 text-sm text-slate-600">Nutze den Warenkorb für eine belastbare Schätzung. Wenn du eigene Getränke mitbringst, bleibt die Auswahl gespeichert, wird aber aus der Berechnung genommen.</p>
-        <label class="mb-4 flex cursor-pointer items-center justify-between gap-3 rounded-md border border-slate-200 px-3 py-3">
-          <span>
-            <strong>Ich kümmere mich selbst um die Getränke</strong>
-            <span class="mt-1 block text-xs text-slate-500">Dann pausieren wir deinen Getränkewarenkorb und zeigen stattdessen die passenden Zapfköpfe.</span>
+        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Datum</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="rental-start-date" class="mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]">Startdatum</label>
+            <%= date_field_tag "inquiry[starts_on]", nil, id: "rental-start-date", lang: "de", class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2" %>
+          </div>
+          <div>
+            <label for="rental-end-date" class="mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]">Enddatum</label>
+            <%= date_field_tag "inquiry[ends_on]", nil, id: "rental-end-date", lang: "de", class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2" %>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-slate-600">Mietdauer am Folgetag bis 13 Uhr inklusive. Exakter Zeitpunkt nach Absprache.</p>
+        <p id="rental-summary" class="mt-2 text-sm text-slate-600"></p>
+      </div>
+
+      <div class="card-soft p-5 sm:p-6">
+        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Schritt 3</p>
+        <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Getränke auswählen</h2>
+
+        <label class="mt-4 flex cursor-pointer items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          <span class="min-w-0">
+            <span class="block text-base font-semibold text-[var(--color-zapfe-navy)]">eigene Getränke</span>
           </span>
           <%= render "shared/toggle_switch", id: "bring-own-drinks", checked: false %>
         </label>
-        <div id="calc-drinks-mode">
-          <div class="relative mb-3">
-            <svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"/></svg>
-            <input id="calc-drinks-search" type="text" placeholder="Nach Getränken suchen..." class="w-full rounded-md border border-slate-300 bg-slate-50 py-2 pl-10 pr-3" />
-          </div>
 
-          <div class="relative">
-            <button type="button" id="calc-scroll-left" class="absolute left-1 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-slate-300 bg-white p-1.5 text-slate-600">‹</button>
-            <button type="button" id="calc-scroll-right" class="absolute right-1 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-slate-300 bg-white p-1.5 text-slate-600">›</button>
+        <div id="calc-own-drinks-note" class="mt-4 hidden rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+          Du kümmerst dich um deine Getränke selbst. Wir können klassische Bierfässer mit Flachfitting und Softdrink-Fässer mit Korbfitting anschließen. Wenn dein Fass spezieller ist oder du dir unsicher bist, kontaktiere uns einfach.
+        </div>
+
+
+        <div class="mt-4 rounded-[1.4rem] border border-slate-200 bg-slate-50/70 p-4">
+          <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+            <div class="relative">
+              <svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"/></svg>
+              <input id="calc-drinks-search" type="text" placeholder="Nach Getränken suchen..." class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-10 pr-3" />
+            </div>
+            <label class="filter-pill">
+              <input id="calc-filter-featured" type="checkbox" class="filter-pill-input">
+              <span class="filter-pill-surface">
+                <span class="filter-pill-indicator" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </span>
+                <span class="featured-mark featured-mark--soft" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 5h10v3H7z" />
+                    <path d="M9 8v5a3 3 0 0 0 6 0V8" />
+                    <path d="M8 19h8" />
+                  </svg>
+                </span>
+                <span>Nur Zapfe-Tipps anzeigen</span>
+              </span>
+            </label>
+            <%= link_to "-> zu allen Getränken", drinks_path, class: "btn-dark px-4 py-2 text-sm" %>
+          </div>
+        </div>
+
+        <div class="relative">
+          <button type="button" id="calc-scroll-left" class="absolute left-1 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-slate-300 bg-white p-1.5 text-slate-600">‹</button>
+          <button type="button" id="calc-scroll-right" class="absolute right-1 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-slate-300 bg-white p-1.5 text-slate-600">›</button>
 
             <div id="calc-drinks-track" class="flex gap-3 overflow-x-auto pb-2" style="scroll-behavior:smooth;">
-              <% @products.each do |product| %>
+              <% quick_products.each do |product| %>
                 <% variants = product.product_variants.order(size: :desc) %>
                 <% next if variants.empty? %>
                 <% display_label = short_product_label(product) %>
-                <article class="calc-drink-card w-52 shrink-0 rounded-lg border border-slate-200 bg-white p-3" data-text="<%= [product.brand, product.name, product.kind, product.subcategory].compact.join(' ') %>">
+                <article class="calc-drink-card w-52 shrink-0 rounded-lg border border-slate-200 bg-white p-3" data-text="<%= [product.brand, product.name, product.kind, product.subcategory, product.featured_note].compact.join(' ') %>" data-featured="<%= product.featured? ? '1' : '0' %>">
                   <div class="relative mb-2 h-24 rounded-md bg-slate-50 p-2">
+                    <% if product.featured? %>
+                      <span class="featured-corner-badge featured-corner-badge--soft" aria-label="Zapfe-Tipp">
+                        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M7 5h10v3H7z" />
+                          <path d="M9 8v5a3 3 0 0 0 6 0V8" />
+                          <path d="M8 19h8" />
+                        </svg>
+                      </span>
+                    <% end %>
                     <%= product_card_image(product, width: 128, height: 96, img_class: "h-full w-full object-contain") %>
-                    <div class="absolute bottom-1 right-1 grid h-6 w-6 place-content-center rounded-full bg-white shadow">
-                      <svg viewBox="0 0 24 24" class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5h8M7 5l1 14h8l1-14M9 9h6M10 13h4"/></svg>
-                    </div>
                   </div>
                   <p class="line-clamp-2 text-sm font-semibold text-[var(--color-zapfe-navy)]"><%= display_label %></p>
-                  <div class="mt-2 flex flex-wrap gap-1">
+                                    <div class="mt-2 flex flex-wrap gap-1">
                     <% variants.each_with_index do |variant, idx| %>
                       <button
                         type="button"
@@ -172,10 +193,10 @@
                   </div>
                   <div class="mt-2 flex items-end justify-between">
                     <div>
-                      <p class="calc-price text-sm font-bold text-slate-900"><%= number_to_currency(variants.first.price, unit: '€', separator: ',', delimiter: '.') %></p>
-                      <p class="calc-price-per text-xs text-slate-500"><%= number_to_currency(variants.first.price.to_f / variants.first.size.to_f, unit: '€', separator: ',', delimiter: '.') %>/L</p>
+                      <p class="calc-price text-sm font-bold text-slate-900"><%= number_to_currency(variants.first.price, unit: "€", separator: ",", delimiter: ".") %></p>
+                      <p class="calc-price-per text-xs text-slate-500"><%= number_to_currency(variants.first.price.to_f / variants.first.size.to_f, unit: "€", separator: ",", delimiter: ".") %>/L</p>
                     </div>
-                    <button type="button" class="calc-add-drink grid h-8 w-8 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]">
+                    <button type="button" class="calc-add-drink grid h-8 w-8 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" aria-label="Getränk hinzufügen">
                       <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                     </button>
                   </div>
@@ -183,77 +204,34 @@
               <% end %>
             </div>
 
-            <div id="calc-no-results" class="card-soft hidden mx-auto mt-2 w-full max-w-md p-4 text-center text-sm text-slate-600" hidden>
-              Kein Getränk gefunden. Versuche einen anderen Suchbegriff.
-            </div>
-          </div>
-        </div>
-
-        <div id="calc-tap-heads-mode" class="hidden space-y-4">
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-            Du kümmerst dich selbst um die Getränke. Dein bisheriger Warenkorb bleibt gespeichert, wird für die Preisschätzung aber pausiert.
-          </div>
-          <div class="grid gap-4 md:grid-cols-2">
-            <article class="rounded-xl border border-slate-200 bg-white p-4">
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Zapfkopf 1</p>
-              <h3 class="mt-2 text-xl font-semibold text-[var(--color-zapfe-navy)]">Flat Head</h3>
-              <p class="mt-2 text-sm text-slate-600">Geeignet für klassische Bierfässer mit Flachfitting. Das ist der gängige Standard bei vielen Brauereien.</p>
-            </article>
-            <article class="rounded-xl border border-slate-200 bg-white p-4">
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Zapfkopf 2</p>
-              <h3 class="mt-2 text-xl font-semibold text-[var(--color-zapfe-navy)]">Korbfitting</h3>
-              <p class="mt-2 text-sm text-slate-600">Passend für bestimmte Softdrink- und Limonadenfässer, zum Beispiel Afri Cola oder ähnliche Systeme.</p>
-            </article>
+          <div id="calc-no-results" class="card-soft hidden mx-auto mt-2 w-full max-w-md p-4 text-center text-sm text-slate-600" hidden>
+            Kein Getränk gefunden. Versuche einen anderen Suchbegriff.
           </div>
         </div>
       </div>
 
       <div class="card-soft p-5">
-        <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Getränke im Warenkorb</h2>
-        <p id="calc-cart-hint" class="mb-3 text-xs text-slate-500">Bereits gewählte Getränke bleiben hier gespeichert und werden in der Anfrage mitgeführt.</p>
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Warenkorb</h2>
+          <button id="calc-clear-cart" type="button" class="hidden rounded-md border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700" aria-label="Warenkorb leeren">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 6h18" />
+              <path d="M8 6V4h8v2" />
+              <path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6M14 11v6" />
+            </svg>
+          </button>
+        </div>
         <div id="calc-cart-items" class="space-y-3 text-sm text-slate-700"></div>
       </div>
 
-      <div class="card-soft p-4 sm:p-5">
-        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Schritt 3</p>
-        <div class="mb-3 flex items-center justify-between gap-3">
-          <h2 class="text-xl font-semibold text-[var(--color-zapfe-navy)] sm:text-2xl">Kontaktinformationen</h2>
-          <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">kurz & direkt</p>
+      <div class="card-soft p-5 sm:p-6">
+        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-zapfe-blue)]">Schritt 4</p>
+        <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Unverbindlich anfragen</h2>
+        <p class="mt-3 text-sm text-slate-600">Wenn die Richtung passt, schick uns direkt deine Eventanfrage. Die Preisindikation aus dem Rechner geht automatisch mit.</p>
+        <div class="mt-5">
+          <%= render "event_inquiry_fields", f: f, source: "calculator" %>
         </div>
-        <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
-          <div>
-            <%= f.label :first_name, "Vorname", class: "mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" %>
-            <%= f.text_field :first_name, required: true, class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-          <div>
-            <%= f.label :last_name, "Nachname", class: "mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" %>
-            <%= f.text_field :last_name, required: true, class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-          <div>
-            <%= f.label :phone, "Telefon", class: "mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" %>
-            <%= f.telephone_field :phone, required: true, class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-          <div>
-            <%= f.label :guests, "Gäste", class: "mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" %>
-            <%= f.number_field :guests, min: 1, class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-          <div class="col-span-2">
-            <%= f.label :email, "E-Mail", class: "mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" %>
-            <%= f.email_field :email, required: true, class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-          <div class="col-span-2">
-            <%= f.label :event_type, "Veranstaltungstyp", class: "mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" %>
-            <%= f.select :event_type, ["", "Firmenveranstaltung", "Hochzeit", "Private Feier", "Festival/Öffentliche Veranstaltung", "Sonstiges"], {}, class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-          </div>
-        </div>
-        <div class="mt-3">
-          <%= f.label :message, "Anmerkungen (optional)", class: "mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500" %>
-          <%= f.text_area :message, rows: 2, class: "w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" %>
-        </div>
-        <label class="mt-3 flex items-start gap-2 text-[11px] text-slate-600">
-          <%= f.check_box :privacy_accepted, required: true, class: "mt-0.5" %>
-          <span>Mit dem Absenden erklären Sie sich mit unserer <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> einverstanden.</span>
-        </label>
       </div>
 
       <div class="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[var(--color-zapfe-navy)] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 text-white shadow-[0_-14px_30px_rgba(15,39,67,0.28)] md:sticky md:bottom-4 md:mx-0 md:rounded-2xl md:border-t-0 md:px-4 md:pb-4 md:pt-4">
@@ -266,7 +244,7 @@
                 </svg>
               </span>
               <span class="min-w-0 flex-1">
-                <span class="block text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300 sm:text-xs">Geschätzter Preis</span>
+                <span class="block text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300 sm:text-xs">Preisindikation</span>
                 <span class="flex items-baseline gap-2">
                   <strong id="total-price" class="text-lg sm:text-xl">€0,00</strong>
                   <span class="truncate text-[11px] text-slate-300 sm:text-xs">unverbindlich</span>
@@ -276,83 +254,29 @@
             <div id="pricing-breakdown-panel" class="mt-3 border-t border-white/10 pt-3">
               <div class="space-y-2 text-xs text-slate-200">
                 <div class="flex items-center justify-between gap-3">
-                  <span id="pricing-rental-label">Grundmiete</span>
+                  <span id="pricing-rental-label">Miete</span>
                   <span id="pricing-rental-value">0,00 €</span>
                 </div>
                 <div id="pricing-drinks-row" class="flex items-center justify-between gap-3">
                   <span>Getränke</span>
                   <span id="pricing-drinks-value">0,00 €</span>
                 </div>
-                <div id="pricing-glasses-row" class="hidden items-center justify-between gap-3">
-                  <span>Gläser</span>
-                  <span>auf Anfrage</span>
-                </div>
                 <div class="flex items-center justify-between gap-3 border-t border-white/10 pt-2 font-semibold text-white">
                   <span>Gesamt</span>
                   <span id="pricing-total-detail">0,00 €</span>
                 </div>
               </div>
-              <p class="mt-3 text-[11px] text-slate-300">Unverbindliche Preisschätzung auf Basis der aktuell aktiven Auswahl.</p>
+              <p class="mt-3 text-[11px] text-slate-300">Orientierungswert für Veranstaltungen. Das finale Angebot stimmen wir mit dir direkt ab.</p>
             </div>
           </details>
-          <button type="submit" class="grid h-10 w-10 shrink-0 place-content-center rounded-xl bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" aria-label="Anfrage senden">
+          <a href="#calculator-contact" class="grid h-10 w-10 shrink-0 place-content-center rounded-xl bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" aria-label="Zur Anfrage">
             <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h13" />
               <path d="m12 5 7 7-7 7" />
             </svg>
-          </button>
+          </a>
         </div>
       </div>
     <% end %>
-  </div>
-</section>
-
-<section class="bg-[var(--color-zapfe-cream)] py-10">
-  <div class="page-wrap max-w-4xl">
-    <div class="mb-6 text-center">
-      <span class="eyebrow-rule">Häufige Fragen</span>
-      <h2 class="mt-4 text-3xl font-bold text-[var(--color-zapfe-navy)]">Wichtige Punkte vor dem Absenden</h2>
-      <p class="mt-2 text-slate-600">Die häufigsten Rückfragen direkt im Kontext des Rechners.</p>
-    </div>
-    <div class="space-y-3">
-      <article class="card-soft p-4">
-        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Gibt es eine Mindestmietdauer?</h3>
-        <p class="mt-1 text-slate-600">Ja, unsere Standardmindestmietdauer beträgt 4 Stunden, einschließlich Auf- und Abbauzeit.</p>
-      </article>
-      <article class="card-soft p-4">
-        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Können wir unsere eigenen Getränke wählen?</h3>
-        <p class="mt-1 text-slate-600">Auf jeden Fall. Wir bieten eine große Auswahl und können auf Wunsch Sonderwünsche prüfen.</p>
-      </article>
-      <article class="card-soft p-4">
-        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Bieten Sie Rabatte für Veranstaltungen unter der Woche an?</h3>
-        <p class="mt-1 text-slate-600">Ja, wir bieten Sonderkonditionen von Montag bis Donnerstag. Kontaktiere uns für Details.</p>
-      </article>
-      <article class="card-soft p-4">
-        <h3 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Wie funktioniert die Bezahlung bei Selbstbedienungszapfanlagen?</h3>
-        <p class="mt-1 text-slate-600">Unser System unterstützt kontaktlose Zahlungen per Smartphone/Karte oder optional ein Gastgeber-Modell.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="bg-white py-10">
-  <div class="page-wrap max-w-5xl">
-    <div class="grid gap-5 md:grid-cols-3">
-      <%= link_to drinks_path, class: "link-panel" do %>
-        <p class="proof-kicker">Vorarbeit</p>
-        <h2 class="mt-3 text-xl font-semibold text-[var(--color-zapfe-navy)]">Getränke separat planen</h2>
-        <p class="mt-2 text-sm text-slate-600">Wenn du zuerst Größen und Marken vergleichen willst, gehe zurück in die Getränkeübersicht.</p>
-      <% end %>
-      <%= link_to "#{events_path}#event-einstieg", class: "link-panel" do %>
-        <p class="proof-kicker">Event</p>
-        <h2 class="mt-3 text-xl font-semibold text-[var(--color-zapfe-navy)]">Zu Veranstaltungen</h2>
-        <p class="mt-2 text-sm text-slate-600">Wenn du ein Event planst und die passende Mietlösung suchst.</p>
-      <% end %>
-      <%= link_to "#{solutions_path}#anfrage", class: "link-panel" do %>
-        <p class="proof-kicker">Betrieb</p>
-        <h2 class="mt-3 text-xl font-semibold text-[var(--color-zapfe-navy)]">Zu Solutions</h2>
-        <p class="mt-2 text-sm text-slate-600">Wenn es um dauerhafte oder wiederkehrende Ausschank-Setups geht.</p>
-      <% end %>
-    </div>
   </div>
 </section>

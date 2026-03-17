@@ -30,14 +30,17 @@ bin/rails db:prepare
 Hinweise:
 - `npx playwright install chromium` wird pro Rechner/Umgebung benoetigt, damit der Browser lokal verfuegbar ist.
 - Die eigenstaendigen Playwright-Tests verwenden `RAILS_ENV=test`.
+- Auf Arch- oder anderen nicht offiziell unterstuetzten Linux-Systemen kann Playwrights Host-Pruefung trotz funktionierendem Chromium fehlschlagen.
+- In diesem Projekt laufen die E2E-Skripte deshalb mit `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1` und explizit mit dem `chromium`-Projekt.
 
 ## Haefige Test-Kommandos
 ```bash
 bin/rails test
 bin/rails test test/system
 bin/rails test test/system/calculator_toggle_test.rb
-npx playwright test
-npx playwright test tests/smoke.spec.ts
+npm run test:e2e
+npm run test:e2e:local
+PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 npx playwright test tests/smoke.spec.ts --project=chromium
 npm run test:e2e:headed
 ```
 
@@ -68,10 +71,17 @@ RAILS_ENV=test bin/rails server -b 127.0.0.1 -p 3200
 
 - `PLAYWRIGHT_SKIP_WEBSERVER=1` kann genutzt werden, wenn der Testserver bereits separat laeuft.
 - `PLAYWRIGHT_PORT` erlaubt einen abweichenden lokalen Port.
+- `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1` umgeht auf nicht offiziell unterstuetzten Distributionen die fehlerhafte Ubuntu-basierte Dependency-Pruefung.
 
 Beispiel:
 ```bash
-PLAYWRIGHT_SKIP_WEBSERVER=1 PLAYWRIGHT_PORT=3201 npx playwright test
+PLAYWRIGHT_SKIP_WEBSERVER=1 PLAYWRIGHT_PORT=3201 PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 npx playwright test --project=chromium
+```
+
+Lokaler Audit gegen bereits laufende Dev-App auf `127.0.0.1:3001`:
+```bash
+npm run test:e2e:local
+npm run test:e2e:local:headed
 ```
 
 ## Konventionen fuer neue Tests
@@ -90,7 +100,7 @@ PLAYWRIGHT_SKIP_WEBSERVER=1 PLAYWRIGHT_PORT=3201 npx playwright test
 ## Debugging
 - Sichtbarer Browser:
 ```bash
-PLAYWRIGHT_HEADED=1 npx playwright test
+PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 PLAYWRIGHT_HEADED=1 npx playwright test --project=chromium
 ```
 
 - Playwright UI:
@@ -105,12 +115,14 @@ bin/rails test test/system/<datei>_test.rb
 
 - Einzelne Playwright-Spec:
 ```bash
-npx playwright test tests/<datei>.spec.ts
+PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 npx playwright test tests/<datei>.spec.ts --project=chromium
 ```
 
 ## Typische Fehlerbilder
 - `browser executable doesn't exist`
   - Loesung: `npx playwright install chromium`
+- `Host system is missing dependencies` auf Arch oder anderer nicht offiziell unterstuetzter Distribution
+  - Loesung: Chromium mit `ldd` pruefen und die Projekt-Skripte bzw. `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1` mit `--project=chromium` verwenden.
 - Port-Konflikt beim Playwright-Webserver
   - Loesung: `PLAYWRIGHT_PORT=3201 npx playwright test`
 - Bereits laufender lokaler Server stoert den Test

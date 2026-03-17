@@ -1,11 +1,11 @@
 class PageMetaCatalog
   PAGE_META = {
     "pages#home" => {
-      title: "Zapfe! Ausschanksysteme für Veranstaltungen und Betrieb",
-      description: "Zapfe! kombiniert Eventvermietung und Selbstbedienungslösungen für den laufenden Ausschank."
+      title: "Mobile Zapfanlagen zur Selbstbedienung | Zapfe!",
+      description: "Zapfe! verbindet mobile Event-Setups und Self-Service-Lösungen für laufenden Ausschank. Wähle den passenden Einstieg für dein Vorhaben."
     },
     "pages#calculator" => {
-      title: "Preisrechner für mobile Zapfanlage | Zapfe!",
+      title: "Preisrechner für Selbstbedienungs-Zapfanlagen | Zapfe!",
       description: "Berechne online deine unverbindliche Anfrage für mobile Zapfanlage, Fassgetränke und Event-Setup für dein Event."
     },
     "pages#drinks" => {
@@ -13,15 +13,19 @@ class PageMetaCatalog
       description: "Übersicht verfügbarer Fassgetränke, Fassgrößen und Preise für dein Event mit Zapfe!."
     },
     "pages#events" => {
-      title: "Beispielveranstaltungen mit Zapfe! | Zapfe!",
-      description: "Einblicke in bisherige Veranstaltungen und Eventformate, für die Zapfe! mobile Ausschanksysteme bereitstellt."
+      title: "Zapfanlage für Events mit Selbstbedienung | Zapfe!",
+      description: "Mobile Zapfe!-Setups für Hochzeiten, Firmenfeiern und Veranstaltungen mit minimaler Betreuung und klarer Anfrageführung."
     },
     "pages#solutions" => {
-      title: "Selbstbedienungslösungen für Ausschank und Verkauf | Zapfe!",
-      description: "Standardisierte Selbstbedienungslösungen für Ausschank-, Kiosk- und Verkaufsprozesse mit Zapfe!."
+      title: "Selbstbedienungs-Zapfanlagen für den dauerhaften Betrieb | Zapfe!",
+      description: "Zapfe! Lösungen für laufenden Ausschank: standardisierte Self-Service-Systeme für Standorte, Kioske und Verkaufsflächen."
+    },
+    "pages#cta_preview" => {
+      title: "CTA Vorschau fuer die Startseite | Zapfe!",
+      description: "Vergleich verschiedener CTA-Varianten fuer den Einstiegsbereich der Zapfe!-Startseite."
     },
     "pages#contact" => {
-      title: "Kontakt für Eventanfragen | Zapfe!",
+      title: "Kontakt für Eventanfragen und Ausschanklösungen | Zapfe!",
       description: "Kontaktiere Zapfe! für Eventanfragen, Rückfragen zur mobilen Zapfanlage oder individuelle Angebote."
     },
     "pages#impressum" => {
@@ -35,7 +39,7 @@ class PageMetaCatalog
   }.freeze
 
   DEFAULT_META = {
-    title: "Zapfe! Mobile Selbstbedienungs-Zapfanlage",
+    title: "Mobile Zapfanlagen zur Selbstbedienung | Zapfe!",
     description: "Mobile Zapfanlagen, Fassgetränke und Eventservice für Veranstaltungen jeder Größe."
   }.freeze
 

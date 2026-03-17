@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get "/drinks", to: "pages#drinks"
   get "/products", to: "pages#drinks"
   get "/solutions", to: "pages#solutions"
+  get "/cta-preview", to: "pages#cta_preview"
   get "/calculator", to: "pages#calculator"
   get "/contact", to: "pages#contact"
   get "/impressum", to: "pages#impressum"

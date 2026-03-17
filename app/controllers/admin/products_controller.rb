@@ -2,7 +2,7 @@ class Admin::ProductsController < Admin::BaseController
   before_action :set_product, only: %i[edit update destroy]
 
   def index
-    @products = Product.includes(:category, :product_variants).order(:brand, :name)
+    @products = Product.catalog_listing
   end
 
   def new
@@ -59,6 +59,9 @@ class Admin::ProductsController < Admin::BaseController
       :subcategory,
       :alcohol_content,
       :is_alcoholic,
+      :featured,
+      :featured_position,
+      :featured_note,
       :description,
       :image,
       product_variants_attributes: %i[id sku size price is_available availability _destroy]

@@ -11,6 +11,7 @@ Dieser Guide beschreibt die Linie, die jetzt in den öffentlichen Seiten umgeset
 - Nutzenbehauptungen ohne Beleg vermeiden. Wenn möglich: konkreter Anwendungsfall, Ablauf, Referenzrahmen oder belastbare Einordnung.
 - Kartenraster nur einsetzen, wenn die Elemente wirklich gleichrangig sind. Sonst lieber Timeline, Proof-Block oder gezielte Link-Panels.
 - Tonalität bleibt im `du`, außer es gibt einen bewusst begründeten Gegenfall.
+- Reine Design- oder Layout-Anfragen sind keine Content-Freigabe: Texte, Labels und Copy bleiben dabei unverändert, solange nicht ausdrücklich auch textliche Anpassungen verlangt sind.
 
 ## Bevorzugte Bausteine
 
@@ -34,6 +35,7 @@ Dieser Guide beschreibt die Linie, die jetzt in den öffentlichen Seiten umgeset
 
 - Wenn neue Inhalte nur ein bestehendes Raster kopieren, ist das fast immer ein Warnsignal.
 - Vor dem Schreiben sollte klar sein: Welche Entscheidung soll der Nutzer auf dieser Seite treffen?
+- Vor visuellen Anpassungen zuerst prüfen: Ist wirklich nur Design gefragt oder auch Inhalt? Ohne explizite Textfreigabe bleibt die bestehende Copy unangetastet.
 - Vor dem Mergen prüfen:
   Ist die Seite klar verlinkt?
   Ist die Ansprache konsistent?
