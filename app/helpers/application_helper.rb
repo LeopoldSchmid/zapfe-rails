@@ -78,14 +78,7 @@ module ApplicationHelper
   end
 
   def short_product_label(product)
-    name = product.name.to_s.squish
-    name = product.subcategory.to_s.squish if name.blank?
-    name = product.kind.to_s.squish if name.blank?
-    brand = product.brand.to_s.squish
-
-    return brand if name.blank?
-
-    name
+    product.short_display_name
   end
 
   def product_featured_note(product)

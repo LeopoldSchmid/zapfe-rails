@@ -13,13 +13,13 @@ class PagesController < ApplicationController
     @categories = Category.catalog_listing
     @brands = Product.catalog_brands
     @subcategories = Product.catalog_subcategories
-    @products = Product.catalog_listing
+    @products = sort_products_for_display(Product.catalog_listing.to_a)
     @featured_products = @products.select(&:featured)
     @catalog_products = @products.reject(&:featured)
   end
 
   def calculator
-    @products = Product.catalog_listing
+    @products = sort_products_for_display(Product.catalog_listing.to_a)
     @featured_products = @products.select(&:featured)
     @catalog_products = @products.reject(&:featured)
   end
@@ -46,5 +46,17 @@ class PagesController < ApplicationController
     ]
 
     render layout: false
+  end
+
+  private
+
+  def sort_products_for_display(products)
+    products.sort_by do |product|
+      [
+        product.featured? ? 0 : 1,
+        product.short_display_name.downcase,
+        product.brand.to_s.downcase
+      ]
+    end
   end
 end

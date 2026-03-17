@@ -30,6 +30,10 @@ export default class extends Controller {
     if (this.refreshScrollButtonsBound) {
       window.removeEventListener("resize", this.refreshScrollButtonsBound)
     }
+
+    if (this.escapeHandler) {
+      window.removeEventListener("keydown", this.escapeHandler)
+    }
   }
 
   cacheElements() {
@@ -64,6 +68,10 @@ export default class extends Controller {
     this.cartItemsEl = document.getElementById("calc-cart-items")
     this.cartHintEl = document.getElementById("calc-cart-hint")
     this.clearCartButton = document.getElementById("calc-clear-cart")
+    this.confirmOverlay = document.getElementById("calculator-confirm-overlay")
+    this.confirmSheet = document.getElementById("calculator-confirm-sheet")
+    this.confirmCancelButton = document.getElementById("calculator-confirm-cancel")
+    this.confirmClearButton = document.getElementById("calculator-confirm-clear")
     this.pricingRentalLabel = document.getElementById("pricing-rental-label")
     this.pricingRentalValue = document.getElementById("pricing-rental-value")
     this.pricingDrinksRow = document.getElementById("pricing-drinks-row")
@@ -111,7 +119,10 @@ export default class extends Controller {
     window.addEventListener("resize", this.refreshScrollButtonsBound)
 
     this.cartItemsEl?.addEventListener("click", (event) => this.updateCartQuantity(event))
-    this.clearCartButton?.addEventListener("click", () => this.handleClearCart())
+    this.clearCartButton?.addEventListener("click", () => this.openClearCartSheet())
+    this.confirmOverlay?.addEventListener("click", () => this.closeClearCartSheet())
+    this.confirmCancelButton?.addEventListener("click", () => this.closeClearCartSheet())
+    this.confirmClearButton?.addEventListener("click", () => this.handleClearCart())
 
     this.startDate?.addEventListener("change", () => {
       this.syncRentalDates()
@@ -132,6 +143,11 @@ export default class extends Controller {
       this.renderCart()
       this.calculate()
     })
+
+    this.escapeHandler = (event) => {
+      if (event.key === "Escape") this.closeClearCartSheet()
+    }
+    window.addEventListener("keydown", this.escapeHandler)
   }
 
   restoreState() {
@@ -400,10 +416,25 @@ export default class extends Controller {
     this.calculate()
   }
 
+  openClearCartSheet() {
+    if (!getCart().length) return
+
+    setElementVisibility(this.confirmOverlay, true)
+    setElementVisibility(this.confirmSheet, true)
+    document.body.classList.add("overflow-hidden")
+  }
+
+  closeClearCartSheet() {
+    setElementVisibility(this.confirmOverlay, false)
+    setElementVisibility(this.confirmSheet, false)
+    document.body.classList.remove("overflow-hidden")
+  }
+
   handleClearCart() {
     if (!getCart().length) return
 
     clearCart()
+    this.closeClearCartSheet()
     this.renderCart()
     this.calculate()
     showToast("Warenkorb geleert")

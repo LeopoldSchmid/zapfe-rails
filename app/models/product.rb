@@ -30,4 +30,15 @@ class Product < ApplicationRecord
   def self.catalog_subcategories
     distinct.order(:subcategory).pluck(:subcategory).compact
   end
+
+  def short_display_name
+    display_name = name.to_s.squish
+    display_name = subcategory.to_s.squish if display_name.blank?
+    display_name = kind.to_s.squish if display_name.blank?
+    brand_name = brand.to_s.squish
+
+    return brand_name if display_name.blank?
+
+    display_name
+  end
 end

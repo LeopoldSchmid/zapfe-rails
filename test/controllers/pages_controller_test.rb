@@ -20,7 +20,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "should get drinks" do
     get drinks_url
     assert_response :success
-    assert_match "Getränkeauswahl", response.body
+    assert_match "drinks-search", response.body
     assert_match "Zum Preisrechner", response.body
     assert_match "drinks-no-results", response.body
   end
