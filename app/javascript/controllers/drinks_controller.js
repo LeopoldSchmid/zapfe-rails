@@ -9,6 +9,7 @@ export default class extends Controller {
     this.bindEvents()
     this.renderCart()
     this.applyFilters()
+    this.handleViewport()
   }
 
   cacheElements() {
@@ -30,14 +31,22 @@ export default class extends Controller {
 
     this.openCartButton = document.getElementById("open-cart")
     this.closeCartButton = document.getElementById("close-cart")
-    this.cartPanel = document.getElementById("cart-panel")
+    this.cartPanel = document.getElementById("cart-panel-mobile")
     this.overlay = document.getElementById("cart-overlay")
-    this.cartCount = document.getElementById("cart-count")
-    this.cartItems = document.getElementById("cart-items")
-    this.cartSubtotal = document.getElementById("cart-subtotal")
-    this.cartDeposit = document.getElementById("cart-deposit")
-    this.cartTotal = document.getElementById("cart-total")
-    this.clearCartButton = document.getElementById("clear-cart")
+    this.cartCounts = [document.getElementById("cart-count"), document.getElementById("cart-count-desktop")].filter(Boolean)
+    this.desktopCartItems = document.getElementById("cart-items")
+    this.mobileCartItems = document.getElementById("cart-items-mobile")
+    this.desktopSubtotal = document.getElementById("cart-subtotal")
+    this.mobileSubtotal = document.getElementById("cart-subtotal-mobile")
+    this.desktopDeposit = document.getElementById("cart-deposit")
+    this.mobileDeposit = document.getElementById("cart-deposit-mobile")
+    this.desktopTotal = document.getElementById("cart-total")
+    this.mobileTotal = document.getElementById("cart-total-mobile")
+    this.clearCartButtons = [document.getElementById("clear-cart"), document.getElementById("clear-cart-mobile")].filter(Boolean)
+    this.confirmOverlay = document.getElementById("drinks-confirm-overlay")
+    this.confirmSheet = document.getElementById("drinks-confirm-sheet")
+    this.confirmCancelButton = document.getElementById("drinks-confirm-cancel")
+    this.confirmClearButton = document.getElementById("drinks-confirm-clear")
   }
 
   bindEvents() {
@@ -49,7 +58,8 @@ export default class extends Controller {
       card.querySelector(".add-to-cart")?.addEventListener("click", () => this.addSelectedDrink(card))
     })
 
-    this.cartItems?.addEventListener("click", (event) => this.updateCartQuantity(event))
+    this.desktopCartItems?.addEventListener("click", (event) => this.updateCartQuantity(event))
+    this.mobileCartItems?.addEventListener("click", (event) => this.updateCartQuantity(event))
 
     this.toggleFiltersButton?.addEventListener("click", () => {
       setElementVisibility(this.filtersPanel, this.filtersPanel?.classList.contains("hidden"))
@@ -67,7 +77,15 @@ export default class extends Controller {
     this.openCartButton?.addEventListener("click", () => this.openPanel())
     this.closeCartButton?.addEventListener("click", () => this.closePanel())
     this.overlay?.addEventListener("click", () => this.closePanel())
-    this.clearCartButton?.addEventListener("click", () => this.handleClearCart())
+    this.clearCartButtons.forEach((button) => {
+      button.addEventListener("click", () => this.openClearCartSheet())
+    })
+    this.confirmOverlay?.addEventListener("click", () => this.closeClearCartSheet())
+    this.confirmCancelButton?.addEventListener("click", () => this.closeClearCartSheet())
+    this.confirmClearButton?.addEventListener("click", () => this.handleClearCart())
+
+    this.resizeHandler = () => this.handleViewport()
+    window.addEventListener("resize", this.resizeHandler)
   }
 
   getSelectedValues(inputs) {
@@ -154,15 +172,31 @@ export default class extends Controller {
     const cart = getCart()
 
     renderDrinksCart({
-      container: this.cartItems,
-      countElement: this.cartCount,
-      subtotalElement: this.cartSubtotal,
-      depositElement: this.cartDeposit,
-      totalElement: this.cartTotal,
+      container: this.desktopCartItems,
+      countElement: this.cartCounts[0],
+      subtotalElement: this.desktopSubtotal,
+      depositElement: this.desktopDeposit,
+      totalElement: this.desktopTotal,
       cart
     })
 
-    setElementVisibility(this.clearCartButton, cart.length > 0)
+    renderDrinksCart({
+      container: this.mobileCartItems,
+      countElement: this.cartCounts[0],
+      subtotalElement: this.mobileSubtotal,
+      depositElement: this.mobileDeposit,
+      totalElement: this.mobileTotal,
+      cart
+    })
+
+    const itemsCount = cart.reduce((sum, item) => sum + item.qty, 0)
+    this.cartCounts.forEach((element) => {
+      element.textContent = String(itemsCount)
+    })
+
+    this.clearCartButtons.forEach((button) => {
+      setElementVisibility(button, cart.length > 0)
+    })
   }
 
   updateCartQuantity(event) {
@@ -207,10 +241,27 @@ export default class extends Controller {
     })
   }
 
+  openClearCartSheet() {
+    if (!getCart().length) return
+
+    setElementVisibility(this.confirmOverlay, true)
+    setElementVisibility(this.confirmSheet, true)
+    document.body.classList.add("overflow-hidden")
+  }
+
+  closeClearCartSheet() {
+    setElementVisibility(this.confirmOverlay, false)
+    setElementVisibility(this.confirmSheet, false)
+    if (this.cartPanel?.classList.contains("hidden")) {
+      document.body.classList.remove("overflow-hidden")
+    }
+  }
+
   handleClearCart() {
     if (!getCart().length) return
 
     clearCart()
+    this.closeClearCartSheet()
     this.renderCart()
     showToast("Warenkorb geleert")
   }
@@ -225,5 +276,18 @@ export default class extends Controller {
     setElementVisibility(this.cartPanel, false)
     setElementVisibility(this.overlay, false)
     document.body.classList.remove("overflow-hidden")
+  }
+
+  handleViewport() {
+    if (window.innerWidth >= 1024) {
+      setElementVisibility(this.overlay, false)
+      document.body.classList.remove("overflow-hidden")
+    }
+  }
+
+  disconnect() {
+    if (this.resizeHandler) {
+      window.removeEventListener("resize", this.resizeHandler)
+    }
   }
 }

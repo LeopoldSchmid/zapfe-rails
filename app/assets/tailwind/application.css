@@ -135,6 +135,13 @@
     background: rgba(255, 248, 231, 0.22);
   }
 
+  @media (min-width: 1024px) {
+    .site-header-bar::before,
+    .site-header-bar::after {
+      content: none;
+    }
+  }
+
   .site-header-panel {
     background: linear-gradient(135deg, #f7d45d 0%, #f2c94c 58%, #eab308 100%);
   }
@@ -311,6 +318,43 @@
     color: var(--color-zapfe-navy);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
     backdrop-filter: blur(10px);
+  }
+
+  .featured-corner-badge {
+    border: 0;
+    cursor: help;
+  }
+
+  .featured-corner-badge__tooltip {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 0.5rem);
+    z-index: 20;
+    border-radius: 9999px;
+    background: rgba(30, 41, 59, 0.96);
+    padding: 0.38rem 0.65rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    color: white;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.22);
+    opacity: 0;
+    transform: translateY(-2px);
+    pointer-events: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  .featured-corner-badge:hover .featured-corner-badge__tooltip,
+  .featured-corner-badge:focus .featured-corner-badge__tooltip,
+  .featured-corner-badge:focus-visible .featured-corner-badge__tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .featured-corner-badge:focus-visible {
+    outline: 2px solid var(--color-zapfe-blue);
+    outline-offset: 2px;
   }
 
   .featured-corner-badge--soft {

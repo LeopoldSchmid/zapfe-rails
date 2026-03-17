@@ -65,8 +65,9 @@ class DrinksSearchTest < ApplicationSystemTestCase
   test "can limit catalog to favorites" do
     visit drinks_path
 
-    find("#toggle-drinks-filters").click
-    check "Zapfe-Tipps"
+    find("#toggle-drinks-filters").click if page.has_selector?("#toggle-drinks-filters", visible: true)
+    find("summary", text: "Weitere Filter").click
+    check "Zapfe!Tipps"
 
     assert_selector ".drink-card", text: "Test Pils Extra"
     assert_no_selector ".drink-card", text: "Anderebrauerei"

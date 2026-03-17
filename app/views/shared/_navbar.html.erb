@@ -1,16 +1,16 @@
 <header class="fixed inset-x-0 top-0 z-[70]" data-controller="mobile-menu">
   <div class="site-header-bar">
-    <div class="page-wrap flex h-14 items-center justify-between">
+    <div class="page-wrap flex h-14 items-center justify-between lg:h-16">
       <%= link_to root_path, class: "flex items-center gap-2" do %>
         <img src="/zapfe_b.svg" alt="Zapfe" class="h-8 w-auto" />
         <span class="text-xl font-extrabold tracking-tight text-[var(--color-zapfe-navy)]">ZAPFE!</span>
       <% end %>
 
-      <nav class="hidden items-center gap-4 text-sm font-semibold text-[var(--color-zapfe-navy)] md:flex">
+      <nav class="hidden items-center gap-4 text-sm font-semibold text-[var(--color-zapfe-navy)] md:flex lg:gap-6 lg:text-[15px]">
         <% desktop_links = [
           ["Startseite", root_path],
-          ["Events", events_path],
-          ["Solutions", solutions_path],
+          ["Veranstaltungen", events_path],
+          ["Produkte", solutions_path],
           ["Preisrechner", calculator_path],
           ["Getränke", drinks_path],
           ["Kontakt", contact_path]

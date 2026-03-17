@@ -2,17 +2,17 @@
   <div class="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,_rgba(214,180,63,0.16),_transparent_72%)]"></div>
   <div class="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(180deg,rgba(255,255,255,0),rgba(255,248,231,0.55))]"></div>
 
-  <div class="page-wrap relative flex min-h-full w-full flex-col gap-6 sm:gap-8">
-    <div class="mx-auto max-w-4xl pt-2 text-center sm:pt-4">
+  <div class="page-wrap relative flex min-h-full w-full flex-col gap-6 sm:gap-8 lg:grid lg:grid-cols-[minmax(0,0.88fr)_minmax(460px,1fr)] lg:items-center lg:gap-10">
+    <div class="mx-auto max-w-4xl pt-2 text-center sm:pt-4 lg:mx-0 lg:max-w-2xl lg:pt-0 lg:text-left">
       <span class="eyebrow-rule">Zapfe!</span>
       <h1 class="mt-4 text-4xl font-bold leading-[1.02] text-[var(--color-zapfe-navy)] sm:text-6xl">
         Frisch gezapfte Getränke zur Selbstbedienung.
       </h1>
-      <p class="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+      <p class="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg lg:mx-0">
         Autonomer Betrieb. Selbstbedienung. Optionale Bezahlfunktion.
       </p>
 
-      <div class="mx-auto mt-6 w-full max-w-md">
+      <div class="mx-auto mt-6 w-full max-w-md lg:mx-0">
         <div class="cta-mini-grid">
           <%= link_to events_path, class: "cta-mini cta-mini--event", aria: { label: "Event, temporär" } do %>
             <span class="cta-mini__topline">
@@ -33,11 +33,11 @@
       </div>
     </div>
 
-    <figure class="mx-auto mt-2 w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#f4ead0] bg-white shadow-[0_26px_70px_rgba(15,23,42,0.12)] sm:mt-4">
+    <figure class="mx-auto mt-2 w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#f4ead0] bg-white shadow-[0_26px_70px_rgba(15,23,42,0.12)] sm:mt-4 lg:mt-0">
       <img
         src="<%= asset_path("hoffest.jpg") %>"
         alt="Zapfe! Ausschank im Einsatz"
-        class="aspect-[6/5] w-full object-cover object-center sm:aspect-[16/9]"
+        class="aspect-[6/5] w-full object-cover object-center sm:aspect-[16/9] lg:aspect-[5/4]"
         fetchpriority="high"
         width="1440"
         height="810"
@@ -47,7 +47,7 @@
 </section>
 
 <%= link_to contact_path,
-  class: "btn-primary solutions-fab solutions-fab--contact inline-flex h-12 w-12 items-center justify-center rounded-xl p-0 text-[var(--color-zapfe-navy)] sm:h-14 sm:w-14",
+  class: "btn-primary solutions-fab solutions-fab--contact inline-flex h-12 w-12 items-center justify-center rounded-xl p-0 text-[var(--color-zapfe-navy)] sm:h-14 sm:w-14 lg:hidden",
   aria: { label: "Zur Kontaktseite" } do %>
   <svg viewBox="0 0 24 24" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M4 6h16v12H4z" />

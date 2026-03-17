@@ -1,182 +1,256 @@
 <section class="py-4 sm:py-6" data-controller="drinks">
   <div class="page-wrap">
-    <div class="sticky top-14 z-30 -mx-2 mb-4 bg-white/90 px-2 py-2 backdrop-blur sm:-mx-3 sm:px-3">
-      <div class="card-soft p-3">
-      <div class="flex items-center gap-2">
-        <div class="relative flex-1">
-          <svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"/></svg>
-          <input id="drinks-search" type="text" placeholder="Nach Getränken suchen..." class="w-full rounded-md border border-slate-300 bg-white py-2 pl-10 pr-3 text-sm" />
-        </div>
-        <button id="toggle-drinks-filters" type="button" aria-label="Filter öffnen" class="grid h-10 w-10 place-content-center rounded-md border border-slate-300 text-slate-700">
-          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 6h16M7 12h10M10 18h4" />
-          </svg>
-        </button>
-        <button id="open-cart" type="button" aria-label="Warenkorb öffnen" class="relative grid h-10 w-10 place-content-center rounded-md bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]">
-          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 6h15l-1.5 8h-11zM6 6l-1-3H2M9 19.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm9 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" />
-          </svg>
-          <span id="cart-count" class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-zapfe-navy)] px-1 text-xs text-white">0</span>
-        </button>
-      </div>
-
-      <div id="drinks-filters-panel" class="mt-3 hidden rounded-md border border-slate-200 bg-slate-50 p-3">
-        <div class="mb-3 flex items-center justify-between">
-          <p class="text-sm font-semibold text-slate-700">Filter</p>
-          <button id="reset-drinks-filters" type="button" class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs">Zurücksetzen</button>
-        </div>
-
-        <div class="grid gap-3 md:grid-cols-2">
-          <details class="rounded-md border border-slate-200 bg-white p-2">
-            <summary class="cursor-pointer text-sm font-medium">Kategorie</summary>
-            <div class="mt-2 space-y-2 text-sm">
-              <% @categories.each do |category| %>
-                <label class="flex items-center gap-2"><input type="checkbox" class="filter-category" value="<%= category.id %>"> <span><%= category.name %></span></label>
-              <% end %>
+    <div class="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
+      <aside class="space-y-4 lg:sticky lg:top-16 lg:self-start">
+        <aside id="cart-panel" class="hidden rounded-[1.8rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.10)] lg:block lg:overflow-hidden">
+          <div class="flex items-center justify-between border-b border-slate-200 p-4">
+            <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Warenkorb</h2>
+            <span id="cart-count-desktop" class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-[var(--color-zapfe-amber)] px-2 text-sm font-semibold text-[var(--color-zapfe-navy)]">0</span>
+          </div>
+          <div id="cart-items" class="max-h-[32vh] overflow-y-auto p-4"></div>
+          <div class="border-t border-slate-200 p-4">
+            <div class="mb-3 flex justify-end">
+              <button id="clear-cart" type="button" class="hidden rounded-md border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700" aria-label="Warenkorb leeren">
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M19 6l-1 14H6L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                </svg>
+              </button>
             </div>
-          </details>
-
-          <details class="rounded-md border border-slate-200 bg-white p-2">
-            <summary class="cursor-pointer text-sm font-medium">Unterkategorie</summary>
-            <div class="mt-2 max-h-40 space-y-2 overflow-y-auto text-sm">
-              <% @subcategories.each do |subcategory| %>
-                <label class="flex items-center gap-2"><input type="checkbox" class="filter-subcategory" value="<%= subcategory %>"> <span><%= subcategory %></span></label>
-              <% end %>
+            <div class="mb-2 flex items-center justify-between text-sm text-slate-600"><span>Zwischensumme</span><span id="cart-subtotal">€0,00</span></div>
+            <div class="mb-2 flex items-center justify-between text-sm text-slate-600"><span>Pfand</span><span id="cart-deposit">€0,00</span></div>
+            <div class="flex items-center justify-between text-lg font-semibold">
+              <span>Gesamtsumme</span>
+              <span id="cart-total">€0,00</span>
             </div>
-          </details>
+            <p class="mt-3 text-xs text-slate-500">Die Auswahl wird in den Preisrechner übernommen.</p>
+            <%= link_to "Zum Preisrechner", calculator_path, class: "btn-primary mt-4 block w-full text-center" %>
+          </div>
+        </aside>
 
-          <details class="rounded-md border border-slate-200 bg-white p-2">
-            <summary class="cursor-pointer text-sm font-medium">Marke</summary>
-            <div class="mt-2 max-h-40 space-y-2 overflow-y-auto text-sm">
-              <% @brands.each do |brand| %>
-                <label class="flex items-center gap-2"><input type="checkbox" class="filter-brand" value="<%= brand %>"> <span><%= brand %></span></label>
-              <% end %>
+        <aside
+          id="drinks-filters-panel"
+          class="hidden rounded-[1.6rem] border border-slate-200 bg-slate-50 p-4 shadow-sm lg:block lg:max-h-[calc(100vh-25rem)] lg:overflow-y-auto"
+        >
+          <div class="mb-4 flex items-center justify-between">
+            <p class="text-sm font-semibold text-slate-700">Filter</p>
+            <button id="reset-drinks-filters" type="button" class="grid h-10 w-10 place-content-center rounded-md border border-slate-300 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700" aria-label="Filter zurücksetzen" title="Filter zurücksetzen">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 6h18" />
+                <path d="M8 6V4h8v2" />
+                <path d="M19 6l-1 14H6L5 6" />
+                <path d="M10 11v6M14 11v6" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <details class="rounded-xl border border-slate-200 bg-white p-3">
+              <summary class="cursor-pointer text-sm font-medium">Kategorie</summary>
+              <div class="mt-3 space-y-2 text-sm">
+                <% @categories.each do |category| %>
+                  <label class="flex items-center gap-2"><input type="checkbox" class="filter-category" value="<%= category.id %>"> <span><%= category.name %></span></label>
+                <% end %>
+              </div>
+            </details>
+
+            <details class="rounded-xl border border-slate-200 bg-white p-3">
+              <summary class="cursor-pointer text-sm font-medium">Unterkategorie</summary>
+              <div class="mt-3 max-h-56 space-y-2 overflow-y-auto text-sm">
+                <% @subcategories.each do |subcategory| %>
+                  <label class="flex items-center gap-2"><input type="checkbox" class="filter-subcategory" value="<%= subcategory %>"> <span><%= subcategory %></span></label>
+                <% end %>
+              </div>
+            </details>
+
+            <details class="rounded-xl border border-slate-200 bg-white p-3">
+              <summary class="cursor-pointer text-sm font-medium">Marke</summary>
+              <div class="mt-3 max-h-56 space-y-2 overflow-y-auto text-sm">
+                <% @brands.each do |brand| %>
+                  <label class="flex items-center gap-2"><input type="checkbox" class="filter-brand" value="<%= brand %>"> <span><%= brand %></span></label>
+                <% end %>
+              </div>
+            </details>
+
+            <div class="rounded-xl border border-slate-200 bg-white p-3">
+              <p class="text-sm font-medium">Weitere Filter</p>
+              <div class="mt-3 space-y-2 text-sm">
+                <label class="flex items-center gap-2"><input type="checkbox" id="filter-featured"> <span>Zapfe-Tipps</span></label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="filter-available" checked> <span>Nur verfügbare Getränke</span></label>
+                <label class="flex items-center gap-2"><input type="radio" name="filter-alcoholic" value="all" checked> <span>Alle Getränke</span></label>
+                <label class="flex items-center gap-2"><input type="radio" name="filter-alcoholic" value="alcoholic"> <span>Nur alkoholische</span></label>
+                <label class="flex items-center gap-2"><input type="radio" name="filter-alcoholic" value="non_alcoholic"> <span>Nur alkoholfreie</span></label>
+              </div>
             </div>
-          </details>
+          </div>
+        </aside>
+      </aside>
 
-          <div class="rounded-md border border-slate-200 bg-white p-2">
-            <p class="text-sm font-medium">Weitere Filter</p>
-            <div class="mt-2 space-y-2 text-sm">
-              <label class="flex items-center gap-2"><input type="checkbox" id="filter-featured"> <span>Zapfe-Tipps</span></label>
-              <label class="flex items-center gap-2"><input type="checkbox" id="filter-available" checked> <span>Nur verfügbare Getränke</span></label>
-              <label class="flex items-center gap-2"><input type="radio" name="filter-alcoholic" value="all" checked> <span>Alle Getränke</span></label>
-              <label class="flex items-center gap-2"><input type="radio" name="filter-alcoholic" value="alcoholic"> <span>Nur alkoholische</span></label>
-              <label class="flex items-center gap-2"><input type="radio" name="filter-alcoholic" value="non_alcoholic"> <span>Nur alkoholfreie</span></label>
+      <div class="min-w-0 lg:col-start-2">
+        <div class="sticky top-14 z-30 -mx-2 mb-4 bg-transparent px-2 py-2 sm:-mx-3 sm:px-3 lg:top-16 lg:mx-0 lg:px-0 lg:py-0">
+          <div class="rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-sm">
+            <div class="flex items-center gap-2 lg:gap-3">
+              <div class="relative flex-1">
+                <svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"/></svg>
+                <input id="drinks-search" type="text" placeholder="Nach Getränken suchen..." class="w-full rounded-xl border border-slate-200 bg-slate-50/85 py-2 pl-10 pr-3 text-sm shadow-inner shadow-white/50 lg:h-12 lg:text-base" />
+              </div>
+              <button id="toggle-drinks-filters" type="button" aria-label="Filter öffnen" class="grid h-10 w-10 place-content-center rounded-md border border-slate-300 text-slate-700 lg:hidden">
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 6h16M7 12h10M10 18h4" />
+                </svg>
+              </button>
+              <button id="open-cart" type="button" aria-label="Warenkorb öffnen" class="relative grid h-10 w-10 place-content-center rounded-md bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)] lg:hidden">
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 6h15l-1.5 8h-11zM6 6l-1-3H2M9 19.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm9 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" />
+                </svg>
+                <span id="cart-count" class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-zapfe-navy)] px-1 text-xs text-white">0</span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
-      </div>
-    </div>
 
-    <% total_products = @products.count %>
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
-      <div><span id="drinks-count"><%= total_products %></span> Getränke gefunden</div>
-      <details class="group relative order-last w-full sm:order-none sm:w-auto">
-        <summary class="flex w-full cursor-pointer list-none items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm sm:w-auto">
-          <span class="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-[var(--color-zapfe-blue)]">?</span>
-          <span>Was lässt sich zapfen?</span>
-        </summary>
-        <div class="mt-3 w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.12)] sm:absolute sm:right-0 sm:z-20 sm:w-[min(92vw,420px)]">
-          <div class="grid gap-3">
-            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Bier</p>
-              <p class="mt-1 text-sm text-slate-600">Der Standard für klassische Ausschanke und die größte Auswahl im Katalog.</p>
-            </div>
-            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Aperitif</p>
-              <p class="mt-1 text-sm text-slate-600">Beispielsweise Hugo vom Fass für Sommerfeste, Empfänge oder Hochzeiten.</p>
-            </div>
-            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Alkoholfrei</p>
-              <p class="mt-1 text-sm text-slate-600">Ausgewählte Softdrinks oder alkoholfreie Optionen lassen sich ebenfalls passend einplanen.</p>
-            </div>
+        <% total_products = @products.count %>
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+          <div class="flex items-center gap-3">
+            <div><span id="drinks-count"><%= total_products %></span> Getränke gefunden</div>
           </div>
-        </div>
-      </details>
-    </div>
-
-    <section class="space-y-4" data-drink-section>
-      <div id="drinks-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <% @products.each do |product| %>
-          <% variants = product.product_variants.order(size: :desc) %>
-          <% next if variants.empty? %>
-          <% has_available = variants.any?(&:is_available) %>
-          <% display_label = short_product_label(product) %>
-          <article
-            class="drink-card <%= product.featured? ? 'overflow-hidden rounded-[1.8rem] border border-amber-200 bg-[linear-gradient(180deg,#fffef7_0%,#fff7df_100%)] shadow-[0_24px_60px_rgba(214,180,63,0.16)]' : 'card-soft overflow-hidden' %>"
-            data-text="<%= [product.brand, product.name, product.kind, product.subcategory, product.featured_note].compact.join(' ').downcase %>"
-            data-category="<%= product.category_id %>"
-            data-brand="<%= product.brand %>"
-            data-subcategory="<%= product.subcategory %>"
-            data-alcoholic="<%= product.is_alcoholic ? '1' : '0' %>"
-            data-featured="<%= product.featured? ? '1' : '0' %>"
-            data-has-available="<%= has_available ? '1' : '0' %>"
-          >
-            <div class="<%= product.featured? ? 'bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,247,223,0.45))] p-4' : 'bg-white p-4' %>">
-              <div class="mb-3 flex items-center justify-end gap-3">
-                <span class="text-xs font-medium text-slate-500"><%= product.subcategory.presence || product.kind %></span>
-              </div>
-              <div class="relative">
-                <% if product.featured? %>
-                  <span class="featured-corner-badge" aria-label="Zapfe-Tipp">
-                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M7 5h10v3H7z" />
-                      <path d="M9 8v5a3 3 0 0 0 6 0V8" />
-                      <path d="M8 19h8" />
-                    </svg>
-                  </span>
-                <% end %>
-                <% unless product.is_alcoholic? %>
-                  <span class="drink-attribute-badge" aria-label="Alkoholfrei">
-                    <span class="drink-attribute-badge__text">0,0</span>
-                  </span>
-                <% end %>
-                <%= product_card_image(product, width: 144, height: 144, img_class: "mx-auto h-36 w-auto object-contain") %>
-              </div>
-            </div>
-            <div class="<%= product.featured? ? 'border-t border-amber-100 p-4' : 'border-t border-slate-100 p-4' %>">
-              <p class="text-base font-semibold text-[var(--color-zapfe-navy)]"><%= display_label %></p>
-
-              <div class="mt-3 flex flex-wrap gap-2">
-                <% variants.each_with_index do |variant, idx| %>
-                  <button
-                    type="button"
-                    class="drink-variant rounded border px-2 py-1 text-xs <%= idx.zero? ? 'border-[var(--color-zapfe-amber)] bg-[var(--color-zapfe-amber)]/20' : 'border-slate-300' %> <%= variant.is_available ? '' : 'opacity-40' %>"
-                    data-variant-id="<%= variant.id %>"
-                    data-size="<%= variant.size.to_f %>"
-                    data-price="<%= variant.price.to_f %>"
-                    data-available="<%= variant.is_available ? '1' : '0' %>"
-                    data-selected="<%= idx.zero? ? '1' : '0' %>"
-                    data-product-name="<%= product.name %>"
-                    data-product-brand="<%= product.brand %>"
-                    data-product-label="<%= display_label %>"
-                  ><%= variant.size.to_f %>L</button>
-                <% end %>
-              </div>
-
-              <div class="mt-3 flex items-end justify-between">
-                <div>
-                  <p class="drink-price text-lg font-bold text-slate-900"><%= number_to_currency(variants.first.price, unit: '€', separator: ',', delimiter: '.') %></p>
-                  <p class="drink-price-per text-xs text-slate-500"><%= number_to_currency(variants.first.price.to_f / variants.first.size.to_f, unit: '€', separator: ',', delimiter: '.') %> /L</p>
+          <details class="group relative order-last w-full sm:order-none sm:w-auto">
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm sm:w-auto">
+              <span>Was lässt sich zapfen?</span>
+            </summary>
+            <div class="mt-3 w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.12)] sm:absolute sm:right-0 sm:z-20 sm:w-[min(92vw,420px)]">
+              <div class="grid gap-3">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Bier</p>
+                  <p class="mt-1 text-sm text-slate-600">Der Standard für klassische Ausschanke und die größte Auswahl im Katalog.</p>
                 </div>
-                <button type="button" class="add-to-cart grid h-9 w-9 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" title="Zum Warenkorb hinzufügen">
-                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 8h-11zM6 6l-1-3H2M9 19.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm9 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>
-                </button>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Aperitif</p>
+                  <p class="mt-1 text-sm text-slate-600">Beispielsweise Hugo vom Fass für Sommerfeste, Empfänge oder Hochzeiten.</p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                  <p class="text-sm font-semibold text-[var(--color-zapfe-navy)]">Alkoholfrei</p>
+                  <p class="mt-1 text-sm text-slate-600">Ausgewählte Softdrinks oder alkoholfreie Optionen lassen sich ebenfalls passend einplanen.</p>
+                </div>
               </div>
             </div>
-          </article>
-        <% end %>
-      </div>
-    </section>
+          </details>
+        </div>
 
-    <div id="drinks-no-results" class="card-soft hidden mt-4 p-6 text-center text-slate-600" hidden>
-      Kein Getränk gefunden. Bitte passe deine Suche oder Filter an.
+        <section class="space-y-4" data-drink-section>
+          <div id="drinks-grid" class="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <% @products.each do |product| %>
+              <% variants = product.product_variants.order(size: :desc) %>
+              <% next if variants.empty? %>
+              <% has_available = variants.any?(&:is_available) %>
+              <% display_label = short_product_label(product) %>
+              <article
+                class="drink-card flex flex-col <%= product.featured? ? 'overflow-hidden rounded-[1.8rem] border border-amber-200 bg-[linear-gradient(180deg,#fffef7_0%,#fff7df_100%)] shadow-[0_24px_60px_rgba(214,180,63,0.16)]' : 'card-soft overflow-hidden' %>"
+                data-text="<%= [product.brand, product.name, product.kind, product.subcategory, product.featured_note].compact.join(' ').downcase %>"
+                data-category="<%= product.category_id %>"
+                data-brand="<%= product.brand %>"
+                data-subcategory="<%= product.subcategory %>"
+                data-alcoholic="<%= product.is_alcoholic ? '1' : '0' %>"
+                data-featured="<%= product.featured? ? '1' : '0' %>"
+                data-has-available="<%= has_available ? '1' : '0' %>"
+              >
+                <div class="<%= product.featured? ? 'bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,247,223,0.45))] p-4 lg:p-5' : 'bg-white p-4 lg:p-5' %>">
+                  <div class="relative flex min-h-[10rem] items-center justify-center lg:min-h-[11rem]">
+                    <% if product.featured? %>
+                      <button type="button" class="featured-corner-badge" aria-label="Zapfe!-Tipps">
+                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M7 5h10v3H7z" />
+                          <path d="M9 8v5a3 3 0 0 0 6 0V8" />
+                          <path d="M8 19h8" />
+                        </svg>
+                        <span class="featured-corner-badge__tooltip">Zapfe!-Tipps</span>
+                      </button>
+                    <% end %>
+                    <% unless product.is_alcoholic? %>
+                      <span class="drink-attribute-badge" aria-label="Alkoholfrei">
+                        <span class="drink-attribute-badge__text">0,0</span>
+                      </span>
+                    <% end %>
+                    <%= product_card_image(product, width: 160, height: 160, img_class: "mx-auto h-28 w-auto object-contain lg:h-32") %>
+                  </div>
+                </div>
+                <div class="<%= product.featured? ? 'border-t border-amber-100 p-4 lg:p-5' : 'border-t border-slate-100 p-4 lg:p-5' %>">
+                  <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400"><%= product.subcategory.presence || product.kind %></p>
+                  <p class="min-h-[2.75rem] text-base font-semibold leading-tight text-[var(--color-zapfe-navy)]"><%= display_label %></p>
+
+                  <div class="mt-3 flex min-h-[2.75rem] flex-wrap content-start gap-2">
+                    <% variants.each_with_index do |variant, idx| %>
+                      <button
+                        type="button"
+                        class="drink-variant rounded border px-2 py-1 text-xs <%= idx.zero? ? 'border-[var(--color-zapfe-amber)] bg-[var(--color-zapfe-amber)]/20' : 'border-slate-300' %> <%= variant.is_available ? '' : 'opacity-40' %>"
+                        data-variant-id="<%= variant.id %>"
+                        data-size="<%= variant.size.to_f %>"
+                        data-price="<%= variant.price.to_f %>"
+                        data-available="<%= variant.is_available ? '1' : '0' %>"
+                        data-selected="<%= idx.zero? ? '1' : '0' %>"
+                        data-product-name="<%= product.name %>"
+                        data-product-brand="<%= product.brand %>"
+                        data-product-label="<%= display_label %>"
+                      ><%= variant.size.to_f %>L</button>
+                    <% end %>
+                  </div>
+
+                  <div class="mt-4 flex items-end justify-between">
+                    <div>
+                      <p class="drink-price text-lg font-bold text-slate-900"><%= number_to_currency(variants.first.price, unit: '€', separator: ',', delimiter: '.') %></p>
+                      <p class="drink-price-per text-xs text-slate-500"><%= number_to_currency(variants.first.price.to_f / variants.first.size.to_f, unit: '€', separator: ',', delimiter: '.') %> /L</p>
+                    </div>
+                    <button type="button" class="add-to-cart grid h-9 w-9 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" title="Zum Warenkorb hinzufügen">
+                      <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 8h-11zM6 6l-1-3H2M9 19.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm9 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            <% end %>
+          </div>
+        </section>
+
+        <div id="drinks-no-results" class="card-soft hidden mt-4 p-6 text-center text-slate-600" hidden>
+          Kein Getränk gefunden. Bitte passe deine Suche oder Filter an.
+        </div>
+      </div>
+
+      <aside id="cart-panel-mobile" class="fixed right-0 top-0 z-[90] hidden h-full w-[90vw] max-w-sm bg-white shadow-2xl lg:hidden">
+        <div class="flex items-center justify-between border-b border-slate-200 p-4 lg:p-5">
+          <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Warenkorb</h2>
+          <button id="close-cart" type="button" class="rounded p-1 text-slate-500 hover:bg-slate-100">
+            <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div id="cart-items-mobile" class="h-[calc(100%-220px)] overflow-y-auto p-4"></div>
+        <div class="border-t border-slate-200 p-4">
+          <div class="mb-3 flex justify-end">
+            <button id="clear-cart-mobile" type="button" class="hidden rounded-md border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700" aria-label="Warenkorb leeren">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 6h18" />
+                <path d="M8 6V4h8v2" />
+                <path d="M19 6l-1 14H6L5 6" />
+                <path d="M10 11v6M14 11v6" />
+              </svg>
+            </button>
+          </div>
+          <div class="mb-2 flex items-center justify-between text-sm text-slate-600"><span>Zwischensumme</span><span id="cart-subtotal-mobile">€0,00</span></div>
+          <div class="mb-2 flex items-center justify-between text-sm text-slate-600"><span>Pfand</span><span id="cart-deposit-mobile">€0,00</span></div>
+          <div class="flex items-center justify-between text-lg font-semibold">
+            <span>Gesamtsumme</span>
+            <span id="cart-total-mobile">€0,00</span>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">Die Auswahl wird in den Preisrechner übernommen.</p>
+          <%= link_to "Zum Preisrechner", calculator_path, class: "btn-primary mt-4 block w-full text-center" %>
+        </div>
+      </aside>
     </div>
   </div>
 </section>
 
-<%= link_to calculator_path, class: "btn-primary solutions-fab solutions-fab--contact inline-flex h-12 w-12 items-center justify-center rounded-xl p-0 text-[var(--color-zapfe-navy)] sm:h-14 sm:w-14", aria: { label: "Zum Preisrechner" }, title: "Zum Preisrechner" do %>
+<%= link_to calculator_path, class: "btn-primary solutions-fab solutions-fab--contact inline-flex h-12 w-12 items-center justify-center rounded-xl p-0 text-[var(--color-zapfe-navy)] sm:h-14 sm:w-14 lg:hidden", aria: { label: "Zum Preisrechner" }, title: "Zum Preisrechner" do %>
   <svg viewBox="0 0 24 24" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M8 3h8" />
     <path d="M6 6h12a1 1 0 0 1 1 1v14H5V7a1 1 0 0 1 1-1z" />
@@ -185,33 +259,25 @@
   </svg>
 <% end %>
 
-<div id="cart-overlay" class="fixed inset-0 z-[85] hidden bg-black/35"></div>
-<aside id="cart-panel" class="fixed right-0 top-0 z-[90] hidden h-full w-[90vw] max-w-sm bg-white shadow-2xl">
-  <div class="flex items-center justify-between border-b border-slate-200 p-4">
-    <h2 class="text-2xl font-semibold text-[var(--color-zapfe-navy)]">Warenkorb</h2>
-    <button id="close-cart" type="button" class="rounded p-1 text-slate-500 hover:bg-slate-100">
-      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-  </div>
-  <div id="cart-items" class="h-[calc(100%-220px)] overflow-y-auto p-4"></div>
-  <div class="border-t border-slate-200 p-4">
-    <div class="mb-3 flex justify-end">
-      <button id="clear-cart" type="button" class="hidden rounded-md border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700" aria-label="Warenkorb leeren">
+<div id="cart-overlay" class="fixed inset-0 z-[85] hidden bg-black/35 lg:hidden"></div>
+<div id="drinks-confirm-overlay" class="fixed inset-0 z-[88] hidden bg-slate-950/35"></div>
+<div id="drinks-confirm-sheet" class="fixed inset-x-0 bottom-0 z-[89] hidden rounded-t-[1.75rem] border border-slate-200 bg-white px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 shadow-[0_-24px_60px_rgba(15,39,67,0.22)]">
+  <div class="mx-auto mb-4 h-1.5 w-14 rounded-full bg-slate-200" aria-hidden="true"></div>
+  <div class="mx-auto max-w-xl">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Warenkorb</p>
+    <h2 class="mt-2 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Wirklich leeren?</h2>
+    <p class="mt-3 text-sm leading-6 text-slate-600">Alle ausgewählten Getränke werden aus dem Warenkorb entfernt.</p>
+    <div class="mt-6 grid gap-3 sm:grid-cols-2">
+      <button id="drinks-confirm-cancel" type="button" class="btn-dark w-full justify-center px-5 py-3">Abbrechen</button>
+      <button id="drinks-confirm-clear" type="button" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-zapfe-amber)] px-5 py-3 font-semibold text-[var(--color-zapfe-navy)] transition hover:brightness-[0.98]">
         <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M3 6h18" />
           <path d="M8 6V4h8v2" />
           <path d="M19 6l-1 14H6L5 6" />
           <path d="M10 11v6M14 11v6" />
         </svg>
+        <span>Warenkorb leeren</span>
       </button>
     </div>
-    <div class="mb-2 flex items-center justify-between text-sm text-slate-600"><span>Zwischensumme</span><span id="cart-subtotal">€0,00</span></div>
-    <div class="mb-2 flex items-center justify-between text-sm text-slate-600"><span>Pfand</span><span id="cart-deposit">€0,00</span></div>
-    <div class="flex items-center justify-between text-lg font-semibold">
-      <span>Gesamtsumme</span>
-      <span id="cart-total">€0,00</span>
-    </div>
-    <p class="mt-3 text-xs text-slate-500">Die Auswahl bleibt lokal im Browser gespeichert und wird im Preisrechner automatisch übernommen.</p>
-    <%= link_to "Zum Preisrechner", calculator_path, class: "btn-primary mt-4 block w-full text-center" %>
   </div>
-</aside>
+</div>

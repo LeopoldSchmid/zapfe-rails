@@ -77,6 +77,7 @@ export default class extends Controller {
     this.pricingDrinksRow = document.getElementById("pricing-drinks-row")
     this.pricingDrinksValue = document.getElementById("pricing-drinks-value")
     this.pricingTotalDetail = document.getElementById("pricing-total-detail")
+    this.pricingBreakdown = document.getElementById("pricing-breakdown")
     this.persistedFields = Array.from(this.form.querySelectorAll("input, select, textarea")).filter((field) => field.name)
   }
 
@@ -117,6 +118,7 @@ export default class extends Controller {
     this.refreshScrollButtonsBound = this.refreshScrollButtons.bind(this)
     this.drinksTrack?.addEventListener("scroll", this.refreshScrollButtonsBound)
     window.addEventListener("resize", this.refreshScrollButtonsBound)
+    this.updatePricingDisclosure()
 
     this.cartItemsEl?.addEventListener("click", (event) => this.updateCartQuantity(event))
     this.clearCartButton?.addEventListener("click", () => this.openClearCartSheet())
@@ -369,9 +371,17 @@ export default class extends Controller {
   refreshScrollButtons() {
     if (!this.drinksTrack || !this.scrollLeftBtn || !this.scrollRightBtn) return
 
+    if (window.innerWidth >= 1024) {
+      this.scrollLeftBtn.classList.add("hidden")
+      this.scrollRightBtn.classList.add("hidden")
+      this.updatePricingDisclosure()
+      return
+    }
+
     if (this.drinksTrack.hidden || this.drinksTrack.closest("[hidden]")) {
       this.scrollLeftBtn.classList.add("hidden")
       this.scrollRightBtn.classList.add("hidden")
+      this.updatePricingDisclosure()
       return
     }
 
@@ -379,6 +389,7 @@ export default class extends Controller {
     const canRight = this.drinksTrack.scrollLeft < this.drinksTrack.scrollWidth - this.drinksTrack.clientWidth - 4
     this.scrollLeftBtn.classList.toggle("hidden", !canLeft)
     this.scrollRightBtn.classList.toggle("hidden", !canRight)
+    this.updatePricingDisclosure()
   }
 
   applyDrinkSearch() {
@@ -422,6 +433,16 @@ export default class extends Controller {
     setElementVisibility(this.confirmOverlay, true)
     setElementVisibility(this.confirmSheet, true)
     document.body.classList.add("overflow-hidden")
+  }
+
+  updatePricingDisclosure() {
+    if (!this.pricingBreakdown) return
+
+    if (window.innerWidth >= 1024) {
+      this.pricingBreakdown.open = true
+    } else if (!this.pricingBreakdown.dataset.userLocked) {
+      this.pricingBreakdown.open = false
+    }
   }
 
   closeClearCartSheet() {
