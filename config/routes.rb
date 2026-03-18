@@ -19,11 +19,17 @@ Rails.application.routes.draw do
     get "/login", to: "sessions#new"
     post "/login", to: "sessions#create"
     delete "/logout", to: "sessions#destroy"
+    get "/password/reset", to: "passwords#new", as: :new_password
+    post "/password/reset", to: "passwords#create", as: :password
+    get "/password/edit", to: "passwords#edit", as: :edit_password
+    patch "/password/edit", to: "passwords#update"
 
     root "dashboard#index"
     resources :categories, except: [ :show ]
     resources :events, except: [ :show ]
-    resources :products, except: [ :show ]
+    resources :products, except: [ :show ] do
+      post :bulk_update_prices, on: :collection
+    end
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

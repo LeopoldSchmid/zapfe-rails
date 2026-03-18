@@ -34,16 +34,8 @@ end
   end
 end
 
-Event.find_or_create_by!(title: "Lichterfest Schopfheim") do |event|
-  event.subtitle = "Winterevent"
-  event.description = "Zapfe versorgte Besucher:innen mit frischen Getränken vor Ort."
-  event.date_from = Date.new(2024, 11, 29)
-  event.location = "Schopfheim"
-  event.published = true
-  event.position = 1
-end
 
-admin_email = ENV.fetch("ADMIN_EMAIL", "admin@zapfe.local")
+admin_email = ENV.fetch("ADMIN_EMAIL", "ape2tap.blackforest@gmail.com")
 admin_password = ENV.fetch("ADMIN_PASSWORD", "change-me-now")
 
 admin = AdminUser.find_or_initialize_by(email: admin_email)

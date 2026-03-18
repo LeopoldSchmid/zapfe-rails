@@ -23,7 +23,6 @@ export default class extends Controller {
     this.emptyState = document.getElementById("drinks-no-results")
 
     this.featuredFilter = document.getElementById("filter-featured")
-    this.availableFilter = document.getElementById("filter-available")
     this.alcoholicRadios = Array.from(document.querySelectorAll('input[name="filter-alcoholic"]'))
     this.categoryFilters = Array.from(document.querySelectorAll(".filter-category"))
     this.subcategoryFilters = Array.from(document.querySelectorAll(".filter-subcategory"))
@@ -72,7 +71,6 @@ export default class extends Controller {
       input.addEventListener("change", () => this.applyFilters())
     })
     this.featuredFilter?.addEventListener("change", () => this.applyFilters())
-    this.availableFilter?.addEventListener("change", () => this.applyFilters())
 
     this.openCartButton?.addEventListener("click", () => this.openPanel())
     this.closeCartButton?.addEventListener("click", () => this.closePanel())
@@ -122,7 +120,6 @@ export default class extends Controller {
     const subcategories = this.getSelectedValues(this.subcategoryFilters)
     const brands = this.getSelectedValues(this.brandFilters)
     const featuredOnly = !!this.featuredFilter?.checked
-    const availableOnly = !!this.availableFilter?.checked
     const alcoholic = this.alcoholicRadios.find((input) => input.checked)?.value || "all"
 
     filterCardsByQuery({
@@ -135,13 +132,12 @@ export default class extends Controller {
         const matchesSubcategory = subcategories.length === 0 || subcategories.includes(card.dataset.subcategory)
         const matchesBrand = brands.length === 0 || brands.includes(card.dataset.brand)
         const matchesFeatured = !featuredOnly || card.dataset.featured === "1"
-        const matchesAvailable = !availableOnly || card.dataset.hasAvailable === "1"
 
         let matchesAlcoholic = true
         if (alcoholic === "alcoholic") matchesAlcoholic = card.dataset.alcoholic === "1"
         if (alcoholic === "non_alcoholic") matchesAlcoholic = card.dataset.alcoholic === "0"
 
-        return matchesCategory && matchesSubcategory && matchesBrand && matchesFeatured && matchesAvailable && matchesAlcoholic
+        return matchesCategory && matchesSubcategory && matchesBrand && matchesFeatured && matchesAlcoholic
       },
       afterFilter: (count) => {
         if (this.countEl) this.countEl.textContent = String(count)
@@ -228,7 +224,6 @@ export default class extends Controller {
     })
 
     if (this.featuredFilter) this.featuredFilter.checked = false
-    if (this.availableFilter) this.availableFilter.checked = true
     if (this.searchInput) this.searchInput.value = ""
 
     this.applyFilters()

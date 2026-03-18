@@ -32,7 +32,7 @@ npx playwright test
 ## Admin Login
 Der erste Admin wird per Seed erzeugt:
 ```bash
-ADMIN_EMAIL=admin@zapfe.local ADMIN_PASSWORD=change-me-now bin/rails db:seed
+ADMIN_EMAIL=ape2tap.blackforest@gmail.com ADMIN_PASSWORD=change-me-now bin/rails db:seed
 ```
 
 Dann Login unter:

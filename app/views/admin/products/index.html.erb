@@ -2,39 +2,233 @@
   <div>
     <p class="proof-kicker">Katalog</p>
     <h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]">Produkte</h1>
+    <p class="mt-2 max-w-2xl text-sm text-slate-500">Quick-Edit fur schnelle Anderungen direkt in der Liste. Varianten, Beschreibung und Bilder bleiben in der Detailansicht.</p>
   </div>
-  <%= link_to "Neues Produkt", new_admin_product_path, class: "admin-cta" %>
+  <div class="flex flex-wrap items-center gap-3">
+    <span class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 shadow-sm"><%= @products.size %> Produkte</span>
+    <%= link_to "Neues Produkt", new_admin_product_path, class: "admin-cta" %>
+  </div>
 </div>
 
-<div class="grid gap-4 md:grid-cols-2">
-  <% @products.each do |product| %>
-    <article class="admin-panel">
-      <div class="mb-3">
-        <% if product.image.attached? %>
-          <%= image_tag product.image, class: "h-32 w-full rounded-lg object-contain bg-slate-50" %>
-        <% else %>
-          <img src="/placeholder-bottle.png" alt="Kein Bild" class="h-32 w-full rounded-lg object-contain bg-slate-50 p-3" />
+<div data-controller="bulk-pricing">
+  <div class="admin-panel mb-5">
+    <div class="mb-4">
+      <p class="proof-kicker">Sammelaktion</p>
+      <h2 class="mt-2 text-xl font-semibold text-[var(--color-zapfe-navy)]">Preise fur ganze Kategorien anpassen</h2>
+      <p class="mt-2 max-w-3xl text-sm text-slate-500">Nutze die zuletzt harmonisierten Kategorien und pflege bis zu drei Größen in einem Schritt. Die Slots starten mit 20L, 30L und 50L, lassen sich aber pro Zeile ändern.</p>
+    </div>
+
+    <%= form_with url: bulk_update_prices_admin_products_path, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :category_id, "Kategorie", class: "admin-field-label" %>
+        <%= f.collection_select :category_id, @bulk_price_categories, :id, :name, { include_blank: "Kategorie wählen" }, { class: "admin-inline-input", data: { bulk_pricing_target: "categorySelect", action: "change->bulk-pricing#update" } } %>
+      </div>
+
+      <div class="admin-bulk-pricing-grid">
+        <% @bulk_price_slots.each_with_index do |default_size, index| %>
+          <% selected_size = params.fetch(:bulk_sizes, [])[index].presence || default_size %>
+          <% entered_price = params.fetch(:bulk_prices, [])[index] %>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4" data-bulk-pricing-target="slotCard">
+          <div class="grid gap-3 md:grid-cols-2">
+              <div>
+                <label class="admin-field-label" for="bulk-size-<%= index %>">Größe</label>
+                <select
+                  id="bulk-size-<%= index %>"
+                  name="bulk_sizes[]"
+                  class="admin-inline-input"
+                  data-bulk-pricing-target="sizeSelect"
+                  data-action="change->bulk-pricing#update"
+                >
+                  <% @bulk_variant_sizes.each do |value| %>
+                    <% label = "#{value.to_f % 1 == 0 ? value.to_i : value}L" %>
+                    <option value="<%= value %>" <%= "selected" if value.to_s == selected_size.to_s %>><%= label %></option>
+                  <% end %>
+                </select>
+              </div>
+
+              <div>
+                <label class="admin-field-label" for="bulk-price-<%= index %>">Preis</label>
+                <input
+                  id="bulk-price-<%= index %>"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  name="bulk_prices[]"
+                  value="<%= entered_price %>"
+                  placeholder="z. B. 80.00"
+                  class="admin-inline-input"
+                  data-bulk-pricing-target="priceInput"
+                  data-action="input->bulk-pricing#update change->bulk-pricing#update"
+                />
+              </div>
+            </div>
+
+            <p class="mt-3 text-sm font-medium text-slate-600">
+              <span class="text-slate-500">Preis pro Liter:</span>
+              <span data-bulk-pricing-target="perLiterOutput">-</span>
+            </p>
+          </div>
         <% end %>
       </div>
-      <div class="flex flex-wrap items-start justify-between gap-2">
-        <h2 class="text-lg font-semibold"><%= product.brand %> <%= product.name %></h2>
-        <% if product.featured? %>
-          <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-800">Favorit <% if product.featured_position.present? %>• <%= product.featured_position %><% end %></span>
-        <% end %>
+
+      <div class="flex justify-end">
+        <%= f.submit "Alle passenden Varianten aktualisieren", class: "admin-cta w-full" %>
       </div>
-      <p class="mt-1 text-sm text-slate-600"><%= product.article_number %> • <%= product.kind %></p>
-      <% if product.featured? %>
-        <p class="mt-2 text-sm text-slate-600"><%= product_featured_note(product) %></p>
-      <% end %>
-      <ul class="mt-3 space-y-1 text-sm text-slate-700">
-        <% product.product_variants.each do |variant| %>
-          <li><%= variant.sku %> • <%= variant.size.to_f %>L • <%= number_to_currency(variant.price, unit: "€", separator: ",", delimiter: ".") %></li>
+    <% end %>
+  </div>
+
+  <div class="admin-panel overflow-hidden p-0">
+    <div class="admin-products-scroll">
+      <table class="admin-products-table">
+      <thead>
+        <tr>
+          <th>Produkt</th>
+          <th>Sortiment</th>
+          <th>Merkmale</th>
+          <th>Favorit</th>
+          <th>Varianten</th>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @products.each do |product| %>
+          <% form_id = dom_id(product, :quick_edit) %>
+          <% row_has_errors = defined?(@product) && @product&.id == product.id && @product.errors.any? %>
+
+          <tr
+            class="<%= "bg-red-50/70" if row_has_errors %>"
+            data-bulk-pricing-target="productRow"
+            data-category-id="<%= product.category_id %>"
+            data-variant-sizes="<%= product.product_variants.map(&:size).uniq.sort.join(",") %>"
+          >
+            <td>
+              <%= form_with model: [ :admin, product ], id: form_id, class: "hidden" do %>
+                <%= hidden_field_tag :return_to, admin_products_path %>
+              <% end %>
+
+              <div class="admin-product-cell">
+                <div class="admin-product-media">
+                  <% if product.image.attached? %>
+                    <%= image_tag product.image, class: "h-16 w-16 rounded-2xl object-contain bg-slate-50" %>
+                  <% else %>
+                    <img src="/placeholder-bottle.png" alt="Kein Bild" class="h-16 w-16 rounded-2xl object-contain bg-slate-50 p-2" />
+                  <% end %>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <label class="admin-field-label" for="<%= "#{form_id}_article_number" %>">Artikelnummer</label>
+                  <input id="<%= "#{form_id}_article_number" %>" form="<%= form_id %>" type="text" name="product[article_number]" value="<%= product.article_number %>" class="admin-inline-input" />
+
+                  <div class="mt-3 grid gap-3 xl:grid-cols-2">
+                    <div>
+                      <label class="admin-field-label" for="<%= "#{form_id}_brand" %>">Marke</label>
+                      <input id="<%= "#{form_id}_brand" %>" form="<%= form_id %>" type="text" name="product[brand]" value="<%= product.brand %>" class="admin-inline-input" />
+                    </div>
+                    <div>
+                      <label class="admin-field-label" for="<%= "#{form_id}_name" %>">Name</label>
+                      <input id="<%= "#{form_id}_name" %>" form="<%= form_id %>" type="text" name="product[name]" value="<%= product.name %>" class="admin-inline-input" />
+                    </div>
+                  </div>
+
+                  <% if row_has_errors %>
+                    <p class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                      <%= @product.errors.full_messages.to_sentence %>
+                    </p>
+                  <% end %>
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <div class="space-y-3">
+                <div>
+                  <label class="admin-field-label" for="<%= "#{form_id}_category_id" %>">Kategorie</label>
+                  <select id="<%= "#{form_id}_category_id" %>" form="<%= form_id %>" name="product[category_id]" class="admin-inline-input">
+                    <option value=""></option>
+                    <% @categories.each do |category| %>
+                      <option value="<%= category.id %>" <%= "selected" if product.category_id == category.id %>><%= category.name %></option>
+                    <% end %>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="admin-field-label" for="<%= "#{form_id}_kind" %>">Typ</label>
+                  <input id="<%= "#{form_id}_kind" %>" form="<%= form_id %>" type="text" name="product[kind]" value="<%= product.kind %>" class="admin-inline-input" />
+                </div>
+
+                <div>
+                  <label class="admin-field-label" for="<%= "#{form_id}_subcategory" %>">Unterkategorie</label>
+                  <input id="<%= "#{form_id}_subcategory" %>" form="<%= form_id %>" type="text" name="product[subcategory]" value="<%= product.subcategory %>" class="admin-inline-input" />
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <div class="space-y-3">
+                <div>
+                  <label class="admin-field-label" for="<%= "#{form_id}_alcohol_content" %>">Vol. %</label>
+                  <input id="<%= "#{form_id}_alcohol_content" %>" form="<%= form_id %>" type="number" min="0" step="0.1" name="product[alcohol_content]" value="<%= product.alcohol_content %>" class="admin-inline-input" />
+                </div>
+
+                <label class="admin-inline-check">
+                  <input form="<%= form_id %>" type="hidden" name="product[is_alcoholic]" value="0" />
+                  <input form="<%= form_id %>" type="checkbox" name="product[is_alcoholic]" value="1" <%= "checked" if product.is_alcoholic? %> />
+                  <span>Alkoholisch</span>
+                </label>
+              </div>
+            </td>
+
+            <td>
+              <div class="space-y-3">
+                <label class="admin-inline-check">
+                  <input form="<%= form_id %>" type="hidden" name="product[featured]" value="0" />
+                  <input form="<%= form_id %>" type="checkbox" name="product[featured]" value="1" <%= "checked" if product.featured? %> />
+                  <span>Im Rechner hervorheben</span>
+                </label>
+
+                <div>
+                  <label class="admin-field-label" for="<%= "#{form_id}_featured_position" %>">Position</label>
+                  <input id="<%= "#{form_id}_featured_position" %>" form="<%= form_id %>" type="number" min="1" step="1" name="product[featured_position]" value="<%= product.featured_position %>" class="admin-inline-input" />
+                </div>
+
+                <div>
+                  <label class="admin-field-label" for="<%= "#{form_id}_featured_note" %>">Hinweis</label>
+                  <textarea id="<%= "#{form_id}_featured_note" %>" form="<%= form_id %>" name="product[featured_note]" rows="3" maxlength="140" class="admin-inline-input admin-inline-textarea"><%= product.featured_note %></textarea>
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <% if product.product_variants.any? %>
+                <ul class="space-y-2 text-sm text-slate-600">
+                  <% product.product_variants.each do |variant| %>
+                    <li class="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
+                      <div class="font-medium text-slate-700"><%= variant.sku %></div>
+                      <div class="mt-1 text-xs text-slate-500"><%= variant.size.to_f %>L • <%= number_to_currency(variant.price, unit: "€", separator: ",", delimiter: ".") %> • <%= variant.is_available? ? "Verfugbar" : "Deaktiviert" %></div>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p class="text-sm text-slate-500">Keine Varianten gepflegt.</p>
+              <% end %>
+            </td>
+
+            <td>
+              <div class="flex min-w-[9rem] flex-col gap-2">
+                <button type="submit" form="<%= form_id %>" class="admin-cta w-full text-center">Speichern</button>
+                <%= link_to "Details", edit_admin_product_path(product), class: "rounded-xl border border-slate-200 px-4 py-2 text-center text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" %>
+                <%= button_to "Löschen", admin_product_path(product), method: :delete, class: "rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50", form: { class: "w-full" } %>
+              </div>
+            </td>
+          </tr>
         <% end %>
-      </ul>
-      <div class="mt-3 flex gap-3 text-sm">
-        <%= link_to "Bearbeiten", edit_admin_product_path(product), class: "font-medium text-slate-700 hover:underline" %>
-        <%= button_to "Löschen", admin_product_path(product), method: :delete, class: "text-red-700", form: { class: "inline" } %>
-      </div>
-    </article>
-  <% end %>
+      </tbody>
+      </table>
+    </div>
+
+    <div class="hidden border-t border-slate-200 px-4 py-6 text-center text-sm text-slate-500" data-bulk-pricing-target="emptyState">
+      Keine Produkte in dieser Kategorie gefunden.
+    </div>
+  </div>
 </div>
