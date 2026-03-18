@@ -7,7 +7,7 @@ class Admin::PasswordsController < ApplicationController
 
   def create
     if (admin_user = AdminUser.find_by(email: params[:email]&.downcase&.strip))
-      AdminUserMailer.password_reset(admin_user).deliver_later
+      AdminUserMailer.password_reset(admin_user).deliver_now
     end
 
     redirect_to admin_login_path, notice: "Wenn ein Admin mit dieser E-Mail existiert, wurde ein Reset-Link versendet."

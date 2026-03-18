@@ -7,6 +7,12 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match "<title>Mobile Zapfanlagen zur Selbstbedienung | Zapfe!</title>", response.body
     assert_match "property=\"og:title\" content=\"Mobile Zapfanlagen zur Selbstbedienung | Zapfe!\"", response.body
     assert_match "rel=\"canonical\" href=\"http://www.example.com/\"", response.body
+    assert_match "property=\"og:image\" content=\"http://www.example.com/optimized/zapfe-hero-desktop.jpg\"", response.body
+    assert_match "property=\"og:image:type\" content=\"image/jpeg\"", response.body
+    assert_match "property=\"og:image:width\" content=\"1920\"", response.body
+    assert_match "property=\"og:image:height\" content=\"1130\"", response.body
+    assert_match "property=\"og:image:alt\" content=\"Zapfe! mobile Zapfanlagen und Self-Service-Ausschank fuer Events und Standorte\"", response.body
+    assert_match "name=\"twitter:image:alt\" content=\"Zapfe! mobile Zapfanlagen und Self-Service-Ausschank fuer Events und Standorte\"", response.body
     assert_match "\"@type\":\"LocalBusiness\"", response.body
     assert_match "Temporär", response.body
     assert_match "Dauerhaft", response.body

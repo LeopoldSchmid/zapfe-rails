@@ -112,6 +112,28 @@ module ApplicationHelper
     "#{request.base_url}/optimized/zapfe-hero-desktop.jpg"
   end
 
+  def og_image_secure_url
+    return nil unless request&.ssl?
+
+    og_image_url
+  end
+
+  def og_image_width
+    1920
+  end
+
+  def og_image_height
+    1130
+  end
+
+  def og_image_type
+    "image/jpeg"
+  end
+
+  def og_image_alt
+    "Zapfe! mobile Zapfanlagen und Self-Service-Ausschank fuer Events und Standorte"
+  end
+
   def page_json_ld
     data = [
       {
