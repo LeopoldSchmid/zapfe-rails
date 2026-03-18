@@ -66,7 +66,7 @@ class DrinksSearchTest < ApplicationSystemTestCase
     visit drinks_path
 
     find("#toggle-drinks-filters").click if page.has_selector?("#toggle-drinks-filters", visible: true)
-    find("summary", text: "Weitere Filter").click
+    find("details", text: "Weitere Filter").click if page.has_selector?("details", text: "Weitere Filter")
     check "Zapfe!Tipps"
 
     assert_selector ".drink-card", text: "Test Pils Extra"
