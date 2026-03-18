@@ -8,6 +8,8 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     clear_enqueued_jobs
     clear_performed_jobs
     ActionMailer::Base.deliveries.clear
+    Rails.cache.clear
+    ApplicationController::RATE_LIMIT_STORE.clear
   end
 
   test "creates contact inquiry and enqueues both emails" do
@@ -120,5 +122,37 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
     follow_redirect!
     assert_match(/muss akzeptiert werden/i, response.body)
+  end
+
+  test "rate limits inquiry creation bursts" do
+    5.times do |index|
+      post inquiries_url, params: {
+        inquiry: {
+          source: "contact",
+          first_name: "Max#{index}",
+          last_name: "Mustermann",
+          email: "max#{index}@example.com",
+          phone: "+491234#{index}",
+          privacy_accepted: "1"
+        }
+      }
+    end
+
+    assert_no_difference("Inquiry.count") do
+      post inquiries_url, params: {
+        inquiry: {
+          source: "contact",
+          first_name: "Burst",
+          last_name: "Blocked",
+          email: "burst@example.com",
+          phone: "+4912399",
+          privacy_accepted: "1"
+        }
+      }
+    end
+
+    assert_redirected_to root_url
+    follow_redirect!
+    assert_match(/Zu viele Anfragen/i, response.body)
   end
 end

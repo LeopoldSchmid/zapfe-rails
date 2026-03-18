@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SSH_KEY="${SSH_KEY:-/home/leo/.ssh/apeServeBeer.pem}"
+HOST="${HOST:-root@157.180.19.232}"
+STAGING_VOLUME="${STAGING_VOLUME:-zapfe_rails_staging_storage}"
+PROD_VOLUME="${PROD_VOLUME:-zapfe_rails_storage}"
+
+ssh -i "$SSH_KEY" "$HOST" <<EOF
+set -euo pipefail
+
+docker run --rm \
+   -v zapfe_rails_staging_storage:/from:ro \
+   -v zapfe_rails_storage:/to \
+   alpine sh -lc 'rm -rf /to/* /to/.[!.]* /to/..?* 2>/dev/null || true; cp -a /
+ from/. /to/'
+EOF

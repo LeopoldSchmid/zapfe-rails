@@ -1,5 +1,6 @@
 class Admin::SessionsController < ApplicationController
   layout "admin_auth"
+  before_action :enforce_rate_limits, only: :create
 
   def new
     return unless admin_signed_in?
@@ -22,5 +23,17 @@ class Admin::SessionsController < ApplicationController
   def destroy
     reset_session
     redirect_to admin_login_path, notice: "Abgemeldet."
+  end
+
+  private
+
+  def enforce_rate_limits
+    return unless rate_limit_exceeded?(scope: "admin:sessions:create", limit: 10, window: 3.minutes)
+
+    rate_limit_exceeded
+  end
+
+  def rate_limit_exceeded
+    redirect_to admin_login_path, alert: "Zu viele Login-Versuche. Bitte versuche es in ein paar Minuten erneut."
   end
 end

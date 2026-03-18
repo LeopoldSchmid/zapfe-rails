@@ -34,14 +34,16 @@
     </div>
 
     <figure class="mx-auto mt-2 w-full max-w-6xl overflow-hidden rounded-[2rem] border border-[#f4ead0] bg-white shadow-[0_26px_70px_rgba(15,23,42,0.12)] sm:mt-4 lg:mt-0">
-      <img
-        src="<%= asset_path("hoffest.jpg") %>"
-        alt="Zapfe! Ausschank im Einsatz"
-        class="aspect-[6/5] w-full object-cover object-center sm:aspect-[16/9] lg:aspect-[5/4]"
-        fetchpriority="high"
-        width="1440"
-        height="810"
-      >
+      <%= static_responsive_image_tag(
+        base_name: "zapfe-hero",
+        alt: "Zapfe! Ausschank im Einsatz",
+        width: 1440,
+        height: 810,
+        img_class: "aspect-[6/5] w-full object-cover object-center sm:aspect-[16/9] lg:aspect-[5/4]",
+        loading: "eager",
+        fetchpriority: "high",
+        sizes: "(max-width: 639px) 100vw, (max-width: 1023px) 100vw, 720px"
+      ) %>
     </figure>
   </div>
 </section>

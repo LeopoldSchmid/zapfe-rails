@@ -12,7 +12,8 @@ class MonitoringController < ApplicationController
     )
 
     unless inquiry.valid?
-      return render json: { status: "error", error: inquiry.errors.full_messages.to_sentence }, status: :internal_server_error
+      Rails.logger.error("Monitoring inquiry_flow validation failed: #{inquiry.errors.full_messages.to_sentence}")
+      return render json: { status: "error" }, status: :internal_server_error
     end
 
     # Build both emails to validate rendering + mailer configuration path without creating DB records.
@@ -21,7 +22,8 @@ class MonitoringController < ApplicationController
 
     render json: { status: "ok", checked_at: Time.current.iso8601 }, status: :ok
   rescue => error
-    render json: { status: "error", error: error.class.name, message: error.message }, status: :internal_server_error
+    Rails.logger.error("Monitoring inquiry_flow failed: #{error.class}: #{error.message}")
+    render json: { status: "error" }, status: :internal_server_error
   end
 
   private

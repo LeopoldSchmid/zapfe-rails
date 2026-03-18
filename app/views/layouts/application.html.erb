@@ -27,7 +27,7 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= yield :head %>
-    <script type="application/ld+json"><%= raw(json_escape(page_json_ld.to_json)) %></script>
+    <%= content_tag(:script, raw(json_escape(page_json_ld.to_json)), type: "application/ld+json", nonce: content_security_policy_nonce) %>
   </head>
 
   <body class="bg-slate-50 text-slate-900" data-controller="page-transition">

@@ -1,4 +1,6 @@
 class InquiriesController < ApplicationController
+  before_action :enforce_rate_limits, only: :create
+
   def create
     @inquiry = Inquiry.new(inquiry_params)
 
@@ -12,6 +14,17 @@ class InquiriesController < ApplicationController
   end
 
   private
+
+  def enforce_rate_limits
+    return unless rate_limit_exceeded?(scope: "inquiries:create:burst", limit: 5, window: 5.minutes) ||
+                  rate_limit_exceeded?(scope: "inquiries:create:hourly", limit: 20, window: 1.hour)
+
+    rate_limit_exceeded
+  end
+
+  def rate_limit_exceeded
+    redirect_back fallback_location: root_path, alert: "Zu viele Anfragen in kurzer Zeit. Bitte versuche es in ein paar Minuten erneut."
+  end
 
   def inquiry_params
     params.require(:inquiry).permit(

@@ -29,9 +29,6 @@
 
 <% solutions_film_url = ENV["SOLUTIONS_FILM_URL"].presence || "/videos/hochzeit_bier_horizontal_720.mp4" %>
 <% hugo_video_url = ENV["HUGO_VIDEO_URL"].presence || "/videos/hochzeit_hugo_vertical_720.mp4" %>
-<% content_for :head do %>
-  <link rel="preload" as="video" href="<%= solutions_film_url %>" type="video/mp4">
-<% end %>
 <section id="event-einstieg" class="bg-[var(--color-zapfe-navy)] py-14 text-white sm:py-18">
   <div class="page-wrap">
     <div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.95fr)] lg:items-center">
@@ -46,8 +43,18 @@
       </div>
 
       <div class="solutions-media-frame">
-        <video autoplay loop muted playsinline preload="auto" poster="<%= asset_path('hoffest.jpg') %>" class="aspect-video w-full object-cover" aria-label="Produktfilm Selbstbedienungsausschank">
-          <source src="<%= solutions_film_url %>" type="video/mp4">
+        <video
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="none"
+          poster="/optimized/zapfe-hero-tablet.webp"
+          class="aspect-video w-full object-cover"
+          aria-label="Produktfilm Selbstbedienungsausschank"
+          data-controller="lazy-video"
+        >
+          <source data-lazy-video-target="source" data-src="<%= solutions_film_url %>" type="video/mp4">
         </video>
       </div>
     </div>
@@ -96,7 +103,8 @@
             <div class="solutions-media-frame aspect-[16/10]">
               <%= image_tag "products/#{system[:image_file]}",
                 alt: system[:title],
-                class: "h-full w-full object-cover object-center" %>
+                class: "h-full w-full object-cover object-center",
+                loading: "lazy" %>
             </div>
             <p class="mt-4 text-lg font-semibold text-[var(--color-zapfe-navy)]"><%= system[:title] %></p>
             <p class="mt-3 flex-1 text-sm leading-6 text-slate-600"><%= system[:body] %></p>
@@ -130,8 +138,18 @@
       </div>
 
       <div class="solutions-media-frame beverage-video-frame mx-auto mt-8 lg:mt-0">
-        <video autoplay loop muted playsinline preload="auto" class="aspect-[9/16] w-full object-cover" aria-label="Hugo wird gezapft">
-          <source src="<%= hugo_video_url %>" type="video/mp4">
+        <video
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="none"
+          poster="/optimized/zapfe-hero-mobile.webp"
+          class="aspect-[9/16] w-full object-cover"
+          aria-label="Hugo wird gezapft"
+          data-controller="lazy-video"
+        >
+          <source data-lazy-video-target="source" data-src="<%= hugo_video_url %>" type="video/mp4">
         </video>
       </div>
     </div>
@@ -151,26 +169,27 @@
           kicker: "Stoßzeiten",
           title: "Warteschlangen verkürzen",
           body: "Stoßzeiten sauber abfangen. Ohne zusätzlichen Personalbedarf.",
-          image_file: "highlights_1.png"
+          image_file: "highlights_1.webp"
         },
         {
           kicker: "Ablauf",
           title: "Weniger Mitarbeiterdruck",
           body: "Mehr Durchsatz. Mehr Erlebnis für Gäste.",
-          image_file: "highlights_2.png"
+          image_file: "highlights_2.webp"
         },
         {
           kicker: "Einbau",
           title: "Das passende Setup wählen",
           body: "Kiosk, Multi, Wand oder Speziallösung. Je nach Ort und Anforderungen.",
-          image_file: "highlights_3.png"
+          image_file: "highlights_3.webp"
         }
       ].each do |benefit| %>
         <article class="benefit-visual-card">
           <div class="solutions-media-frame mb-4 aspect-[16/10]">
             <%= image_tag benefit[:image_file],
               alt: benefit[:title],
-              class: "h-full w-full object-cover object-center" %>
+              class: "h-full w-full object-cover object-center",
+              loading: "lazy" %>
           </div>
           <p class="proof-kicker"><%= benefit[:kicker] %></p>
           <p class="proof-value mt-3"><%= benefit[:title] %></p>

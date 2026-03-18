@@ -27,4 +27,24 @@ class MonitoringControllerTest < ActionDispatch::IntegrationTest
     payload = JSON.parse(response.body)
     assert_equal "ok", payload["status"]
   end
+
+  test "does not expose internal error details" do
+    original_method = InquiryMailer.method(:customer_confirmation)
+
+    InquiryMailer.singleton_class.send(:define_method, :customer_confirmation) do |*|
+      raise "smtp misconfigured"
+    end
+
+    begin
+      get "/monitoring/inquiry_flow", params: { token: "test-monitoring-token" }
+    ensure
+      InquiryMailer.singleton_class.send(:define_method, :customer_confirmation) do |*args, &block|
+        original_method.call(*args, &block)
+      end
+    end
+
+    assert_response :internal_server_error
+    payload = JSON.parse(response.body)
+    assert_equal({ "status" => "error" }, payload)
+  end
 end
