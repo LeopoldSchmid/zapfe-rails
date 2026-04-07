@@ -16,14 +16,14 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Inquiry.count", 1) do
       assert_enqueued_emails 2 do
         post inquiries_url, params: {
-          inquiry: {
+          inquiry: inquiry_params(
             source: "contact",
             first_name: "Max",
             last_name: "Mustermann",
             email: "max@example.com",
             phone: "+491234",
             privacy_accepted: "1"
-          }
+          )
         }
       end
     end
@@ -37,7 +37,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Inquiry.count", 1) do
       assert_enqueued_emails 2 do
         post inquiries_url, params: {
-          inquiry: {
+          inquiry: inquiry_params(
             source: "calculator",
             first_name: "Erika",
             last_name: "Musterfrau",
@@ -58,7 +58,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
             total_price: "350.00",
             pricing_snapshot: "{\"total\":350}",
             privacy_accepted: "1"
-          }
+          )
         }
       end
     end
@@ -76,7 +76,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     perform_enqueued_jobs do
       assert_emails 2 do
         post inquiries_url, params: {
-          inquiry: {
+          inquiry: inquiry_params(
             source: "calculator",
             first_name: "Lisa",
             last_name: "Beispiel",
@@ -93,7 +93,7 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
             total_price: "330.00",
             pricing_snapshot: "{\"total\":330}",
             privacy_accepted: "1"
-          }
+          )
         }
       end
     end
@@ -107,14 +107,14 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference("Inquiry.count") do
       assert_enqueued_emails 0 do
         post inquiries_url, params: {
-          inquiry: {
+          inquiry: inquiry_params(
             source: "contact",
             first_name: "Max",
             last_name: "Mustermann",
             email: "max@example.com",
             phone: "+491234",
             privacy_accepted: "0"
-          }
+          )
         }
       end
     end
@@ -127,32 +127,88 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
   test "rate limits inquiry creation bursts" do
     5.times do |index|
       post inquiries_url, params: {
-        inquiry: {
+        inquiry: inquiry_params(
           source: "contact",
           first_name: "Max#{index}",
           last_name: "Mustermann",
           email: "max#{index}@example.com",
           phone: "+491234#{index}",
           privacy_accepted: "1"
-        }
+        )
       }
     end
 
     assert_no_difference("Inquiry.count") do
       post inquiries_url, params: {
-        inquiry: {
+        inquiry: inquiry_params(
           source: "contact",
           first_name: "Burst",
           last_name: "Blocked",
           email: "burst@example.com",
           phone: "+4912399",
           privacy_accepted: "1"
-        }
+        )
       }
     end
 
     assert_redirected_to root_url
     follow_redirect!
     assert_match(/Zu viele Anfragen/i, response.body)
+  end
+
+  test "silently drops spam inquiry when honeypot is filled" do
+    assert_no_difference("Inquiry.count") do
+      assert_enqueued_emails 0 do
+        post inquiries_url, params: {
+          inquiry: inquiry_params(
+            source: "contact",
+            first_name: "Spam",
+            last_name: "Bot",
+            email: "spam@example.com",
+            phone: "+491230",
+            privacy_accepted: "1",
+            website: "https://spam.invalid"
+          )
+        }
+      end
+    end
+
+    assert_redirected_to root_url
+    follow_redirect!
+    assert_match "Vielen Dank", response.body
+  end
+
+  test "silently drops spam inquiry when submitted too quickly" do
+    assert_no_difference("Inquiry.count") do
+      assert_enqueued_emails 0 do
+        post inquiries_url, params: {
+          inquiry: inquiry_params(
+            source: "contact",
+            first_name: "Fast",
+            last_name: "Bot",
+            email: "fast@example.com",
+            phone: "+491231",
+            privacy_accepted: "1",
+            submitted_at_token: inquiry_timestamp_token(Time.current)
+          )
+        }
+      end
+    end
+
+    assert_redirected_to root_url
+    follow_redirect!
+    assert_match "Vielen Dank", response.body
+  end
+
+  private
+
+  def inquiry_params(attributes)
+    {
+      submitted_at_token: inquiry_timestamp_token(10.seconds.ago)
+    }.merge(attributes)
+  end
+
+  def inquiry_timestamp_token(time)
+    Rails.application.message_verifier(:inquiry_form).generate(time.to_i, purpose: :inquiry_form)
   end
 end

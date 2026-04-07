@@ -1,0 +1,6 @@
+<div style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+  <label for="<%= field_prefix %>_website">Website</label>
+  <%= text_field_tag "#{field_name_prefix}[website]", "", id: "#{field_prefix}_website", tabindex: "-1", autocomplete: "off" %>
+</div>
+
+<%= hidden_field_tag "#{field_name_prefix}[submitted_at_token]", signed_inquiry_timestamp_token %>

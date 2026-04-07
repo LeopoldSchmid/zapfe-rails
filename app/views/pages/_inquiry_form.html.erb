@@ -9,6 +9,7 @@ end %>
 
 <%= form_with model: Inquiry.new(source: source), url: inquiries_path, class: "space-y-3", data: { controller: "form-validation" }, lang: "de" do |f| %>
   <%= f.hidden_field :source, value: source %>
+  <%= render "pages/spam_protection_fields", field_name_prefix: "inquiry", field_prefix: "#{source}-inquiry" %>
 
   <div class="grid gap-3 sm:grid-cols-2">
     <div>

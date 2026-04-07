@@ -1,4 +1,8 @@
 module ApplicationHelper
+  def signed_inquiry_timestamp_token
+    Rails.application.message_verifier(:inquiry_form).generate(Time.current.to_i, purpose: :inquiry_form)
+  end
+
   def nav_link_classes(path, base_classes: nil, active_classes: "underline underline-offset-8")
     classes = [ base_classes ]
     classes << active_classes if request&.path == path

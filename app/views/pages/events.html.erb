@@ -241,6 +241,7 @@
         <div class="rounded-3xl border border-slate-200 bg-[var(--color-zapfe-cream)] p-5 sm:p-6">
           <%= form_with model: Inquiry.new(source: "events"), url: inquiries_path, class: "space-y-4", data: { controller: "form-validation" }, lang: "de" do |f| %>
             <%= f.hidden_field :source, value: "events" %>
+            <%= render "pages/spam_protection_fields", field_name_prefix: "inquiry", field_prefix: "events-inquiry" %>
             <%= render "event_inquiry_fields", f: f, source: "events" %>
           <% end %>
         </div>

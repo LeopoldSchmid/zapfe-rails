@@ -15,6 +15,7 @@
 
     <%= form_with model: Inquiry.new(source: "calculator"), url: inquiries_path, data: { turbo: false, controller: "form-validation" }, id: "calculator-form", class: "pb-28 lg:pb-0", lang: "de" do |f| %>
       <%= f.hidden_field :source, value: "calculator" %>
+      <%= render "pages/spam_protection_fields", field_name_prefix: "inquiry", field_prefix: "calculator-inquiry" %>
       <%= hidden_field_tag "inquiry[selected_product]", "Piaggio Ape", id: "selected-product-hidden" %>
       <%= f.hidden_field :rental_mode, id: "rental-mode-hidden" %>
       <%= f.hidden_field :rental_days, id: "rental-days-hidden" %>
