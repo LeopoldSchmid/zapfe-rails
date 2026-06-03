@@ -235,7 +235,27 @@ module ApplicationHelper
     end
   end
 
+  def umami_script_tag
+    return unless umami_enabled?
+
+    data_attributes = {
+      website_id: ENV["UMAMI_WEBSITE_ID"],
+      do_not_track: "true",
+      exclude_search: "true",
+      exclude_hash: "true"
+    }
+    data_attributes[:domains] = ENV["UMAMI_DOMAINS"] if ENV["UMAMI_DOMAINS"].present?
+
+    content_tag(:script, "", src: ENV["UMAMI_SCRIPT_URL"], defer: true, data: data_attributes)
+  end
+
   private
+
+  def umami_enabled?
+    ActiveModel::Type::Boolean.new.cast(ENV["UMAMI_ENABLED"]) &&
+      ENV["UMAMI_SCRIPT_URL"].present? &&
+      ENV["UMAMI_WEBSITE_ID"].present?
+  end
 
   def page_meta
     key = "#{controller_name}##{action_name}"

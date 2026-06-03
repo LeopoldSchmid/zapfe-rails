@@ -34,6 +34,7 @@
     <link rel="apple-touch-icon" href="/zapfe_b_w.svg">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= umami_script_tag %>
     <%= yield :head %>
     <%= content_tag(:script, raw(json_escape(page_json_ld.to_json)), type: "application/ld+json", nonce: content_security_policy_nonce) %>
   </head>
