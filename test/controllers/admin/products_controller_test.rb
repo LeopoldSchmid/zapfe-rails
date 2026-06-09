@@ -9,7 +9,10 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get admin_products_url
     assert_response :success
-    assert_select "table.admin-products-table"
+    assert_select "[data-controller~='admin-product-search']"
+    assert_select "input[type='search'][data-admin-product-search-target='query']"
+    assert_select "details.admin-bulk-details"
+    assert_select "article.admin-product-card", minimum: 1
   end
 
   test "updates featured attributes" do
@@ -48,6 +51,52 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     assert product.featured?
     assert_equal 1, product.featured_position
     assert_equal "Perfekt fur grosse Gruppen und unkomplizierte Bierauswahl.", product.featured_note
+  end
+
+  test "updates product while ignoring blank variant slots from edit form" do
+    product = products(:one)
+    original_variant_count = product.product_variants.count
+    variant = product.product_variants.first
+
+    patch admin_product_url(product), params: {
+      product: {
+        category_id: product.category_id,
+        article_number: product.article_number,
+        name: "Aktualisiertes Pils",
+        brand: product.brand,
+        kind: product.kind,
+        subcategory: product.subcategory,
+        alcohol_content: product.alcohol_content,
+        is_alcoholic: product.is_alcoholic ? "1" : "0",
+        featured: product.featured ? "1" : "0",
+        featured_position: product.featured_position,
+        featured_note: product.featured_note,
+        description: product.description,
+        product_variants_attributes: {
+          "0" => {
+            id: variant.id,
+            sku: variant.sku,
+            size: variant.size,
+            price: variant.price,
+            is_available: variant.is_available ? "1" : "0",
+            availability: variant.availability
+          },
+          "1" => {
+            sku: "",
+            size: "",
+            price: "",
+            is_available: "0",
+            availability: "",
+            _destroy: "0"
+          }
+        }
+      }
+    }
+
+    assert_redirected_to admin_products_url
+    product.reload
+    assert_equal "Aktualisiertes Pils", product.name
+    assert_equal original_variant_count, product.product_variants.count
   end
 
   test "updates quick edit row and returns to index" do

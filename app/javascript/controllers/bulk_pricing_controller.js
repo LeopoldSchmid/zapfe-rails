@@ -37,13 +37,18 @@ export default class extends Controller {
 
     this.productRowTargets.forEach((row) => {
       const matches = !selectedCategoryId || row.dataset.categoryId === selectedCategoryId
-      row.classList.toggle("hidden", !matches)
-      if (matches) visibleRows += 1
+      row.classList.toggle("category-hidden", !matches)
+      this.syncRowVisibility(row)
+      if (!row.hidden) visibleRows += 1
     })
 
     if (this.hasEmptyStateTarget) {
-      this.emptyStateTarget.classList.toggle("hidden", visibleRows > 0)
+      this.emptyStateTarget.hidden = visibleRows > 0
     }
+  }
+
+  syncRowVisibility(row) {
+    row.hidden = row.classList.contains("search-hidden") || row.classList.contains("category-hidden")
   }
 
   filterSizeOptions() {

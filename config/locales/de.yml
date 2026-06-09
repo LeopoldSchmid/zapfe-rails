@@ -1,6 +1,33 @@
 de:
   activerecord:
+    attributes:
+      product:
+        article_number: "Artikelnummer"
+        brand: "Marke"
+        category: "Kategorie"
+        description: "Beschreibung"
+        featured: "Favorit"
+        featured_note: "Empfehlungstext"
+        featured_position: "Reihenfolge"
+        is_alcoholic: "Alkoholisch"
+        kind: "Typ"
+        name: "Name"
+        product_variants: "Varianten"
+        subcategory: "Unterkategorie"
+      product_variant:
+        availability: "Verfügbarkeit"
+        is_available: "Aktiv"
+        price: "Preis"
+        size: "Größe"
+        sku: "SKU"
     errors:
+      messages:
+        accepted: "muss akzeptiert werden"
+        blank: "muss ausgefüllt werden"
+        greater_than: "muss größer als %{count} sein"
+        not_a_number: "ist keine Zahl"
+        required: "muss vorhanden sein"
+        taken: "ist bereits vergeben"
       models:
         inquiry:
           attributes:

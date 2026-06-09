@@ -3,7 +3,7 @@ class Product < ApplicationRecord
   has_many :product_variants, dependent: :destroy
   has_one_attached :image
 
-  accepts_nested_attributes_for :product_variants, allow_destroy: true
+  accepts_nested_attributes_for :product_variants, allow_destroy: true, reject_if: :blank_product_variant_attributes?
 
   validates :article_number, :name, :brand, :kind, presence: true
   validates :article_number, uniqueness: true
@@ -40,5 +40,11 @@ class Product < ApplicationRecord
     return brand_name if display_name.blank?
 
     display_name
+  end
+
+  private
+
+  def blank_product_variant_attributes?(attributes)
+    attributes["id"].blank? && %w[sku size price].all? { |key| attributes[key].blank? }
   end
 end
