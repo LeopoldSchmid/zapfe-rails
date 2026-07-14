@@ -1,0 +1,11 @@
+stock:
+  supplier: suedstar
+  name: Lagerware
+  lead_time_days: 2
+  return_policy: returnable
+
+special_order:
+  supplier: beck
+  name: Bestellware
+  lead_time_days: 14
+  return_policy: non_returnable

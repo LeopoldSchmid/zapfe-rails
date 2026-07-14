@@ -1,0 +1,15 @@
+current_suedstar:
+  supplier_offering: suedstar_variant
+  purchase_price: 72.50
+  valid_from: 2026-01-01
+
+old_beck:
+  supplier_offering: beck_variant
+  purchase_price: 70.00
+  valid_from: 2025-01-01
+  valid_until: 2025-12-31
+
+current_beck:
+  supplier_offering: beck_variant
+  purchase_price: 74.00
+  valid_from: 2026-01-01

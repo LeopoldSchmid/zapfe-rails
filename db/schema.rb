@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -39,10 +39,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "activities", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.string "event_type", null: false
+    t.text "message", null: false
+    t.json "metadata", default: {}, null: false
+    t.integer "subject_id", null: false
+    t.string "subject_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_activities_on_admin_user_id"
+    t.index ["subject_type", "subject_id", "created_at"], name: "index_activities_on_subject_type_and_subject_id_and_created_at"
+    t.index ["subject_type", "subject_id"], name: "index_activities_on_subject"
+  end
+
   create_table "admin_users", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "email", null: false
+    t.text "email_signature"
+    t.string "name", default: "Unbekannt", null: false
+    t.json "notification_preferences", default: {}, null: false
     t.string "password_digest", null: false
+    t.string "phone"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
   end
@@ -55,6 +74,51 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
     t.datetime "updated_at", null: false
     t.index ["kind"], name: "index_categories_on_kind"
     t.index ["name"], name: "index_categories_on_name", unique: true
+  end
+
+  create_table "checklist_template_items", force: :cascade do |t|
+    t.integer "checklist_template_id", null: false
+    t.datetime "created_at", null: false
+    t.text "instructions"
+    t.string "link_url"
+    t.text "notes"
+    t.integer "position", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.string "video_url"
+    t.index ["checklist_template_id", "position"], name: "idx_on_checklist_template_id_position_7bdf561605"
+    t.index ["checklist_template_id"], name: "index_checklist_template_items_on_checklist_template_id"
+  end
+
+  create_table "checklist_templates", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "resource_type"
+    t.string "section", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resource_type", "section"], name: "index_checklist_templates_on_resource_type_and_section"
+  end
+
+  create_table "configuration_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "customer_snapshot_json"
+    t.text "price_snapshot_json"
+    t.string "public_token", null: false
+    t.integer "scene_id"
+    t.text "selected_options_json"
+    t.integer "solution_id", null: false
+    t.integer "solution_variant_id", null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.text "visual_snapshot_json"
+    t.index ["public_token"], name: "index_configuration_sessions_on_public_token", unique: true
+    t.index ["scene_id"], name: "index_configuration_sessions_on_scene_id"
+    t.index ["solution_id"], name: "index_configuration_sessions_on_solution_id"
+    t.index ["solution_variant_id"], name: "index_configuration_sessions_on_solution_variant_id"
+    t.index ["status"], name: "index_configuration_sessions_on_status"
+    t.index ["submitted_at"], name: "index_configuration_sessions_on_submitted_at"
   end
 
   create_table "events", force: :cascade do |t|
@@ -75,7 +139,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
   end
 
   create_table "inquiries", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.integer "assigned_admin_user_id"
     t.boolean "bring_own_drinks", default: false, null: false
+    t.string "closure_reason"
     t.datetime "created_at", null: false
     t.string "delivery_city"
     t.string "delivery_postcode"
@@ -90,6 +157,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
     t.integer "guests"
     t.string "last_name", null: false
     t.text "message"
+    t.text "next_step"
+    t.date "next_step_due_on"
     t.string "phone", null: false
     t.text "pricing_snapshot"
     t.boolean "privacy_accepted", default: false, null: false
@@ -99,12 +168,172 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
     t.string "source", null: false
     t.string "start_time"
     t.date "starts_on"
+    t.string "status", default: "new", null: false
     t.decimal "total_price", precision: 10, scale: 2
     t.datetime "updated_at", null: false
+    t.index ["archived_at"], name: "index_inquiries_on_archived_at"
+    t.index ["assigned_admin_user_id"], name: "index_inquiries_on_assigned_admin_user_id"
     t.index ["created_at"], name: "index_inquiries_on_created_at"
+    t.index ["next_step_due_on"], name: "index_inquiries_on_next_step_due_on"
     t.index ["rental_mode"], name: "index_inquiries_on_rental_mode"
     t.index ["source"], name: "index_inquiries_on_source"
     t.index ["starts_on"], name: "index_inquiries_on_starts_on"
+    t.index ["status"], name: "index_inquiries_on_status"
+  end
+
+  create_table "offer_line_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.decimal "direct_cost_unit", precision: 10, scale: 2
+    t.string "discount_reason"
+    t.string "discount_type", default: "none", null: false
+    t.decimal "discount_value", precision: 10, scale: 2, default: "0.0", null: false
+    t.text "internal_note"
+    t.decimal "net_unit_price", precision: 10, scale: 2, default: "0.0", null: false
+    t.integer "offer_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "position_type", default: "free", null: false
+    t.integer "product_variant_id"
+    t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.integer "supplier_offering_id"
+    t.decimal "tax_rate", precision: 5, scale: 2, default: "19.0", null: false
+    t.string "unit", default: "Stk", null: false
+    t.datetime "updated_at", null: false
+    t.index ["offer_id", "position"], name: "index_offer_line_items_on_offer_id_and_position"
+    t.index ["offer_id"], name: "index_offer_line_items_on_offer_id"
+    t.index ["product_variant_id"], name: "index_offer_line_items_on_product_variant_id"
+    t.index ["supplier_offering_id"], name: "index_offer_line_items_on_supplier_offering_id"
+  end
+
+  create_table "offers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "document_snapshot"
+    t.datetime "finalized_at"
+    t.string "global_discount_reason"
+    t.string "global_discount_type", default: "none", null: false
+    t.decimal "global_discount_value", precision: 10, scale: 2, default: "0.0", null: false
+    t.text "internal_note"
+    t.string "offer_number"
+    t.integer "order_id", null: false
+    t.text "recipient_address"
+    t.string "recipient_email"
+    t.string "recipient_name", null: false
+    t.datetime "sent_at"
+    t.string "status", default: "draft", null: false
+    t.datetime "updated_at", null: false
+    t.date "valid_until", null: false
+    t.integer "version", default: 1, null: false
+    t.index ["offer_number"], name: "index_offers_on_offer_number", unique: true
+    t.index ["order_id", "version"], name: "index_offers_on_order_id_and_version", unique: true
+    t.index ["order_id"], name: "index_offers_on_order_id"
+    t.index ["status"], name: "index_offers_on_status"
+  end
+
+  create_table "order_checklist_items", force: :cascade do |t|
+    t.integer "checklist_template_item_id"
+    t.boolean "completed", default: false, null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "instructions"
+    t.string "link_url"
+    t.text "notes"
+    t.integer "order_checklist_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.string "video_url"
+    t.index ["checklist_template_item_id"], name: "index_order_checklist_items_on_checklist_template_item_id"
+    t.index ["order_checklist_id", "position"], name: "index_order_checklist_items_on_order_checklist_id_and_position"
+    t.index ["order_checklist_id"], name: "index_order_checklist_items_on_order_checklist_id"
+  end
+
+  create_table "order_checklists", force: :cascade do |t|
+    t.integer "checklist_template_id"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "order_id", null: false
+    t.string "section", null: false
+    t.string "status", default: "open", null: false
+    t.datetime "updated_at", null: false
+    t.index ["checklist_template_id"], name: "index_order_checklists_on_checklist_template_id"
+    t.index ["order_id", "status"], name: "index_order_checklists_on_order_id_and_status"
+    t.index ["order_id"], name: "index_order_checklists_on_order_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.datetime "created_at", null: false
+    t.string "customer_email"
+    t.text "customer_message"
+    t.string "customer_name", null: false
+    t.string "customer_phone"
+    t.string "end_time"
+    t.date "ends_on"
+    t.date "event_date"
+    t.string "event_location", null: false
+    t.string "event_type"
+    t.integer "guests"
+    t.integer "inquiry_id"
+    t.text "inquiry_pricing_snapshot"
+    t.text "next_step"
+    t.date "next_step_due_on"
+    t.integer "responsible_admin_user_id", null: false
+    t.string "start_time"
+    t.date "starts_on"
+    t.string "status", default: "preparing", null: false
+    t.datetime "updated_at", null: false
+    t.index ["archived_at"], name: "index_orders_on_archived_at"
+    t.index ["event_date"], name: "index_orders_on_event_date"
+    t.index ["inquiry_id"], name: "index_orders_on_inquiry_id", unique: true
+    t.index ["next_step_due_on"], name: "index_orders_on_next_step_due_on"
+    t.index ["responsible_admin_user_id"], name: "index_orders_on_responsible_admin_user_id"
+    t.index ["status"], name: "index_orders_on_status"
+  end
+
+  create_table "procurement_plan_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.integer "lead_time_days"
+    t.text "notes"
+    t.integer "offer_line_item_id"
+    t.date "order_by_on"
+    t.integer "procurement_plan_id", null: false
+    t.decimal "purchase_price", precision: 10, scale: 2
+    t.decimal "quantity", precision: 10, scale: 2, null: false
+    t.string "return_policy"
+    t.integer "supplier_offering_id"
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
+    t.index ["offer_line_item_id"], name: "index_procurement_plan_items_on_offer_line_item_id"
+    t.index ["order_by_on"], name: "index_procurement_plan_items_on_order_by_on"
+    t.index ["procurement_plan_id"], name: "index_procurement_plan_items_on_procurement_plan_id"
+    t.index ["supplier_offering_id"], name: "index_procurement_plan_items_on_supplier_offering_id"
+  end
+
+  create_table "procurement_plans", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.integer "offer_id"
+    t.date "order_by_on"
+    t.integer "order_id", null: false
+    t.string "status", default: "planned", null: false
+    t.datetime "updated_at", null: false
+    t.index ["offer_id"], name: "index_procurement_plans_on_offer_id"
+    t.index ["order_id", "status"], name: "index_procurement_plans_on_order_id_and_status"
+    t.index ["order_id"], name: "index_procurement_plans_on_order_id"
+  end
+
+  create_table "procurement_profiles", force: :cascade do |t|
+    t.text "cancellation_notes"
+    t.datetime "created_at", null: false
+    t.text "delivery_notes"
+    t.integer "lead_time_days", default: 0, null: false
+    t.string "name", null: false
+    t.string "return_policy", default: "unknown", null: false
+    t.integer "supplier_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["supplier_id", "name"], name: "index_procurement_profiles_on_supplier_id_and_name", unique: true
+    t.index ["supplier_id"], name: "index_procurement_profiles_on_supplier_id"
   end
 
   create_table "product_variants", force: :cascade do |t|
@@ -144,8 +373,196 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_120000) do
     t.index ["kind"], name: "index_products_on_kind"
   end
 
+  create_table "reservations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", null: false
+    t.text "note"
+    t.integer "offer_id"
+    t.integer "order_id", null: false
+    t.integer "resource_id", null: false
+    t.datetime "starts_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["offer_id"], name: "index_reservations_on_offer_id"
+    t.index ["order_id", "starts_at"], name: "index_reservations_on_order_id_and_starts_at"
+    t.index ["order_id"], name: "index_reservations_on_order_id"
+    t.index ["resource_id", "starts_at", "ends_at"], name: "index_reservations_on_resource_id_and_starts_at_and_ends_at"
+    t.index ["resource_id"], name: "index_reservations_on_resource_id"
+  end
+
+  create_table "resources", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.text "configuration_notes"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "resource_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_resources_on_name", unique: true
+    t.index ["resource_type"], name: "index_resources_on_resource_type"
+  end
+
+  create_table "scenes", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "metadata_json"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active", "position"], name: "index_scenes_on_active_and_position"
+    t.index ["slug"], name: "index_scenes_on_slug", unique: true
+  end
+
+  create_table "solution_variants", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.integer "base_price_cents", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.text "metadata_json"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "slug", null: false
+    t.integer "solution_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["solution_id", "active", "position"], name: "index_solution_variants_on_solution_id_and_active_and_position"
+    t.index ["solution_id", "slug"], name: "index_solution_variants_on_solution_id_and_slug", unique: true
+    t.index ["solution_id"], name: "index_solution_variants_on_solution_id"
+  end
+
+  create_table "solutions", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active", "position"], name: "index_solutions_on_active_and_position"
+    t.index ["slug"], name: "index_solutions_on_slug", unique: true
+  end
+
+  create_table "supplier_offerings", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "lead_time_days_override"
+    t.text "notes"
+    t.integer "procurement_profile_id", null: false
+    t.integer "product_variant_id", null: false
+    t.string "return_policy_override"
+    t.integer "supplier_id", null: false
+    t.string "supplier_sku"
+    t.datetime "updated_at", null: false
+    t.index ["procurement_profile_id"], name: "index_supplier_offerings_on_procurement_profile_id"
+    t.index ["product_variant_id"], name: "index_supplier_offerings_on_product_variant_id"
+    t.index ["supplier_id", "product_variant_id"], name: "index_supplier_offerings_on_supplier_id_and_product_variant_id", unique: true
+    t.index ["supplier_id"], name: "index_supplier_offerings_on_supplier_id"
+  end
+
+  create_table "supplier_prices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "purchase_price", precision: 10, scale: 2, null: false
+    t.integer "supplier_offering_id", null: false
+    t.datetime "updated_at", null: false
+    t.date "valid_from", null: false
+    t.date "valid_until"
+    t.index ["supplier_offering_id", "valid_from"], name: "index_supplier_prices_on_supplier_offering_id_and_valid_from", unique: true
+    t.index ["supplier_offering_id"], name: "index_supplier_prices_on_supplier_offering_id"
+  end
+
+  create_table "suppliers", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.boolean "default_supplier", default: false, null: false
+    t.string "email"
+    t.string "name", null: false
+    t.text "notes"
+    t.string "phone"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_suppliers_on_name", unique: true
+  end
+
+  create_table "system_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "internal_hourly_cost", precision: 10, scale: 2
+    t.decimal "standard_tax_rate", precision: 5, scale: 2, default: "19.0", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.integer "assigned_admin_user_id"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "details"
+    t.date "due_on"
+    t.integer "order_id", null: false
+    t.integer "procurement_plan_id"
+    t.string "relative_anchor"
+    t.integer "relative_offset_days"
+    t.string "status", default: "open", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_admin_user_id"], name: "index_tasks_on_assigned_admin_user_id"
+    t.index ["due_on"], name: "index_tasks_on_due_on"
+    t.index ["order_id", "status"], name: "index_tasks_on_order_id_and_status"
+    t.index ["order_id"], name: "index_tasks_on_order_id"
+    t.index ["procurement_plan_id"], name: "index_tasks_on_procurement_plan_id"
+  end
+
+  create_table "time_entries", force: :cascade do |t|
+    t.integer "admin_user_id"
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.string "entry_type", null: false
+    t.decimal "hourly_cost", precision: 10, scale: 2, null: false
+    t.integer "minutes", null: false
+    t.text "note"
+    t.integer "offer_id"
+    t.integer "order_id", null: false
+    t.date "recorded_on"
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_time_entries_on_admin_user_id"
+    t.index ["offer_id", "entry_type"], name: "index_time_entries_on_offer_id_and_entry_type"
+    t.index ["offer_id"], name: "index_time_entries_on_offer_id"
+    t.index ["order_id", "entry_type"], name: "index_time_entries_on_order_id_and_entry_type"
+    t.index ["order_id"], name: "index_time_entries_on_order_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activities", "admin_users"
+  add_foreign_key "checklist_template_items", "checklist_templates"
+  add_foreign_key "configuration_sessions", "scenes"
+  add_foreign_key "configuration_sessions", "solution_variants"
+  add_foreign_key "configuration_sessions", "solutions"
+  add_foreign_key "inquiries", "admin_users", column: "assigned_admin_user_id"
+  add_foreign_key "offer_line_items", "offers"
+  add_foreign_key "offer_line_items", "product_variants"
+  add_foreign_key "offer_line_items", "supplier_offerings"
+  add_foreign_key "offers", "orders"
+  add_foreign_key "order_checklist_items", "checklist_template_items"
+  add_foreign_key "order_checklist_items", "order_checklists"
+  add_foreign_key "order_checklists", "checklist_templates"
+  add_foreign_key "order_checklists", "orders"
+  add_foreign_key "orders", "admin_users", column: "responsible_admin_user_id"
+  add_foreign_key "orders", "inquiries"
+  add_foreign_key "procurement_plan_items", "offer_line_items"
+  add_foreign_key "procurement_plan_items", "procurement_plans"
+  add_foreign_key "procurement_plan_items", "supplier_offerings"
+  add_foreign_key "procurement_plans", "offers"
+  add_foreign_key "procurement_plans", "orders"
+  add_foreign_key "procurement_profiles", "suppliers"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "categories"
+  add_foreign_key "reservations", "offers"
+  add_foreign_key "reservations", "orders"
+  add_foreign_key "reservations", "resources"
+  add_foreign_key "solution_variants", "solutions"
+  add_foreign_key "supplier_offerings", "procurement_profiles"
+  add_foreign_key "supplier_offerings", "product_variants"
+  add_foreign_key "supplier_offerings", "suppliers"
+  add_foreign_key "supplier_prices", "supplier_offerings"
+  add_foreign_key "tasks", "admin_users", column: "assigned_admin_user_id"
+  add_foreign_key "tasks", "orders"
+  add_foreign_key "tasks", "procurement_plans"
+  add_foreign_key "time_entries", "admin_users"
+  add_foreign_key "time_entries", "offers"
+  add_foreign_key "time_entries", "orders"
 end

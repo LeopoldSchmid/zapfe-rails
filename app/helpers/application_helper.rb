@@ -82,7 +82,10 @@ module ApplicationHelper
   end
 
   def short_product_label(product)
-    product.short_display_name
+    label = product.short_display_name
+    return label if product.brand.blank? || label.downcase.start_with?(product.brand.downcase)
+
+    "#{product.brand} #{label}"
   end
 
   def product_featured_note(product)

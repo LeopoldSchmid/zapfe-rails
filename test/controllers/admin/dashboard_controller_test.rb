@@ -15,4 +15,15 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     get admin_root_url
     assert_response :success
   end
+
+  test "shows customer and external waiting states" do
+    inquiry = inquiries(:two)
+    inquiry.update!(status: "waiting_customer")
+
+    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    get admin_root_url
+
+    assert_select "section", text: /Wartet auf Rückmeldung/
+    assert_select "a", text: /Wartet auf Kunde · #{Regexp.escape(inquiry.customer_name)}/
+  end
 end

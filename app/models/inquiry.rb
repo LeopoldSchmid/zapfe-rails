@@ -1,11 +1,20 @@
 class Inquiry < ApplicationRecord
   SOURCES = %w[contact calculator solutions events].freeze
+  STATUSES = %w[new clarifying waiting_customer waiting_external closed discarded].freeze
+
+  belongs_to :assigned_admin_user, class_name: "AdminUser", optional: true, inverse_of: :assigned_inquiries
+  has_one :order, dependent: :restrict_with_error
+  has_many :activities, as: :subject, dependent: :destroy
+  has_many_attached :attachments
+
+  validate :attachments_are_safe
 
   before_validation :normalize_structured_fields
 
   validates :source, inclusion: { in: SOURCES }
   validates :first_name, :last_name, :email, :phone, presence: true
   validates :privacy_accepted, acceptance: true
+  validates :status, inclusion: { in: STATUSES }
   validates :rental_mode, :starts_on, :ends_on, presence: true, if: :calculator?
   validates :rental_days, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
 
@@ -33,6 +42,18 @@ class Inquiry < ApplicationRecord
     [start_time.presence, end_time.presence].compact.join(" bis ")
   end
 
+  def open?
+    !%w[closed discarded].include?(status)
+  end
+
+  def archived?
+    archived_at.present?
+  end
+
+  def customer_name
+    [first_name, last_name].compact.join(" ")
+  end
+
   private
 
   def normalize_structured_fields
@@ -56,6 +77,13 @@ class Inquiry < ApplicationRecord
 
     if starts_on.present? && ends_on.present?
       self.rental_days ||= [(ends_on - starts_on).to_i, 1].max
+    end
+  end
+
+  def attachments_are_safe
+    attachments.each do |attachment|
+      errors.add(:attachments, "dürfen höchstens 25 MB groß sein") if attachment.byte_size > 25.megabytes
+      errors.add(:attachments, "müssen PDF- oder Bilddateien sein") unless attachment.content_type.in?(%w[application/pdf image/jpeg image/png image/webp])
     end
   end
 end

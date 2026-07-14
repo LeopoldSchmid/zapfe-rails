@@ -1,0 +1,345 @@
+version: 2
+
+goal:
+  title: "Zapfe-Auftragszentrale implementieren"
+  slug: "cockpit-implementation"
+  kind: existing_plan
+  tranche: "Validate the supplied roadmap, then deliver successive verified vertical slices through Phase 3; keep Phase 4 and later work behind their explicit decision gates."
+  status: active
+  oracle:
+    signal: "Tested admin workflows prove the Phase 1–3 exit criteria: inquiry-to-order, offer-to-PDF-and-send, and confirmed-order-to-procurement/tasks/resources."
+    cadence: "after each Worker package and at every phase boundary"
+    final_proof: "A final Judge/PM audit maps verified workflows, migrations, tests, and roadmap updates to every in-scope Phase 1–3 exit criterion."
+  intake:
+    original_request: "Read documentation/cockpit_implementation_plan.md, make a structured implementation plan, then implement it step by step while keeping overview of completed, missing, and open work."
+    interpreted_outcome: "A transparently tracked, tested implementation of the first usable Zapfe order-management cockpit from the supplied roadmap."
+    input_shape: existing_plan
+    audience: "Zapfe internal team"
+    authority: requested
+    proof_type: test
+    completion_proof: "Passing model, integration, system/browser tests and a receipt-backed walkthrough satisfy every in-scope Phase 1–3 exit criterion."
+    likely_misfire: "Implement isolated tables and forms without a coherent, secure, versioned operational workflow."
+    blind_spots_considered:
+      - "Existing catalog data and fields need evidence-based migration decisions."
+      - "PDF generation, backup/restore, file authorization, and GDPR retention require technical validation."
+      - "Phase 4 and 5 contain unresolved business/legal decisions and must not be assumed."
+    existing_plan_facts:
+      - "The authoritative source plan is documentation/cockpit_implementation_plan.md, dated 2026-07-14."
+      - "Phase 1 inquiry/order core, Phase 2 offers/suppliers, and Phase 3 operations/resources are the first usable product."
+      - "Rails monolith, Hotwire-first, personal AdminUser accounts, Europe/Berlin, BigDecimal money, and immutable document snapshots are fixed constraints."
+      - "Phase 4 invoice/XRechnung and Phase 5 PWA/push require later decision gates."
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+  slice_policy:
+    max_consecutive_tiny_tasks: 2
+    prefer_vertical_slices: true
+    judge_picks_largest_safe_slice: true
+    worker_completes_whole_slice: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+visual_board:
+  selected: local
+  local:
+    status: live
+    url: "http://goalbuddy.localhost:41737/cockpit-implementation/"
+    command: "node /home/leo/.codex/plugins/cache/goalbuddy/goalbuddy/0.4.0/skills/goal-prep/surfaces/local-goal-board/scripts/local-goal-board.mjs --goal docs/goals/cockpit-implementation"
+
+active_task: T003
+tasks:
+  - id: T001
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Validate the supplied cockpit roadmap against the actual repository and specify the first safe vertical implementation slice."
+    inputs: ["documentation/cockpit_implementation_plan.md"]
+    constraints: ["Read-only.", "Preserve roadmap decisions; record implementation findings and only material unresolved choices."]
+    expected_output: ["Evidence map for current models, flows, data, tests, and repo health", "Phase-0 decision log and risk register", "First Worker slice with allowed files, migration concerns, and verification"]
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      rationale: "The existing inquiry stores enough contact and event data for a safe Phase-1 conversion slice. Admin authentication and catalog data need extensions, but supplier/PDF decisions do not block the inquiry-to-order workflow."
+      worker_package:
+        objective: "Implement the Phase-1 inquiry-to-order foundation: personal active AdminUser accounts, inquiry ownership/status/next step, a unique Order linked to an optional source inquiry, idempotent conversion, protected admin list/detail flows, and regression tests."
+        allowed_files:
+          - app/models/admin_user.rb
+          - app/models/inquiry.rb
+          - app/models/order.rb
+          - app/services/orders/create_from_inquiry.rb
+          - app/controllers/application_controller.rb
+          - app/controllers/admin/base_controller.rb
+          - app/controllers/admin/sessions_controller.rb
+          - app/controllers/admin/dashboard_controller.rb
+          - app/controllers/admin/inquiries_controller.rb
+          - app/controllers/admin/orders_controller.rb
+          - app/helpers/admin/inquiries_helper.rb
+          - app/helpers/admin/orders_helper.rb
+          - app/views/layouts/admin.html.erb
+          - app/views/admin/dashboard/index.html.erb
+          - app/views/admin/inquiries/index.html.erb
+          - app/views/admin/inquiries/show.html.erb
+          - app/views/admin/orders/index.html.erb
+          - app/views/admin/orders/show.html.erb
+          - config/routes.rb
+          - db/migrate
+          - db/schema.rb
+          - db/seeds.rb
+          - test/models/admin_user_test.rb
+          - test/models/inquiry_test.rb
+          - test/models/order_test.rb
+          - test/services/orders/create_from_inquiry_test.rb
+          - test/controllers/admin/inquiries_controller_test.rb
+          - test/controllers/admin/orders_controller_test.rb
+          - test/controllers/admin/sessions_controller_test.rb
+          - test/controllers/admin/dashboard_controller_test.rb
+          - test/fixtures/admin_users.yml
+          - test/fixtures/inquiries.yml
+          - test/fixtures/orders.yml
+          - documentation/cockpit_implementation_plan.md
+        verify:
+          - "bin/rails test test/models/admin_user_test.rb test/models/inquiry_test.rb test/models/order_test.rb test/services/orders/create_from_inquiry_test.rb test/controllers/admin/inquiries_controller_test.rb test/controllers/admin/orders_controller_test.rb test/controllers/admin/sessions_controller_test.rb test/controllers/admin/dashboard_controller_test.rb"
+          - "bin/rails test"
+        stop_if:
+          - "Existing inquiry data cannot be copied without a lossy or ambiguous mapping."
+          - "The slice needs product, supplier, offer, invoice, or PDF decisions."
+          - "A required authorization or mobile workflow needs files outside the approved scope."
+      evidence:
+        - docs/goals/cockpit-implementation/notes/T001-phase0-validation.md
+        - app/models/inquiry.rb
+        - app/models/admin_user.rb
+        - app/models/product_variant.rb
+        - config/routes.rb
+        - "bin/rails test: 64 tests, 3 pre-existing failures"
+      blocked_tasks: []
+      missing_evidence:
+        - "PDF renderer suitability and deployment behavior"
+        - "Backup/restore and GDPR retention implementation"
+        - "Existing catalog-field migration mapping"
+      required_board_updates:
+        - "Run T002 as the Phase-1 package approval and copy its scoped worker contract to T003."
+  - id: T002
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Review Phase-0 evidence and approve the largest safe vertical Phase-1 slice for internal accounts, inquiry ownership, and order conversion."
+    inputs: ["T001 receipt", "documentation/cockpit_implementation_plan.md"]
+    constraints: ["Read-only.", "Do not override decided roadmap facts."]
+    expected_output: ["Exact Worker objective", "allowed_files", "verify", "stop_if", "open decisions"]
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      rationale: "Phase 1 can safely begin with the complete internal intake-to-order workflow. It is bounded because it preserves the existing Inquiry schema as source data and postpones notes, files, offers, and catalog migration. The known red baseline must be recorded, but its unrelated failures do not prevent focused verification."
+      worker_package:
+        objective: "Deliver the protected Phase-1 intake-to-order workflow: extend AdminUser for personal active accounts and safe deactivation, extend Inquiry with ownership/status/next action, add Order and idempotent Orders::CreateFromInquiry, expose inquiry/order dashboard, list and detail screens with manual assignment and conversion, add internal admin-account management, seed the three named accounts without credentials in source, update the roadmap status, and cover the workflow with model/service/controller tests."
+        allowed_files:
+          - app/models/admin_user.rb
+          - app/models/inquiry.rb
+          - app/models/order.rb
+          - app/services/orders/create_from_inquiry.rb
+          - app/controllers/application_controller.rb
+          - app/controllers/admin/base_controller.rb
+          - app/controllers/admin/sessions_controller.rb
+          - app/controllers/admin/dashboard_controller.rb
+          - app/controllers/admin/admin_users_controller.rb
+          - app/controllers/admin/inquiries_controller.rb
+          - app/controllers/admin/orders_controller.rb
+          - app/helpers/admin/inquiries_helper.rb
+          - app/helpers/admin/orders_helper.rb
+          - app/views/layouts/admin.html.erb
+          - app/views/admin/dashboard/index.html.erb
+          - app/views/admin/admin_users/index.html.erb
+          - app/views/admin/admin_users/new.html.erb
+          - app/views/admin/admin_users/edit.html.erb
+          - app/views/admin/admin_users/_form.html.erb
+          - app/views/admin/inquiries/index.html.erb
+          - app/views/admin/inquiries/show.html.erb
+          - app/views/admin/orders/index.html.erb
+          - app/views/admin/orders/new.html.erb
+          - app/views/admin/orders/show.html.erb
+          - config/routes.rb
+          - db/migrate
+          - db/schema.rb
+          - db/seeds.rb
+          - test/models/admin_user_test.rb
+          - test/models/inquiry_test.rb
+          - test/models/order_test.rb
+          - test/services/orders/create_from_inquiry_test.rb
+          - test/controllers/admin/inquiries_controller_test.rb
+          - test/controllers/admin/orders_controller_test.rb
+          - test/controllers/admin/admin_users_controller_test.rb
+          - test/controllers/admin/sessions_controller_test.rb
+          - test/controllers/admin/dashboard_controller_test.rb
+          - test/fixtures/admin_users.yml
+          - test/fixtures/inquiries.yml
+          - test/fixtures/orders.yml
+          - documentation/cockpit_implementation_plan.md
+        verify:
+          - "bin/rails test test/models/admin_user_test.rb test/models/inquiry_test.rb test/models/order_test.rb test/services/orders/create_from_inquiry_test.rb test/controllers/admin/inquiries_controller_test.rb test/controllers/admin/orders_controller_test.rb test/controllers/admin/admin_users_controller_test.rb test/controllers/admin/sessions_controller_test.rb test/controllers/admin/dashboard_controller_test.rb"
+          - "bin/rails test"
+        stop_if:
+          - "Existing inquiry data cannot be copied without a lossy or ambiguous mapping."
+          - "The slice requires product, supplier, offer, invoice, PDF, task, or resource decisions."
+          - "A required screen needs an unlisted asset, JavaScript, or stylesheet change rather than existing admin components."
+      evidence:
+        - "T001 receipt"
+        - docs/goals/cockpit-implementation/notes/T001-phase0-validation.md
+        - config/routes.rb
+        - app/controllers/admin/base_controller.rb
+      blocked_tasks: []
+      missing_evidence: []
+      required_board_updates:
+        - "Copy worker_package to T003 and activate it."
+  - id: T003
+    type: worker
+    assignee: Worker
+    status: active
+    reasoning_hint: high
+    objective: "Implement the approved Phase-1 vertical slice, including migrations, authorization, admin UI, activity history, and tests."
+    allowed_files:
+      - app/models/admin_user.rb
+      - app/models/inquiry.rb
+      - app/models/order.rb
+      - app/services/orders/create_from_inquiry.rb
+      - app/controllers/application_controller.rb
+      - app/controllers/admin/base_controller.rb
+      - app/controllers/admin/sessions_controller.rb
+      - app/controllers/admin/dashboard_controller.rb
+      - app/controllers/admin/admin_users_controller.rb
+      - app/controllers/admin/inquiries_controller.rb
+      - app/controllers/admin/orders_controller.rb
+      - app/helpers/admin/inquiries_helper.rb
+      - app/helpers/admin/orders_helper.rb
+      - app/views/layouts/admin.html.erb
+      - app/views/admin/dashboard/index.html.erb
+      - app/views/admin/admin_users/index.html.erb
+      - app/views/admin/admin_users/new.html.erb
+      - app/views/admin/admin_users/edit.html.erb
+      - app/views/admin/admin_users/_form.html.erb
+      - app/views/admin/inquiries/index.html.erb
+      - app/views/admin/inquiries/show.html.erb
+      - app/views/admin/orders/index.html.erb
+      - app/views/admin/orders/new.html.erb
+      - app/views/admin/orders/show.html.erb
+      - config/routes.rb
+      - db/migrate
+      - db/schema.rb
+      - db/seeds.rb
+      - test/models/admin_user_test.rb
+      - test/models/inquiry_test.rb
+      - test/models/order_test.rb
+      - test/services/orders/create_from_inquiry_test.rb
+      - test/controllers/admin/inquiries_controller_test.rb
+      - test/controllers/admin/orders_controller_test.rb
+      - test/controllers/admin/admin_users_controller_test.rb
+      - test/controllers/admin/sessions_controller_test.rb
+      - test/controllers/admin/dashboard_controller_test.rb
+      - test/fixtures/admin_users.yml
+      - test/fixtures/inquiries.yml
+      - test/fixtures/orders.yml
+      - documentation/cockpit_implementation_plan.md
+    verify:
+      - bin/rails test test/models/admin_user_test.rb test/models/inquiry_test.rb test/models/order_test.rb test/services/orders/create_from_inquiry_test.rb test/controllers/admin/inquiries_controller_test.rb test/controllers/admin/orders_controller_test.rb test/controllers/admin/admin_users_controller_test.rb test/controllers/admin/sessions_controller_test.rb test/controllers/admin/dashboard_controller_test.rb
+      - bin/rails test
+    stop_if:
+      - Existing inquiry data cannot be copied without a lossy or ambiguous mapping.
+      - The slice requires product, supplier, offer, invoice, PDF, task, or resource decisions.
+      - A required screen needs an unlisted asset, JavaScript, or stylesheet change rather than existing admin components.
+    receipt: null
+  - id: T004
+    type: judge
+    assignee: Judge
+    status: queued
+    reasoning_hint: high
+    objective: "Review Phase 1 against its exit criteria and select the next largest safe Phase-1 or Phase-2 vertical slice."
+    inputs: ["T003 receipt", "Phase 1 exit criteria"]
+    constraints: ["Read-only.", "Require a workflow-level verification plan."]
+    expected_output: ["Phase 1 gaps", "next Worker specification", "decision-gate status"]
+    receipt: null
+  - id: T005
+    type: worker
+    assignee: Worker
+    status: queued
+    reasoning_hint: high
+    objective: "Complete the next approved workflow slice, progressing from Phase 1 into catalog/supplier and offer foundations only when Phase-0 findings support the migration."
+    allowed_files: []
+    verify: []
+    stop_if: ["Catalog migration could lose data.", "Required source document/template is unavailable.", "Need files outside approved scope."]
+    receipt: null
+  - id: T006
+    type: judge
+    assignee: Judge
+    status: queued
+    reasoning_hint: high
+    objective: "Review the offer/cost/supplier foundations and specify the complete next customer-document slice, including immutable snapshots and PDF/send proof."
+    inputs: ["Prior receipts", "Phase 2 exit criteria"]
+    constraints: ["Read-only.", "Do not select a renderer or legal content without evidence."]
+    expected_output: ["Next Worker specification", "PDF/send verification", "remaining Phase 2 risks"]
+    receipt: null
+  - id: T007
+    type: worker
+    assignee: Worker
+    status: queued
+    reasoning_hint: high
+    objective: "Implement the approved versioned offer, calculation, PDF, and sending workflow as one tested vertical slice."
+    allowed_files: []
+    verify: []
+    stop_if: ["PDF renderer/deployment choice is blocked.", "Document legal requirements require a business decision.", "Need files outside approved scope."]
+    receipt: null
+  - id: T008
+    type: judge
+    assignee: Judge
+    status: queued
+    reasoning_hint: high
+    objective: "Audit Phase 2 and select the largest safe Phase-3 operations slice for procurement, tasks, and concrete resource reservations."
+    inputs: ["Prior receipts", "Phase 2 and Phase 3 exit criteria"]
+    constraints: ["Read-only.", "Keep the non-returnable-order confirmation as an explicit decision gate."]
+    expected_output: ["Phase 2 audit", "next Worker specification", "blocked decisions"]
+    receipt: null
+  - id: T009
+    type: worker
+    assignee: Worker
+    status: queued
+    reasoning_hint: high
+    objective: "Implement the approved Phase-3 operational workflow: procurement choice, relative tasks/checklists, and conflict-safe concrete resource reservations."
+    allowed_files: []
+    verify: []
+    stop_if: ["Non-returnable confirmation behavior needs a product decision.", "Calendar UX requires a scope expansion.", "Need files outside approved scope."]
+    receipt: null
+  - id: T010
+    type: judge
+    assignee: Judge
+    status: queued
+    reasoning_hint: high
+    objective: "Audit the first usable cockpit (Phases 1–3) against all roadmap exit criteria, then either specify remaining work or record the exact Phase-4 decision gate."
+    inputs: ["All prior receipts", "documentation/cockpit_implementation_plan.md"]
+    constraints: ["Read-only.", "Reject completion if any Phase 1–3 exit criterion lacks proof."]
+    expected_output: ["complete | not_complete", "full_outcome_complete for current tranche", "missing evidence", "Phase-4 decision list"]
+    receipt: null
+
+checks:
+  dirty_fingerprint: "pre-existing untracked documentation/cockpit_implementation_plan.md"
+  last_verification:
+    result: "not run during goal preparation; documented gates are bin/rails test, bin/rails test test/system, and npm run test:e2e"
+    task: null
+    commands: []

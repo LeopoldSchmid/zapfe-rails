@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   def current_admin_user
     return nil unless session[:admin_user_id]
 
-    @current_admin_user ||= AdminUser.find_by(id: session[:admin_user_id])
+    @current_admin_user ||= AdminUser.active.find_by(id: session[:admin_user_id])
   end
 
   def admin_signed_in?

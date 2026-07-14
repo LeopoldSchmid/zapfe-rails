@@ -1,0 +1,14 @@
+suedstar_variant:
+  supplier: suedstar
+  product_variant: one
+  procurement_profile: stock
+  supplier_sku: S-100
+  active: true
+
+beck_variant:
+  supplier: beck
+  product_variant: one
+  procurement_profile: special_order
+  supplier_sku: B-100
+  active: true
+  lead_time_days_override: 10

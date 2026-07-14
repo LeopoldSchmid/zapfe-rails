@@ -1,0 +1,24 @@
+<div class="admin-toolbar">
+  <div><p class="proof-kicker">Eingang</p><h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]">Anfragen</h1></div>
+  <%= link_to "Nur unzugewiesen", admin_inquiries_path(unassigned: 1), class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+  <%= link_to "Heute fällig", admin_inquiries_path(due: "overdue"), class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+  <%= link_to "Nächste 7 Tage", admin_inquiries_path(due: "next_7_days"), class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+  <%= link_to "Archiv", admin_inquiries_path(archived: 1), class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+</div>
+
+<div class="mb-4 flex flex-wrap gap-2 text-sm">
+  <% Inquiry::STATUSES.each do |status| %>
+    <%= link_to inquiry_status_label(status), admin_inquiries_path(status: status), class: "rounded-full border border-slate-300 px-3 py-1" %>
+  <% end %>
+  <% @admin_users.each do |admin_user| %>
+    <%= link_to admin_user.name, admin_inquiries_path(assigned_admin_user_id: admin_user.id), class: "rounded-full border border-slate-300 px-3 py-1" %>
+  <% end %>
+</div>
+
+<div class="space-y-3">
+  <% @inquiries.each do |inquiry| %>
+    <article class="rounded-xl border <%= inquiry.assigned_admin_user.nil? && inquiry.open? ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white' %> p-4">
+      <div class="flex flex-col justify-between gap-3 md:flex-row"><div><p class="font-semibold"><%= inquiry.customer_name %> <span class="font-normal text-slate-500">· <%= inquiry.event_date || inquiry.starts_on || "Termin offen" %></span></p><p class="mt-1 text-sm text-slate-600"><%= inquiry.event_type.presence || "Anfrage" %> · <%= inquiry_status_label(inquiry.status) %> · <%= inquiry.assigned_admin_user&.name || "Unzugewiesen" %></p><% if inquiry.next_step.present? %><p class="mt-2 text-sm"><strong>Nächster Schritt:</strong> <%= inquiry.next_step %></p><% end %></div><%= link_to "Öffnen", admin_inquiry_path(inquiry), class: "admin-cta" %></div>
+    </article>
+  <% end %>
+</div>

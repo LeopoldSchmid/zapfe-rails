@@ -1,0 +1,9 @@
+suedstar:
+  name: Getränkemarkt Südstar
+  active: true
+  default_supplier: true
+
+beck:
+  name: Getränke Beck
+  active: true
+  default_supplier: false

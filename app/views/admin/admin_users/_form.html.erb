@@ -1,0 +1,45 @@
+<%= render "shared/form_errors", object: @admin_user %>
+
+<%= form_with model: [ :admin, @admin_user ], class: "space-y-4" do |f| %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :name, "Name", class: "mb-1 block text-sm font-medium" %>
+      <%= f.text_field :name, required: true, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :email, class: "mb-1 block text-sm font-medium" %>
+      <%= f.email_field :email, required: true, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :phone, "Telefon", class: "mb-1 block text-sm font-medium" %>
+    <%= f.telephone_field :phone, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :password, "Passwort#{@admin_user.persisted? ? ' (leer lassen zum Beibehalten)' : ''}", class: "mb-1 block text-sm font-medium" %>
+      <%= f.password_field :password, required: @admin_user.new_record?, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :password_confirmation, "Passwort wiederholen", class: "mb-1 block text-sm font-medium" %>
+      <%= f.password_field :password_confirmation, required: @admin_user.new_record?, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :email_signature, "E-Mail-Signatur", class: "mb-1 block text-sm font-medium" %>
+    <%= f.text_area :email_signature, rows: 3, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+  </div>
+
+  <label class="inline-flex items-center gap-2">
+    <%= f.check_box :active %>
+    Konto ist aktiv und darf sich anmelden
+  </label>
+
+  <div class="flex gap-3">
+    <%= f.submit class: "admin-cta" %>
+    <%= link_to "Abbrechen", admin_admin_users_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+  </div>
+<% end %>

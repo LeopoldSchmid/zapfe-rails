@@ -11,7 +11,7 @@ class Admin::SessionsController < ApplicationController
   def create
     user = AdminUser.find_by(email: params[:email]&.downcase&.strip)
 
-    if user&.authenticate(params[:password])
+    if user&.active? && user.authenticate(params[:password])
       session[:admin_user_id] = user.id
       redirect_to admin_root_path, notice: "Login erfolgreich."
     else

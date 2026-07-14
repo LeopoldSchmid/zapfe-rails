@@ -13,13 +13,20 @@
       <div class="admin-container flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <%= link_to "Zapfe Admin", admin_root_path, class: "text-xl font-semibold text-slate-900" %>
-          <p class="mt-1 text-sm text-slate-500">Produkte, Events und Katalogdaten in einem klaren Arbeitsbereich.</p>
+          <p class="mt-1 text-sm text-slate-500">Anfragen, Aufträge, Produkte und Events in einem klaren Arbeitsbereich.</p>
         </div>
         <nav class="flex flex-wrap items-center gap-3 text-sm">
           <%= link_to "Dashboard", admin_root_path, class: "admin-link" %>
+          <%= link_to "Anfragen", admin_inquiries_path, class: "admin-link" %>
+          <%= link_to "Aufträge", admin_orders_path, class: "admin-link" %>
+          <%= link_to "Lieferanten", admin_suppliers_path, class: "admin-link" %>
+          <%= link_to "Ressourcen", admin_resources_path, class: "admin-link" %>
+          <%= link_to "Checklisten", admin_checklist_templates_path, class: "admin-link" %>
           <%= link_to "Produkte", admin_products_path, class: "admin-link" %>
           <%= link_to "Kategorien", admin_categories_path, class: "admin-link" %>
           <%= link_to "Events", admin_events_path, class: "admin-link" %>
+          <%= link_to "Interne Konten", admin_admin_users_path, class: "admin-link" %>
+          <%= link_to "Einstellungen", edit_admin_system_settings_path, class: "admin-link" %>
           <%= button_to "Logout", admin_logout_path, method: :delete, class: "admin-cta" %>
         </nav>
       </div>

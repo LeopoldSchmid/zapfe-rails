@@ -1,0 +1,15 @@
+<div class="admin-toolbar">
+  <div><p class="proof-kicker">Team</p><h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]">Interne Konten</h1></div>
+  <%= link_to "Internes Konto anlegen", new_admin_admin_user_path, class: "admin-cta" %>
+</div>
+
+<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+  <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+    <thead class="bg-slate-50 text-slate-600"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">E-Mail</th><th class="px-4 py-3">Status</th><th class="px-4 py-3"></th></tr></thead>
+    <tbody class="divide-y divide-slate-100">
+      <% @admin_users.each do |admin_user| %>
+        <tr><td class="px-4 py-3 font-medium"><%= admin_user.name %></td><td class="px-4 py-3"><%= admin_user.email %></td><td class="px-4 py-3"><%= admin_user.active? ? "Aktiv" : "Deaktiviert" %></td><td class="px-4 py-3 text-right"><%= link_to "Bearbeiten", edit_admin_admin_user_path(admin_user), class: "admin-link" %></td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

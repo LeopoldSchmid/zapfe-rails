@@ -1,5 +1,6 @@
 class ProductVariant < ApplicationRecord
   belongs_to :product
+  has_many :supplier_offerings, dependent: :destroy
 
   validates :sku, :size, :price, presence: true
   validates :sku, uniqueness: true

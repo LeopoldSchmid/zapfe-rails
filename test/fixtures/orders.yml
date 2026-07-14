@@ -1,0 +1,9 @@
+from_inquiry:
+  inquiry: one
+  responsible_admin_user: one
+  status: preparing
+  customer_name: Max Mustermann
+  customer_email: max@example.com
+  customer_phone: '+49123'
+  event_date: 2026-01-01
+  event_location: Musterweg 1, 79104, Freiburg
