@@ -32,6 +32,18 @@ class Admin::ProcurementPlansControllerTest < ActionDispatch::IntegrationTest
     assert_equal draft_offer, ProcurementPlan.last.offer
   end
 
+  test "adds offer positions created after the procurement plan" do
+    draft_offer = Offer.create!(order: @order, version: 2, valid_until: Date.current + 14.days, recipient_name: "Max Mustermann")
+    plan = ProcurementPlans::CreateFromOffer.new(offer: draft_offer).call
+    draft_offer.line_items.create!(description: "Bierkrug", quantity: 12, unit: "Stk", net_unit_price: 8, tax_rate: 19, product_variant: product_variants(:one), supplier_offering: supplier_offerings(:suedstar_variant), direct_cost_unit: 5)
+
+    assert_difference("plan.items.count", 1) do
+      post sync_admin_order_procurement_plan_url(@order, plan)
+    end
+
+    assert_equal "Bierkrug", plan.items.order(:created_at).last.description
+  end
+
   test "downloads a procurement attachment through the protected order route" do
     plan = ProcurementPlans::CreateFromOffer.new(offer: @offer).call
     plan.attachments.attach(io: StringIO.new("Lieferantenangebot"), filename: "angebot.pdf", content_type: "application/pdf")

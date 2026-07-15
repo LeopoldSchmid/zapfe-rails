@@ -54,7 +54,8 @@ export default class extends Controller {
     if (/lösch|entfern/.test(label)) return "trash"
     if (/kopier/.test(label)) return "copy"
     if (/versend|senden/.test(label)) return "send"
-    if (/speicher|aktualisier|bestätig|reservier|finalisier|bezahlt/.test(label)) return "save"
+    if (/speicher|aktualisier/.test(label)) return "save"
+    if (/bestätig|reservier|finalisier|bezahlt/.test(label)) return "check"
     if (/erstell|hinzufüg|anleg|einplan|planen|import/.test(label)) return "plus"
     return null
   }

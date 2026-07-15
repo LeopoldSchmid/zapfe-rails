@@ -1,6 +1,6 @@
 class Admin::ProcurementPlansController < Admin::BaseController
   before_action :set_order
-  before_action :set_plan, only: %i[update destroy add_attachments download_attachment]
+  before_action :set_plan, only: %i[update destroy sync add_attachments download_attachment]
 
   def create
     offer = @order.offers.find(params.require(:offer_id))
@@ -28,6 +28,12 @@ class Admin::ProcurementPlansController < Admin::BaseController
   def destroy
     @plan.destroy!
     redirect_to procurement_admin_order_path(@order), notice: "Beschaffungsplan gelöscht."
+  end
+
+  def sync
+    added = ProcurementPlans::SyncFromOffer.new(plan: @plan).call
+    notice = added.positive? ? "#{added} neue #{'Position'.pluralize(added)} aus dem Angebot übernommen." : "Der Beschaffungsplan ist bereits vollständig."
+    redirect_to procurement_admin_order_path(@order), notice: notice
   end
 
   def add_attachments

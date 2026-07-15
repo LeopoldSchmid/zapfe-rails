@@ -16,7 +16,7 @@ export default class extends Controller {
   }
 
   register(form) {
-    if (form.dataset.dirtyReady || this.isDestructive(form) || !this.hasEditableFields(form)) return
+    if (form.dataset.dirtyReady || this.isDestructive(form) || !this.isUpdateForm(form) || !this.hasEditableFields(form)) return
 
     form.dataset.dirtyReady = "true"
     form.dataset.dirtySnapshot = this.snapshot(form)
@@ -45,6 +45,10 @@ export default class extends Controller {
 
   isDestructive(form) {
     return form.querySelector('input[name="_method"][value="delete"]')
+  }
+
+  isUpdateForm(form) {
+    return form.querySelector('input[name="_method"][value="patch"], input[name="_method"][value="put"]')
   }
 
   hasEditableFields(form) {

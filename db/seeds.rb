@@ -2,7 +2,8 @@
 
 categories = [
   { name: "Bier", kind: "Beer", description: "Biersorten" },
-  { name: "Softdrinks", kind: "Soft Drink", description: "Alkoholfreie Getränke" }
+  { name: "Softdrinks", kind: "Soft Drink", description: "Alkoholfreie Getränke" },
+  { name: "Mietartikel", kind: "Rental", description: "Gläser, Kühlung und weitere Mietartikel" }
 ]
 
 categories.each do |attrs|
@@ -67,6 +68,30 @@ ProductVariant.find_each do |variant|
     price.purchase_price = variant.size * 2
     price.valid_until = nil
     price.save!
+  end
+end
+
+rental_category = Category.find_by!(name: "Mietartikel")
+glass_definitions = [
+  { article_number: "MIETE-BIERKRUG", brand: "Glasverleih", name: "Bierkrug", kind: "Gläser", variants: [ [ "MIETE-BIERKRUG-03", 0.3, 8.0 ], [ "MIETE-BIERKRUG-04", 0.4, 8.0 ], [ "MIETE-BIERKRUG-05", 0.5, 8.0 ] ] },
+  { article_number: "MIETE-WEINGLAS", brand: "Glasverleih", name: "Weinglas", kind: "Gläser", variants: [ [ "MIETE-WEINGLAS-01", 0.1, 7.0 ], [ "MIETE-WEINGLAS-02", 0.2, 7.0 ] ] }
+]
+
+glass_definitions.each do |definition|
+  product = Product.find_or_initialize_by(article_number: definition[:article_number])
+  product.assign_attributes(name: definition[:name], brand: definition[:brand], kind: definition[:kind], category: rental_category, is_alcoholic: false, description: "Mietartikel")
+  product.save!
+  definition[:variants].each do |sku, size, sale_price|
+    variant = product.product_variants.find_or_initialize_by(sku: sku)
+    variant.assign_attributes(size: size, price: sale_price, is_available: true, availability: "Miete")
+    variant.save!
+    [ "Getränkemarkt Südstar", "Getränke Beck" ].each do |supplier_name|
+      offering = SupplierOffering.find_or_initialize_by(supplier: suppliers.fetch(supplier_name), product_variant: variant)
+      offering.assign_attributes(procurement_profile: standard_profiles.fetch("Lagerware"), active: true)
+      offering.save!
+      price = offering.supplier_prices.find_or_initialize_by(valid_from: Date.current)
+      price.update!(purchase_price: 5.0, valid_until: nil)
+    end
   end
 end
 

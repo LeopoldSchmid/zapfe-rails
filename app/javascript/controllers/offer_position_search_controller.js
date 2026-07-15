@@ -22,7 +22,7 @@ export default class extends Controller {
   insertSearchField() {
     const wrapper = document.createElement("div")
     wrapper.className = "md:col-span-2"
-    wrapper.innerHTML = '<label class="block text-sm font-medium" for="offer-position-search">Suchen und auswählen</label><input id="offer-position-search" type="search" placeholder="Getränk, Zapfanlage, Kegerator …" autocomplete="off" class="admin-field"><div class="mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" data-position-search-results></div><p class="mt-1 text-xs text-slate-500">Treffer erscheinen beim Tippen und übernehmen die passende Konfiguration.</p>'
+    wrapper.innerHTML = '<label class="block text-sm font-medium" for="offer-position-search">Suchen und auswählen</label><input id="offer-position-search" type="search" placeholder="Getränk, Zapfanlage, Kegerator …" autocomplete="off" class="admin-field"><div class="mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" data-position-search-results></div>'
     this.form.querySelector("[data-position-search-anchor]").before(wrapper)
     this.searchInput = wrapper.querySelector("input")
     this.results = wrapper.querySelector("[data-position-search-results]")

@@ -11,26 +11,37 @@
     <% if @tasks.any? %>
       <ul class="mt-5 space-y-3">
         <% @tasks.each do |task| %>
-          <li id="task-<%= task.id %>" class="scroll-mt-28 rounded-xl border border-slate-200 bg-slate-50 p-4 <%= 'ring-2 ring-violet-300' if params[:task_id].to_s == task.id.to_s %>">
+          <li id="task-<%= task.id %>" class="scroll-mt-28 rounded-2xl border border-slate-200 bg-slate-50 p-4 <%= 'ring-2 ring-violet-300' if params[:task_id].to_s == task.id.to_s %>">
             <%= form_with model: [:admin, @order, task], url: admin_order_task_path(@order, task), method: :patch do |f| %>
-              <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem] sm:items-end">
                 <div>
-                  <%= f.label :title, "Aufgabe", class: "sr-only" %>
-                  <%= f.text_field :title, required: true, class: "w-full bg-transparent font-semibold outline-none" %>
-                  <p class="mt-1 text-sm text-slate-600"><%= task.assigned_admin_user&.name || "Unzugewiesen" %> · <%= task.due_on ? l(task.due_on) : "Termin offen" %></p>
+                  <%= f.label :title, "Aufgabe", class: "admin-field-label" %>
+                  <%= f.text_field :title, required: true, class: "admin-field font-semibold" %>
                 </div>
-                <div class="flex flex-wrap content-start gap-2">
-                  <span class="admin-task-status admin-task-status-<%= task.status %>"><%= task.status == "done" ? "✓ Erledigt" : task.status == "in_progress" ? "● In Arbeit" : "○ Offen" %></span>
-                  <%= f.select :status, [["Offen", "open"], ["In Arbeit", "in_progress"], ["Erledigt", "done"]], {}, class: "admin-field mt-0 min-w-32", data: { controller: "status-autosave", action: "change->status-autosave#change" } %>
-                  <%= f.submit "Speichern", class: "admin-secondary-action" %>
+                <div>
+                  <%= f.label :status, "Status", class: "admin-field-label" %>
+                  <%= f.select :status, [["Offen", "open"], ["In Arbeit", "in_progress"], ["Erledigt", "done"]], {}, class: "admin-field admin-task-select-#{task.status}", data: { controller: "status-autosave", action: "change->status-autosave#change" } %>
                 </div>
               </div>
-              <div class="mt-3">
-                <%= f.label :details, "Hinweis", class: "admin-field-label" %>
-                <%= f.text_area :details, rows: 2, placeholder: "Was ist bei dieser Aufgabe zu beachten?", class: "admin-field" %>
+
+              <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <%= f.label :assigned_admin_user_id, "Verantwortlich", class: "admin-field-label" %>
+                  <%= f.collection_select :assigned_admin_user_id, @admin_users, :id, :name, { include_blank: "Unzugewiesen" }, class: "admin-field" %>
+                </div>
+                <div>
+                  <%= f.label :due_on, "Fällig am", class: "admin-field-label" %>
+                  <%= stepped_date_field(f, :due_on) %>
+                </div>
+                <div class="sm:col-span-2">
+                  <%= f.label :details, "Hinweis", class: "admin-field-label" %>
+                  <%= f.text_area :details, rows: 2, placeholder: "Was ist bei dieser Aufgabe zu beachten?", class: "admin-field" %>
+                </div>
               </div>
+
+              <div class="mt-3 flex justify-end"><%= f.submit "Speichern", class: "admin-secondary-action" %></div>
             <% end %>
-            <%= button_to "Entfernen", admin_order_task_path(@order, task), method: :delete, class: "mt-3 text-sm font-semibold text-rose-700" %>
+            <div class="mt-1 flex justify-end"><%= button_to "Entfernen", admin_order_task_path(@order, task), method: :delete, class: "text-sm font-semibold text-rose-700" %></div>
           </li>
         <% end %>
       </ul>
@@ -46,7 +57,7 @@
         <div><%= f.label :due_on, "Fällig am", class: "admin-field-label" %><%= stepped_date_field(f, :due_on) %></div>
         <div><%= f.label :details, "Hinweis", class: "admin-field-label" %><%= f.text_field :details, placeholder: "Optionaler Kontext", class: "admin-field" %></div>
       </div>
-      <%= f.submit "Aufgabe anlegen", class: "admin-cta mt-4" %>
+      <div class="mt-4 flex justify-end"><%= f.submit "Aufgabe anlegen", class: "admin-cta" %></div>
     <% end %>
   </section>
 
@@ -57,14 +68,14 @@
       <div class="rounded-xl bg-slate-50 p-3"><p class="text-sm">Tatsächlich</p><p class="mt-1 text-xl font-semibold"><%= number_to_currency(@actual_time_entries.sum(&:cost_total), unit: "€", format: "%n %u") %></p></div>
     </div>
     <% if @actual_time_entries.any? %>
-      <ul class="mt-4 space-y-2 text-sm"><% @actual_time_entries.each do |entry| %><li class="flex items-center justify-between gap-3"><span><%= entry.category == "organisation" ? "Organisation" : "Durchführung" %> · <%= entry.minutes %> Min. · <%= l(entry.recorded_on) %></span><%= button_to "Entfernen", admin_order_actual_time_entry_path(@order, entry), method: :delete, class: "text-sm font-semibold text-rose-700" %></li><% end %></ul>
+      <ul class="mt-4 space-y-2 text-sm"><% @actual_time_entries.each do |entry| %><li class="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2"><span><%= entry.category == "organisation" ? "Organisation" : "Durchführung" %> · <%= entry.minutes %> Min. · <%= l(entry.recorded_on) %></span><%= button_to "Entfernen", admin_order_actual_time_entry_path(@order, entry), method: :delete, class: "text-sm font-semibold text-rose-700" %></li><% end %></ul>
     <% end %>
     <%= form_with model: [:admin, @order, TimeEntry.new], url: admin_order_actual_time_entries_path(@order), class: "mt-5 grid gap-3 sm:grid-cols-2" do |f| %>
       <div><%= f.label :category, "Bereich", class: "admin-field-label" %><%= f.select :category, [["Organisation", "organisation"], ["Durchführung", "execution"]], {}, class: "admin-field" %></div>
       <div><%= f.label :minutes, "Minuten", class: "admin-field-label" %><%= f.number_field :minutes, min: 1, required: true, class: "admin-field" %></div>
       <div><%= f.label :recorded_on, "Datum", class: "admin-field-label" %><%= stepped_date_field(f, :recorded_on) %></div>
       <div><%= f.label :note, "Notiz", class: "admin-field-label" %><%= f.text_field :note, class: "admin-field" %></div>
-      <div><%= f.submit "Ist-Zeit speichern", class: "admin-cta" %></div>
+      <div class="sm:col-span-2 flex justify-end"><%= f.submit "Ist-Zeit speichern", class: "admin-cta" %></div>
     <% end %>
   </section>
 </div>

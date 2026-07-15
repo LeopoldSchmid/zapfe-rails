@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       resources :reservations, only: [ :create, :update, :destroy ]
       resources :tasks, only: [ :create, :update, :destroy ]
       resources :procurement_plans, only: [ :create, :update, :destroy ] do
+        post :sync, on: :member
         post :add_attachments, on: :member
         get "attachments/:attachment_id", to: "procurement_plans#download_attachment", on: :member, as: :attachment
       end

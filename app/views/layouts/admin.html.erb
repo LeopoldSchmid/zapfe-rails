@@ -44,7 +44,7 @@
         <% flash.each do |type, message| %>
           <% next if type.to_s == "undo_available" %>
           <% tone = type.to_s == "alert" ? "admin-flash-alert" : "admin-flash-notice" %>
-          <div class="admin-flash <%= tone %>" role="status"><%= message %></div>
+          <div class="admin-flash <%= tone %>" role="status" data-controller="flash" data-flash-delay-value="4500"><span><%= message %></span><button type="button" class="admin-flash-dismiss" aria-label="Meldung schließen" data-action="flash#close">×</button></div>
         <% end %>
         <% if flash[:undo_available] %><div class="admin-flash admin-flash-notice flex items-center justify-between gap-3" role="status"><span>Änderung gespeichert.</span><%= button_to "Rückgängig", admin_undo_path, class: "admin-undo-button" %></div><% end %>
       </div>

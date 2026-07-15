@@ -1,4 +1,45 @@
 <div class="admin-toolbar">
-  <div><p class="proof-kicker">Angebot · <%= { "draft" => "Entwurf", "finalized" => "Finalisiert", "sent" => "Versendet", "accepted" => "Angenommen", "rejected" => "Abgelehnt", "expired" => "Abgelaufen" }.fetch(offer.status) %> · Version <%= offer.version %></p><h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]"><%= offer.recipient_name %></h1><p class="mt-1 text-sm text-slate-600"><%= offer.offer_number.presence || "Noch keine Angebotsnummer" %> · Auftrag: <%= link_to offer.order.customer_name, admin_order_offers_path(offer.order), class: "underline" %> · gültig bis <%= l(offer.valid_until) %></p></div>
-  <div class="flex flex-wrap items-center gap-2"><%= link_to "Zu Angeboten", admin_order_offers_path(offer.order), class: "admin-secondary-action" %><% if offer.editable? %><%= button_to "Angebot finalisieren", finalize_admin_offer_path(offer), method: :post, class: "admin-cta" %><% else %><%= link_to "PDF", document_admin_offer_path(offer), class: "admin-secondary-action" if offer.document.attached? %><% if offer.status == "finalized" && CustomerDocumentDelivery.enabled? %><%= button_to "Per E-Mail versenden", send_mail_admin_offer_path(offer), method: :post, class: "admin-cta" %><% elsif offer.status == "finalized" %><span class="admin-product-badge bg-amber-100 text-amber-900">Dokumentversand auf Staging aus</span><% end %><% if %w[finalized sent].include?(offer.status) %><%= button_to "Annehmen", resolve_admin_offer_path(offer, status: "accepted"), method: :patch, class: "admin-cta" %><%= button_to "Ablehnen", resolve_admin_offer_path(offer, status: "rejected"), method: :patch, class: "admin-danger-action" %><% end %><%= button_to "Neue Version", duplicate_admin_offer_path(offer), method: :post, class: "admin-cta" %><% end %></div>
+  <div>
+    <p class="proof-kicker">Angebot · <%= { "draft" => "Entwurf", "finalized" => "Finalisiert", "sent" => "Versendet", "accepted" => "Angenommen", "rejected" => "Abgelehnt", "expired" => "Abgelaufen" }.fetch(offer.status) %> · Version <%= offer.version %></p>
+    <h1 class="mt-2 text-3xl font-semibold text-[var(--color-zapfe-navy)]"><%= offer.recipient_name %></h1>
+    <p class="mt-1 text-sm text-slate-600"><%= offer.offer_number.presence || "Noch keine Angebotsnummer" %> · Auftrag: <%= link_to offer.order.customer_name, admin_order_offers_path(offer.order), class: "underline" %> · gültig bis <%= l(offer.valid_until) %></p>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <%= link_to "Zu Angeboten", admin_order_offers_path(offer.order), class: "admin-secondary-action" %>
+
+    <% if offer.editable? %>
+      <%= button_to "Dokument finalisieren", finalize_admin_offer_path(offer), method: :post, class: "admin-cta", data: { turbo_confirm: "Angebot wirklich finalisieren? Es erhält eine Angebotsnummer, ein PDF wird erzeugt und Inhalte können danach nicht mehr geändert werden." } %>
+    <% else %>
+      <span class="admin-secondary-action opacity-40" aria-disabled="true">Finalisiert</span>
+    <% end %>
+
+    <% if offer.document.attached? %>
+      <%= link_to "PDF", document_admin_offer_path(offer), class: "admin-secondary-action" %>
+    <% else %>
+      <span class="admin-secondary-action opacity-40" aria-disabled="true" title="Wird beim Finalisieren erzeugt">PDF</span>
+    <% end %>
+
+    <% if offer.status == "finalized" && CustomerDocumentDelivery.enabled? %>
+      <%= button_to "Per E-Mail versenden", send_mail_admin_offer_path(offer), method: :post, class: "admin-cta", data: { turbo_confirm: "Angebot wirklich an #{offer.recipient_email} versenden?" } %>
+    <% elsif offer.status == "finalized" %>
+      <span class="admin-product-badge bg-amber-100 text-amber-900">Dokumentversand deaktiviert</span>
+    <% elsif offer.status == "sent" %>
+      <span class="admin-secondary-action opacity-40" aria-disabled="true">Versendet</span>
+    <% else %>
+      <span class="admin-secondary-action opacity-40" aria-disabled="true" title="Nach der Finalisierung verfügbar">Versenden</span>
+    <% end %>
+
+    <% if %w[finalized sent].include?(offer.status) %>
+      <%= button_to "Annehmen", resolve_admin_offer_path(offer, status: "accepted"), method: :patch, class: "admin-cta", data: { turbo_confirm: "Angebot #{offer.offer_number} wirklich als angenommen markieren?" } %>
+      <%= button_to "Ablehnen", resolve_admin_offer_path(offer, status: "rejected"), method: :patch, class: "admin-danger-action", data: { turbo_confirm: "Angebot #{offer.offer_number} wirklich als abgelehnt markieren?" } %>
+    <% elsif %w[accepted rejected].include?(offer.status) %>
+      <span class="admin-secondary-action opacity-40" aria-disabled="true">Entschieden</span>
+    <% else %>
+      <span class="admin-secondary-action opacity-40" aria-disabled="true" title="Nach der Finalisierung verfügbar">Annehmen</span>
+      <span class="admin-danger-action w-auto opacity-40" aria-disabled="true" title="Nach der Finalisierung verfügbar">Ablehnen</span>
+    <% end %>
+
+    <%= button_to "Neue Version", duplicate_admin_offer_path(offer), method: :post, class: "admin-cta" unless offer.editable? %>
+  </div>
 </div>
