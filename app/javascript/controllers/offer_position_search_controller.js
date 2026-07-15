@@ -123,7 +123,9 @@ export default class extends Controller {
 
     if (this.resourceSelect) this.resourceSelect.value = ""
     const description = this.form.querySelector('input[name="offer_line_item[description]"]')
+    const unit = this.form.querySelector('input[name="offer_line_item[unit]"]')
     if (description) description.value = option.text
+    if (unit && option.dataset.salesUnit) unit.value = option.dataset.salesUnit
     if (this.sourceWrapper) this.sourceWrapper.hidden = true
     if (this.supplierWrapper) this.supplierWrapper.hidden = false
     await this.loadSupplierOfferings(option.value)

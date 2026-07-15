@@ -27,14 +27,18 @@ Rails.application.routes.draw do
     root "dashboard#index"
     post :undo, to: "undo#create"
     resources :admin_users, except: [ :show, :destroy ]
+    resources :help_articles, except: [ :show, :destroy ]
+    resources :help_requests, only: [ :create, :update ]
     resource :system_settings, only: [ :edit, :update ]
-    resources :suppliers, except: [ :show, :destroy ]
+    resources :suppliers, except: [ :destroy ]
     resources :resources, except: [ :show, :destroy ]
     resources :customers, except: [ :show, :destroy ] do
       get :contact_options, on: :member
     end
     resources :checklist_templates, except: [ :show, :destroy ]
-    resources :order_templates, except: [ :show, :destroy ]
+    resources :order_templates, except: [ :show, :destroy ] do
+      post :create_series, on: :member
+    end
     resources :supplier_offerings, only: [ :new, :create, :edit, :update ]
     resources :procurement_profiles, only: [ :edit, :update ]
     resources :inquiries, only: [ :index, :show ] do

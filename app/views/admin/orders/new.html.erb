@@ -14,8 +14,8 @@
     <div><%= f.label :event_location, "Veranstaltungsort", class: "block text-sm font-medium" %><%= f.text_field :event_location, required: true, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
     <div><%= f.label :customer_email, "E-Mail", class: "block text-sm font-medium" %><%= f.email_field :customer_email, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2", data: { order_customer_contact_target: "email" } %></div>
     <div><%= f.label :customer_phone, "Telefon", class: "block text-sm font-medium" %><%= f.telephone_field :customer_phone, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2", data: { order_customer_contact_target: "phone" } %></div>
-    <div><%= f.label :start_time, "Beginn", class: "block text-sm font-medium" %><%= f.time_field :start_time, step: 900, lang: "de", class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-    <div><%= f.label :end_time, "Ende", class: "block text-sm font-medium" %><%= f.time_field :end_time, step: 900, lang: "de", class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
+    <div><%= f.label :start_time, "Beginn", class: "block text-sm font-medium" %><%= german_time_field(f, :start_time, class_name: "mt-1 w-full rounded border border-slate-300 px-3 py-2") %></div>
+    <div><%= f.label :end_time, "Ende", class: "block text-sm font-medium" %><%= german_time_field(f, :end_time, class_name: "mt-1 w-full rounded border border-slate-300 px-3 py-2") %></div>
   </div>
   <%= f.submit "Auftrag erstellen", class: "admin-cta" %>
 <% end %>

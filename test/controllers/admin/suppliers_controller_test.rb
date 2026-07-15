@@ -39,7 +39,7 @@ class Admin::SuppliersControllerTest < ActionDispatch::IntegrationTest
     offering = supplier_offerings(:suedstar_variant)
     SupplierPrice.create!(supplier_offering: offering, purchase_price: 72.5, valid_from: Date.current)
 
-    get admin_suppliers_url
+    get admin_supplier_url(offering.supplier)
 
     assert_response :success
     assert_match(/72[,.]50 €/, response.body)

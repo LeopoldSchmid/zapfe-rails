@@ -1205,6 +1205,27 @@
     @apply rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm active:bg-slate-50;
   }
 
+  .admin-help-link {
+    @apply grid h-9 w-9 place-items-center rounded-full border border-slate-200 text-sm font-bold text-slate-600 transition hover:border-[var(--color-zapfe-amber)] hover:bg-amber-50 hover:text-[var(--color-zapfe-navy)];
+  }
+
+  .admin-help-button {
+    @apply fixed bottom-5 right-5 z-30 grid h-11 w-11 place-items-center rounded-full bg-[var(--color-zapfe-navy)] text-lg font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-amber-200;
+  }
+
+  .admin-help-dialog {
+    @apply w-[min(42rem,calc(100vw-2rem))] max-w-none rounded-3xl border border-slate-200 bg-white p-0 text-slate-800 shadow-2xl;
+  }
+
+  .admin-help-dialog::backdrop { background: rgba(15, 23, 42, 0.42); }
+  .admin-help-dialog-inner { @apply max-h-[min(46rem,calc(100vh-2rem))] overflow-y-auto p-5 sm:p-7; }
+  .admin-help-close { @apply grid h-9 w-9 place-items-center rounded-xl text-xl leading-none text-slate-500 transition hover:bg-slate-100 hover:text-slate-900; }
+  .admin-help-content { @apply mt-5 leading-7 text-slate-700; }
+  .admin-help-content h1, .admin-help-content h2, .admin-help-content h3 { @apply mt-5 font-semibold text-[var(--color-zapfe-navy)]; }
+  .admin-help-content ul { @apply my-3 list-disc pl-5; }
+  .admin-help-content ol { @apply my-3 list-decimal pl-5; }
+  .admin-help-article-card { @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md; }
+
   .admin-navigation {
     @apply -mx-4 border-t border-slate-100 bg-white px-4 py-4 md:mx-0 md:flex md:flex-wrap md:items-center md:gap-x-5 md:gap-y-2 md:border-0 md:px-0 md:py-3;
   }

@@ -6,11 +6,13 @@ class SupplierOffering < ApplicationRecord
   belongs_to :procurement_profile
   has_many :supplier_prices, dependent: :destroy
 
-  accepts_nested_attributes_for :supplier_prices, reject_if: ->(attributes) { attributes["purchase_price"].blank? }
+  accepts_nested_attributes_for :supplier_prices, reject_if: ->(attributes) { attributes["purchase_price"].blank? && attributes["gross_purchase_price"].blank? }
 
   scope :active, -> { where(active: true) }
 
   validates :product_variant_id, uniqueness: { scope: :supplier_id }
+  validates :package_unit, :package_content_unit, presence: true
+  validates :package_quantity, numericality: { greater_than: 0 }
   validates :lead_time_days_override, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :return_policy_override, inclusion: { in: RETURN_POLICIES }, allow_blank: true
   validates :return_period_days_override, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
@@ -34,6 +36,13 @@ class SupplierOffering < ApplicationRecord
 
   def order_by_on(event_date)
     event_date && event_date - lead_time_days.days
+  end
+
+  def package_label
+    quantity = package_quantity.to_d.frac.zero? ? package_quantity.to_i : package_quantity
+    return package_unit if quantity == 1
+
+    "#{package_unit} à #{quantity} #{package_content_unit}"
   end
 
   def procurement_overdue?(event_date, on: Date.current)

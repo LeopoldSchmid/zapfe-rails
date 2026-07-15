@@ -114,7 +114,7 @@
         product.subcategory,
         product.category&.name,
         product.product_variants.map(&:sku),
-        product.product_variants.map { |variant| "#{variant.size.to_f % 1 == 0 ? variant.size.to_i : variant.size}L" }
+        product.product_variants.map(&:measurement_label)
       ].flatten.compact.join(" ").downcase %>
 
       <article
@@ -218,7 +218,7 @@
             <% product.product_variants.each do |variant| %>
               <span class="admin-variant-pill">
                 <span class="font-semibold text-slate-700"><%= variant.sku %></span>
-                <span><%= variant.size.to_f %>L</span>
+                <span><%= variant.measurement_label %> · je <%= variant.sales_unit %></span>
                 <span><%= number_to_currency(variant.price, unit: "€", separator: ",", delimiter: ".") %></span>
                 <span><%= variant.supplier_offerings.count(&:active?) %> Bezugsquellen</span>
                 <span><%= variant.is_available? ? "Verfügbar" : "Deaktiviert" %></span>

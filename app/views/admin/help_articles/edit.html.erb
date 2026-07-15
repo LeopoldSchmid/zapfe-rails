@@ -1,0 +1,28 @@
+<div class="admin-toolbar"><div><p class="proof-kicker">Anleitungen</p><h1 class="mt-2 text-3xl font-semibold"><%= @help_article.title %></h1></div></div>
+<%= render "form" %>
+
+<% if @help_requests.any? %>
+  <section class="admin-panel mt-6">
+    <h2 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Fragen</h2>
+    <div class="mt-4 space-y-3">
+      <% @help_requests.each do |help_request| %>
+        <article class="rounded-xl border border-slate-200 p-4">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 class="font-semibold"><%= help_request.subject %></h3>
+              <p class="mt-1 text-sm text-slate-600"><%= help_request.message %></p>
+              <p class="mt-2 text-xs text-slate-500"><%= help_request.admin_user.name %> · <%= help_request.page_path %> · <%= l(help_request.created_at, format: :short) %></p>
+            </div>
+            <%= form_with model: [ :admin, help_request ], class: "flex items-center gap-2" do |f| %>
+              <%= f.select :status, [["Offen", "open"], ["Erledigt", "resolved"]], {}, class: "admin-field mt-0" %>
+              <%= f.submit "Aktualisieren", class: "admin-secondary-action" %>
+            <% end %>
+          </div>
+          <% if help_request.screenshot.attached? %>
+            <%= link_to image_tag(help_request.screenshot, class: "mt-4 max-h-64 rounded-lg border border-slate-200"), help_request.screenshot, target: "_blank", rel: "noopener" %>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+  </section>
+<% end %>

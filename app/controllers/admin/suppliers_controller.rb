@@ -1,5 +1,5 @@
 class Admin::SuppliersController < Admin::BaseController
-  before_action :set_supplier, only: %i[edit update]
+  before_action :set_supplier, only: %i[show edit update]
 
   def index
     @suppliers = Supplier.includes(
@@ -11,6 +11,9 @@ class Admin::SuppliersController < Admin::BaseController
   def new
     @supplier = Supplier.new
     @supplier.procurement_profiles.build(return_policy: "unknown")
+  end
+
+  def show
   end
 
   def create

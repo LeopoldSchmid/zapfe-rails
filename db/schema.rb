@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_151000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_15_235000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -167,6 +167,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_151000) do
     t.index ["date_from"], name: "index_events_on_date_from"
     t.index ["position"], name: "index_events_on_position"
     t.index ["published"], name: "index_events_on_published"
+  end
+
+  create_table "help_articles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "title", null: false
+    t.string "topic", null: false
+    t.datetime "updated_at", null: false
+    t.index ["topic"], name: "index_help_articles_on_topic", unique: true
+  end
+
+  create_table "help_faqs", force: :cascade do |t|
+    t.text "answer", null: false
+    t.datetime "created_at", null: false
+    t.integer "help_article_id", null: false
+    t.integer "position", default: 1, null: false
+    t.string "question", null: false
+    t.datetime "updated_at", null: false
+    t.index ["help_article_id"], name: "index_help_faqs_on_help_article_id"
+  end
+
+  create_table "help_requests", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "help_article_id"
+    t.text "message", null: false
+    t.string "page_path", null: false
+    t.string "status", default: "open", null: false
+    t.string "subject", null: false
+    t.string "topic", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_help_requests_on_admin_user_id"
+    t.index ["help_article_id"], name: "index_help_requests_on_help_article_id"
+    t.index ["status"], name: "index_help_requests_on_status"
   end
 
   create_table "inquiries", force: :cascade do |t|
@@ -505,12 +538,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_151000) do
     t.string "availability", default: "Instant", null: false
     t.datetime "created_at", null: false
     t.boolean "is_available", default: true, null: false
+    t.string "label"
     t.decimal "price", precision: 10, scale: 2, null: false
     t.integer "product_id", null: false
+    t.string "sales_unit", default: "Fass", null: false
     t.decimal "size", precision: 4, scale: 1, null: false
     t.string "sku", null: false
+    t.string "unit", default: "l", null: false
     t.datetime "updated_at", null: false
-    t.index ["product_id", "size"], name: "index_product_variants_on_product_id_and_size", unique: true
+    t.index ["product_id", "size", "unit"], name: "index_product_variants_on_product_id_and_size_and_unit", unique: true
     t.index ["product_id"], name: "index_product_variants_on_product_id"
     t.index ["sku"], name: "index_product_variants_on_sku", unique: true
   end
@@ -614,6 +650,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_151000) do
     t.datetime "created_at", null: false
     t.integer "lead_time_days_override"
     t.text "notes"
+    t.string "package_content_unit", default: "Stk", null: false
+    t.decimal "package_quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.string "package_unit", default: "Fass", null: false
     t.integer "procurement_profile_id", null: false
     t.integer "product_variant_id", null: false
     t.integer "return_period_days_override"
@@ -629,8 +668,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_151000) do
 
   create_table "supplier_prices", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.decimal "gross_purchase_price", precision: 10, scale: 2, null: false
     t.decimal "purchase_price", precision: 10, scale: 2, null: false
     t.integer "supplier_offering_id", null: false
+    t.decimal "tax_rate", precision: 5, scale: 2, default: "19.0", null: false
     t.datetime "updated_at", null: false
     t.date "valid_from", null: false
     t.date "valid_until"
@@ -729,6 +770,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_151000) do
   add_foreign_key "configuration_sessions", "solution_variants"
   add_foreign_key "configuration_sessions", "solutions"
   add_foreign_key "contacts", "customers"
+  add_foreign_key "help_faqs", "help_articles"
+  add_foreign_key "help_requests", "admin_users"
+  add_foreign_key "help_requests", "help_articles"
   add_foreign_key "inquiries", "admin_users", column: "assigned_admin_user_id"
   add_foreign_key "invoice_line_items", "invoices"
   add_foreign_key "invoices", "offers"

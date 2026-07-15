@@ -73,21 +73,21 @@ end
 
 rental_category = Category.find_by!(name: "Mietartikel")
 glass_definitions = [
-  { article_number: "MIETE-BIERKRUG", brand: "Glasverleih", name: "Bierkrug", kind: "Gläser", variants: [ [ "MIETE-BIERKRUG-03", 0.3, 8.0 ], [ "MIETE-BIERKRUG-04", 0.4, 8.0 ], [ "MIETE-BIERKRUG-05", 0.5, 8.0 ] ] },
-  { article_number: "MIETE-WEINGLAS", brand: "Glasverleih", name: "Weinglas", kind: "Gläser", variants: [ [ "MIETE-WEINGLAS-01", 0.1, 7.0 ], [ "MIETE-WEINGLAS-02", 0.2, 7.0 ] ] }
+  { article_number: "MIETE-BIERKRUG", brand: "Glasverleih", name: "Bierkrug", kind: "Gläser", variants: [ [ "MIETE-BIERKRUG-03", 0.3, 8.0, 18 ], [ "MIETE-BIERKRUG-04", 0.4, 8.0, 18 ], [ "MIETE-BIERKRUG-05", 0.5, 8.0, 15 ] ] },
+  { article_number: "MIETE-WEINGLAS", brand: "Glasverleih", name: "Weinglas", kind: "Gläser", variants: [ [ "MIETE-WEINGLAS-01", 0.1, 7.0, 18 ], [ "MIETE-WEINGLAS-02", 0.2, 7.0, 18 ] ] }
 ]
 
 glass_definitions.each do |definition|
   product = Product.find_or_initialize_by(article_number: definition[:article_number])
   product.assign_attributes(name: definition[:name], brand: definition[:brand], kind: definition[:kind], category: rental_category, is_alcoholic: false, description: "Mietartikel")
   product.save!
-  definition[:variants].each do |sku, size, sale_price|
+  definition[:variants].each do |sku, size, sale_price, package_quantity|
     variant = product.product_variants.find_or_initialize_by(sku: sku)
-    variant.assign_attributes(size: size, price: sale_price, is_available: true, availability: "Miete")
+    variant.assign_attributes(label: "#{size} l", size: size, unit: "l", sales_unit: "Kiste", price: sale_price, is_available: true, availability: "Miete")
     variant.save!
     [ "Getränkemarkt Südstar", "Getränke Beck" ].each do |supplier_name|
       offering = SupplierOffering.find_or_initialize_by(supplier: suppliers.fetch(supplier_name), product_variant: variant)
-      offering.assign_attributes(procurement_profile: standard_profiles.fetch("Lagerware"), active: true)
+      offering.assign_attributes(procurement_profile: standard_profiles.fetch("Lagerware"), package_unit: "Kiste", package_quantity: package_quantity, package_content_unit: "Gläser", active: true)
       offering.save!
       price = offering.supplier_prices.find_or_initialize_by(valid_from: Date.current)
       price.update!(purchase_price: 5.0, valid_until: nil)
@@ -136,6 +136,31 @@ admin_accounts.each do |name, email, password|
   admin.password = password
   admin.password_confirmation = password
   admin.save!
+end
+
+help_articles = {
+  "dashboard" => [ "Übersicht", "Hier stehen die aktuell relevanten Vorgänge und Aufgaben. Öffne einen Eintrag, um direkt im zugehörigen Auftrag weiterzuarbeiten." ],
+  "inquiries" => [ "Anfragen", "Neue Anfragen zuerst prüfen, ergänzen und einer verantwortlichen Person zuweisen. Erst danach bei Bedarf in einen Auftrag überführen." ],
+  "orders" => [ "Aufträge", "Der Auftrag bündelt alle Informationen zur Veranstaltung. Die Phasen oben führen durch Angebot, Beschaffung, Durchführung und Rechnung." ],
+  "offers" => [ "Angebote", "Positionen und Preise im Entwurf bearbeiten. Vor Annahme oder Ablehnung immer die Kund:innenrückmeldung prüfen." ],
+  "procurement" => [ "Beschaffung", "Einen Plan aus dem gewünschten Angebot erstellen. Für jeden Händler kann der Bestelltext kopiert und in eine E-Mail eingefügt werden." ],
+  "execution" => [ "Durchführung", "Aufgaben vor, während und nach der Veranstaltung festhalten. Die Durchführung gilt als erledigt, wenn keine offenen Aufgaben mehr vorhanden sind." ],
+  "invoices" => [ "Rechnungen", "Rechnungen auf Grundlage eines angenommenen Angebots erstellen. Den Versand vor dem Auslösen prüfen und den Zahlungseingang anschließend markieren." ],
+  "notes" => [ "Freie Notizen", "Hier können interne Notizen, Bilder, Tabellen und weiterführende Informationen zum Auftrag gesammelt werden." ],
+  "customers" => [ "Kunden", "Firmen und Ansprechpartner einmal pflegen. Bei neuen Aufträgen können vorhandene Kontakte direkt übernommen werden." ],
+  "products" => [ "Getränke & Mietartikel", "Produkte enthalten die Varianten, etwa Fassgrößen oder Glasgrößen. Händlerangebote und Einkaufspreise werden anschließend beim jeweiligen Händler gepflegt." ],
+  "suppliers" => [ "Händler & Preise", "Beim Händler werden nur bereits angelegte Produktvarianten angeboten. Hier werden Liefergebinde, Beschaffungsprofil und Einkaufspreise gepflegt." ],
+  "resources" => [ "Ressourcen", "Eigene Dinge wie Ape, Zapfanlagen oder Kühlung hier anlegen. Im Auftrag können sie zunächst angefragt und später verbindlich reserviert werden." ],
+  "order_templates" => [ "Auftragsvorlagen", "Vorlagen bündeln wiederkehrende Positionen, Aufgaben, Checklisten und Ressourcen. Serien erzeugen daraus mehrere einzelne Aufträge." ],
+  "checklist_templates" => [ "Checklisten", "Checklisten strukturieren wiederkehrende Arbeiten. Bereiche wie Organisation, Packen, Aufbau oder Reinigung können frei ergänzt werden." ],
+  "settings" => [ "Einstellungen", "Hier werden die allgemeinen Daten für Dokumente und Rechnungen gepflegt." ]
+}
+
+help_articles.each do |topic, (title, body)|
+  article = HelpArticle.find_or_initialize_by(topic: topic)
+  article.title = title
+  article.body = body if article.body.blank?
+  article.save!
 end
 
 puts "Seed complete. Set LEOPOLD_ADMIN_EMAIL/PASSWORD, DENNIS_ADMIN_EMAIL/PASSWORD and JOHANNES_ADMIN_EMAIL/PASSWORD to create the three internal accounts."

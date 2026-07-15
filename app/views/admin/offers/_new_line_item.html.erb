@@ -13,7 +13,7 @@
       <div class="md:col-span-2" data-position-source hidden><label class="block text-sm font-medium">Bezugsquelle (intern)</label><p class="admin-readonly-field" data-position-source-label>Eigene Ressource</p></div>
       <div class="md:col-span-2" data-position-supplier hidden><%= f.label :supplier_offering_id, "Bezugsquelle (intern)", class: "block text-sm font-medium" %><%= f.select :supplier_offering_id, [], { include_blank: "Zuerst Getränk auswählen" }, disabled: true, class: "admin-field" %></div>
     </div>
-    <%= f.select :product_variant_id, @product_variants.map { |variant| ["#{variant.product.brand} #{variant.product.name} · #{variant.size} l", variant.id] }, { include_blank: "" }, class: "hidden", tabindex: -1, aria: { hidden: true } %>
+    <%= f.select :product_variant_id, @product_variants.map { |variant| [variant.display_label, variant.id, { data: { sales_unit: variant.sales_unit } }] }, { include_blank: "" }, class: "hidden", tabindex: -1, aria: { hidden: true } %>
     <%= f.select :resource_id, [], { include_blank: "" }, class: "hidden", tabindex: -1, aria: { hidden: true } %>
     <div class="mt-4 flex justify-end"><%= f.submit "Position hinzufügen", class: "admin-cta" %></div>
   <% end %>

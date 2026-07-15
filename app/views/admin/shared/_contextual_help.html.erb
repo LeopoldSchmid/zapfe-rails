@@ -1,0 +1,61 @@
+<% article = contextual_help_article %>
+<section data-controller="contextual-help">
+  <button type="button" class="admin-help-button" data-action="contextual-help#open" aria-label="Hilfe für <%= contextual_help_title %>">
+    i
+  </button>
+
+  <dialog class="admin-help-dialog" data-contextual-help-target="dialog" data-action="click->contextual-help#closeOnBackdrop">
+    <div class="admin-help-dialog-inner">
+      <div class="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
+        <div>
+          <p class="proof-kicker">Hilfe</p>
+          <h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]"><%= article&.title || contextual_help_title %></h2>
+        </div>
+        <button type="button" class="admin-help-close" data-action="contextual-help#close" aria-label="Hilfe schließen">×</button>
+      </div>
+
+      <div class="admin-help-content">
+        <% if article&.body&.present? %>
+          <%= article.body %>
+        <% else %>
+          <p>Für diesen Bereich ist noch keine Anleitung hinterlegt.</p>
+        <% end %>
+      </div>
+
+      <% if article&.faqs&.any? %>
+        <section class="mt-6 border-t border-slate-200 pt-5">
+          <h3 class="font-semibold text-[var(--color-zapfe-navy)]">Häufige Fragen</h3>
+          <div class="mt-3 divide-y divide-slate-200">
+            <% article.faqs.each do |faq| %>
+              <details class="py-3">
+                <summary class="cursor-pointer font-medium text-slate-800"><%= faq.question %></summary>
+                <p class="mt-2 text-sm leading-6 text-slate-600"><%= faq.answer %></p>
+              </details>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <details class="mt-6 border-t border-slate-200 pt-5">
+        <summary class="cursor-pointer font-semibold text-[var(--color-zapfe-navy)]">Frage stellen</summary>
+        <%= form_with model: [ :admin, HelpRequest.new ], class: "mt-4 space-y-4", html: { multipart: true } do |f| %>
+          <%= f.hidden_field :topic, value: contextual_help_topic %>
+          <%= f.hidden_field :page_path, value: request.fullpath %>
+          <div>
+            <%= f.label :subject, "Worum geht es?", class: "admin-field-label" %>
+            <%= f.text_field :subject, required: true, class: "admin-field" %>
+          </div>
+          <div>
+            <%= f.label :message, "Frage", class: "admin-field-label" %>
+            <%= f.text_area :message, rows: 4, required: true, class: "admin-field" %>
+          </div>
+          <div>
+            <%= f.label :screenshot, "Screenshot", class: "admin-field-label" %>
+            <%= f.file_field :screenshot, accept: "image/png,image/jpeg,image/webp", class: "mt-1 block text-sm" %>
+          </div>
+          <%= f.submit "Senden", class: "admin-cta" %>
+        <% end %>
+      </details>
+    </div>
+  </dialog>
+</section>

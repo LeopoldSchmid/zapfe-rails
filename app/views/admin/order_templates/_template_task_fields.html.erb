@@ -1,0 +1,12 @@
+<div class="grid gap-3 rounded-lg bg-slate-50 p-4 md:grid-cols-2" data-template-task>
+  <%= task.hidden_field :position %>
+  <div><%= task.label :title, "Aufgabe", class: "block text-sm font-medium" %><%= task.text_field :title, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
+  <div><%= task.label :assigned_admin_user_id, "Verantwortlich", class: "block text-sm font-medium" %><%= task.collection_select :assigned_admin_user_id, @admin_users, :id, :name, { include_blank: "Auftragsverantwortlich" }, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
+  <div><%= task.label :relative_offset_days, "Tage relativ zum Termin", class: "block text-sm font-medium" %><%= task.number_field :relative_offset_days, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
+  <div class="md:col-span-2"><%= task.label :details, "Hinweis", class: "block text-sm font-medium" %><%= task.text_field :details, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
+  <% if task.object.persisted? %>
+    <label class="inline-flex items-center gap-2 text-sm"><%= task.check_box :_destroy %> Aufgabe entfernen</label>
+  <% else %>
+    <button type="button" class="justify-self-start text-sm font-semibold text-rose-700" data-action="nested-template-tasks#remove">Aufgabe entfernen</button>
+  <% end %>
+</div>

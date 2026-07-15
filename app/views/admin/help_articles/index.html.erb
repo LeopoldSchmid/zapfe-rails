@@ -1,0 +1,17 @@
+<div class="admin-toolbar">
+  <div>
+    <p class="proof-kicker">Einrichtung</p>
+    <h1 class="mt-2 text-3xl font-semibold">Anleitungen</h1>
+  </div>
+  <%= link_to "Anleitung anlegen", new_admin_help_article_path, class: "admin-cta" %>
+</div>
+
+<div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+  <% @help_articles.each do |article| %>
+    <%= link_to edit_admin_help_article_path(article), class: "admin-help-article-card" do %>
+      <p class="text-xs font-bold uppercase tracking-[0.14em] text-slate-400"><%= article.topic %></p>
+      <h2 class="mt-2 font-semibold text-[var(--color-zapfe-navy)]"><%= article.title %></h2>
+      <p class="mt-2 text-sm text-slate-500"><%= pluralize(article.faqs.size, "FAQ") %></p>
+    <% end %>
+  <% end %>
+</div>

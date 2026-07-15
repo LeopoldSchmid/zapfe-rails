@@ -81,15 +81,27 @@
   <div class="rounded-lg border border-slate-200 p-4">
     <h3 class="mb-3 font-semibold">Varianten</h3>
     <%= f.fields_for :product_variants do |vf| %>
-      <div class="mb-3 grid gap-3 rounded-md border border-slate-200 p-3 md:grid-cols-6">
+      <div class="mb-3 grid gap-3 rounded-md border border-slate-200 p-3 md:grid-cols-4 xl:grid-cols-8">
         <%= vf.hidden_field :id %>
         <div>
           <%= vf.label :sku, class: "mb-1 block text-xs font-medium" %>
           <%= vf.text_field :sku, class: "w-full rounded border border-slate-300 px-2 py-1" %>
         </div>
         <div>
-          <%= vf.label :size, class: "mb-1 block text-xs font-medium" %>
+          <%= vf.label :label, "Bezeichnung", class: "mb-1 block text-xs font-medium" %>
+          <%= vf.text_field :label, placeholder: "z. B. 30 L Fass", class: "w-full rounded border border-slate-300 px-2 py-1" %>
+        </div>
+        <div>
+          <%= vf.label :size, "Menge", class: "mb-1 block text-xs font-medium" %>
           <%= vf.number_field :size, step: 0.1, class: "w-full rounded border border-slate-300 px-2 py-1" %>
+        </div>
+        <div>
+          <%= vf.label :unit, "Mess-Einheit", class: "mb-1 block text-xs font-medium" %>
+          <%= vf.select :unit, ProductVariant::MEASUREMENT_UNITS, {}, class: "w-full rounded border border-slate-300 px-2 py-1" %>
+        </div>
+        <div>
+          <%= vf.label :sales_unit, "Verkauf/Miete je", class: "mb-1 block text-xs font-medium" %>
+          <%= vf.text_field :sales_unit, placeholder: "Fass, Kiste …", class: "w-full rounded border border-slate-300 px-2 py-1" %>
         </div>
         <div>
           <%= vf.label :price, class: "mb-1 block text-xs font-medium" %>

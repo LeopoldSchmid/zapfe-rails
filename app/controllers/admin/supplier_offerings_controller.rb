@@ -46,9 +46,9 @@ class Admin::SupplierOfferingsController < Admin::BaseController
 
   def offering_params
     params.require(:supplier_offering).permit(
-      :supplier_id, :product_variant_id, :procurement_profile_id, :supplier_sku, :active,
+      :supplier_id, :product_variant_id, :procurement_profile_id, :supplier_sku, :active, :package_unit, :package_quantity, :package_content_unit,
       :lead_time_days_override, :return_policy_override, :return_period_days_override, :notes,
-      supplier_prices_attributes: %i[id purchase_price valid_from valid_until]
+      supplier_prices_attributes: %i[id purchase_price gross_purchase_price tax_rate valid_from valid_until]
     )
   end
 end

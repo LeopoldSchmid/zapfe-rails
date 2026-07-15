@@ -119,7 +119,7 @@ class Admin::ProductsController < Admin::BaseController
       :featured_note,
       :description,
       :image,
-      product_variants_attributes: %i[id sku size price is_available availability _destroy]
+      product_variants_attributes: %i[id sku label size unit sales_unit price is_available availability _destroy]
     )
   end
 end

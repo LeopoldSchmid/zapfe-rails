@@ -14,8 +14,8 @@
       <div class="mt-4 grid gap-4 sm:grid-cols-2">
         <div><%= f.label :event_type, "Art", class: "block text-sm font-medium" %><%= f.text_field :event_type, class: "admin-field" %></div>
         <div><%= f.label :event_date, "Datum", class: "block text-sm font-medium" %><%= f.date_field :event_date, class: "admin-field" %></div>
-        <div><%= f.label :start_time, "Beginn", class: "block text-sm font-medium" %><%= f.time_field :start_time, step: 900, lang: "de", class: "admin-field" %></div>
-        <div><%= f.label :end_time, "Ende", class: "block text-sm font-medium" %><%= f.time_field :end_time, step: 900, lang: "de", class: "admin-field" %></div>
+        <div><%= f.label :start_time, "Beginn", class: "block text-sm font-medium" %><%= german_time_field(f, :start_time) %></div>
+        <div><%= f.label :end_time, "Ende", class: "block text-sm font-medium" %><%= german_time_field(f, :end_time) %></div>
         <div><%= f.label :event_location, "Ort", class: "block text-sm font-medium" %><%= f.text_field :event_location, required: true, class: "admin-field" %></div>
         <div><%= f.label :guests, "Gäste", class: "block text-sm font-medium" %><%= f.number_field :guests, min: 0, class: "admin-field" %></div>
       </div>

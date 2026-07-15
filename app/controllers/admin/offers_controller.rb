@@ -26,8 +26,9 @@ class Admin::OffersController < Admin::BaseController
     offerings = SupplierOffering.active.includes(:supplier).where(product_variant: product_variant).order("suppliers.default_supplier DESC", "suppliers.name ASC")
     render json: {
       net_unit_price: product_variant.price,
+      unit: product_variant.sales_unit,
       offerings: offerings.map { |offering|
-        { id: offering.id, label: "#{offering.supplier.name} · #{helpers.number_to_currency(offering.current_price&.purchase_price || 0, unit: "€", format: "%n %u")} · #{offering.lead_time_days} Tage", preferred: offering.supplier.default_supplier? }
+        { id: offering.id, label: "#{offering.supplier.name} · #{offering.package_label} · #{helpers.number_to_currency(offering.current_price&.purchase_price || 0, unit: "€", format: "%n %u")} · #{offering.lead_time_days} Tage", preferred: offering.supplier.default_supplier? }
       }
     }
   end

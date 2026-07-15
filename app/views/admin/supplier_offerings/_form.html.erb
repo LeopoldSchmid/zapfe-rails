@@ -1,26 +1,45 @@
 <%= render "shared/form_errors", object: @supplier_offering %>
-<%= form_with model: [ :admin, @supplier_offering ], class: "space-y-6" do |f| %>
-  <section class="rounded-xl border border-slate-200 bg-white p-5">
-    <h2 class="font-semibold">Händlerangebot</h2>
-    <p class="mt-1 text-sm text-slate-600">Eine konkrete Bezugsquelle für genau ein vorhandenes Gebinde.</p>
-    <div class="mt-4 grid gap-4 md:grid-cols-2">
-      <div><%= f.label :supplier_id, "Lieferant", class: "block text-sm font-medium" %><%= f.collection_select :supplier_id, @suppliers, :id, :name, { include_blank: "Bitte wählen" }, required: true, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-      <div><%= f.label :procurement_profile_id, "Beschaffungsprofil", class: "block text-sm font-medium" %><%= f.select :procurement_profile_id, @profiles.map { |profile| [profile.name, profile.id] }, { include_blank: "Bitte wählen" }, required: true, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-      <div class="md:col-span-2"><%= f.label :product_variant_id, "Produktvariante", class: "block text-sm font-medium" %><%= f.select :product_variant_id, @product_variants.map { |variant| ["#{variant.product.brand} #{variant.product.name} · #{variant.size} l", variant.id] }, { include_blank: "Bitte wählen" }, required: true, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-      <div><%= f.label :supplier_sku, "Händler-SKU", class: "block text-sm font-medium" %><%= f.text_field :supplier_sku, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-      <div><%= f.label :lead_time_days_override, "Abweichender Vorlauf (Tage)", class: "block text-sm font-medium" %><%= f.number_field :lead_time_days_override, min: 0, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-      <div><%= f.label :return_policy_override, "Rückgabe abweichend vom Profil", class: "block text-sm font-medium" %><%= f.select :return_policy_override, [["Profil verwenden", ""], ["Unbekannt", "unknown"], ["Rückgabefähig", "returnable"], ["Nicht rückgabefähig", "non_returnable"]], {}, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-      <div><%= f.label :return_period_days_override, "Rückgabefrist abweichend (Tage)", class: "block text-sm font-medium" %><%= f.number_field :return_period_days_override, min: 0, placeholder: "Profil verwenden", class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-    </div>
-    <p class="mt-3 text-xs text-slate-500">Leere Abweichungsfelder übernehmen die Regel des gewählten Beschaffungsprofils.</p>
-    <div class="mt-4"><%= f.label :notes, "Interne Notiz", class: "block text-sm font-medium" %><%= f.text_area :notes, rows: 3, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div>
-    <label class="mt-4 inline-flex items-center gap-2 text-sm"><%= f.check_box :active %> Angebot aktiv</label>
+<%= form_with model: [ :admin, @supplier_offering ], class: "space-y-6", data: { controller: "catalog-variant-picker" } do |f| %>
+  <section class="admin-panel">
+    <% if @supplier_offering.persisted? %>
+      <p class="proof-kicker">Händlerangebot</p>
+      <h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]"><%= @supplier_offering.supplier.name %> · <%= @supplier_offering.product_variant.display_label %></h2>
+      <p class="mt-2 text-sm text-slate-600">Liefergebinde: <strong><%= @supplier_offering.package_label %></strong></p>
+      <%= f.hidden_field :supplier_id %><%= f.hidden_field :product_variant_id %>
+    <% else %>
+      <p class="proof-kicker">Neues Händlerangebot</p>
+      <h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]">Was kann dieser Händler liefern?</h2>
+      <div class="mt-5 grid gap-4 md:grid-cols-2">
+        <div><%= f.label :supplier_id, "Händler", class: "admin-field-label" %><%= f.collection_select :supplier_id, @suppliers, :id, :name, { include_blank: "Händler wählen" }, required: true, class: "admin-field" %></div>
+        <div><label class="admin-field-label" for="catalog-variant-search">Artikel suchen</label><input id="catalog-variant-search" type="search" placeholder="Rothaus, Bierkrug, 30 L …" class="admin-field" data-catalog-variant-picker-target="query" data-action="input->catalog-variant-picker#filter" /></div>
+        <div class="md:col-span-2"><%= f.label :product_variant_id, "Artikel", class: "admin-field-label" %><%= f.select :product_variant_id, @product_variants.map { |variant| [variant.display_label, variant.id, { data: { sales_unit: variant.sales_unit } }] }, { include_blank: "Artikel wählen" }, required: true, class: "admin-field", data: { catalog_variant_picker_target: "select", action: "change->catalog-variant-picker#applyPackageDefaults" } %></div>
+      </div>
+    <% end %>
   </section>
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5">
-    <h2 class="font-semibold">Einkaufspreise</h2>
-    <p class="mt-1 text-sm text-slate-600">Neue Preiszeilen behalten ältere Konditionen nachvollziehbar.</p>
-    <div class="mt-4 space-y-3"><%= f.fields_for :supplier_prices do |price_form| %><div class="grid gap-3 md:grid-cols-3"><div><%= price_form.label :purchase_price, "Netto-Einkaufspreis", class: "block text-sm font-medium" %><%= price_form.number_field :purchase_price, step: 0.01, min: 0, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div><div><%= price_form.label :valid_from, "Gültig ab", class: "block text-sm font-medium" %><%= price_form.date_field :valid_from, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div><div><%= price_form.label :valid_until, "Gültig bis", class: "block text-sm font-medium" %><%= price_form.date_field :valid_until, class: "mt-1 w-full rounded border border-slate-300 px-3 py-2" %></div></div><% end %></div>
+  <section class="admin-panel">
+    <p class="proof-kicker">Konditionen</p>
+    <h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]">Was kostet es und wie wird es beschafft?</h2>
+    <div class="mt-5 grid gap-4 md:grid-cols-2">
+      <div><%= f.label :procurement_profile_id, "Beschaffungsart", class: "admin-field-label" %><%= f.select :procurement_profile_id, @profiles.map { |profile| [profile.name, profile.id] }, { include_blank: "Beschaffungsart wählen" }, required: true, class: "admin-field" %></div>
+      <label class="mt-7 inline-flex items-center gap-2 text-sm"><%= f.check_box :active %> Bei diesem Händler verfügbar</label>
+      <div class="md:col-span-2"><%= f.fields_for :supplier_prices do |price_form| %><div class="grid gap-3 rounded-xl bg-slate-50 p-3 md:grid-cols-4" data-controller="gross-price"><div><%= price_form.label :gross_purchase_price, "Brutto-EK", class: "admin-field-label" %><%= price_form.number_field :gross_purchase_price, step: 0.01, min: 0, required: @supplier_offering.new_record?, class: "admin-field", data: { gross_price_target: "gross", action: "input->gross-price#calculate" } %></div><div><%= price_form.label :tax_rate, "MwSt. %", class: "admin-field-label" %><%= price_form.number_field :tax_rate, step: 0.01, min: 0, max: 100, class: "admin-field", data: { gross_price_target: "tax", action: "input->gross-price#calculate" } %></div><div><span class="admin-field-label">Netto-EK (berechnet)</span><p class="admin-readonly-field" data-gross-price-target="net">–</p></div><div><%= price_form.label :valid_from, "Gültig ab", class: "admin-field-label" %><%= price_form.date_field :valid_from, class: "admin-field" %></div><div class="md:col-span-4"><%= price_form.label :valid_until, "Gültig bis", class: "admin-field-label" %><%= price_form.date_field :valid_until, class: "admin-field" %></div></div><% end %></div>
+    </div>
   </section>
-  <div class="flex gap-3"><%= f.submit class: "admin-cta" %><%= link_to "Abbrechen", admin_suppliers_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %></div>
+
+  <details class="admin-panel">
+    <summary class="cursor-pointer font-semibold text-[var(--color-zapfe-navy)]">Liefergebinde und Sonderregeln anpassen</summary>
+    <div class="mt-5 grid gap-4 md:grid-cols-2">
+      <div><%= f.label :package_unit, "Geliefert als", class: "admin-field-label" %><%= f.text_field :package_unit, placeholder: "Fass, Kiste …", class: "admin-field", data: { catalog_variant_picker_target: "packageUnit" } %></div>
+      <div><%= f.label :package_quantity, "Stück je Liefergebinde", class: "admin-field-label" %><%= f.number_field :package_quantity, min: 0.01, step: 0.01, class: "admin-field", data: { catalog_variant_picker_target: "packageQuantity" } %></div>
+      <div><%= f.label :package_content_unit, "Was ist darin?", class: "admin-field-label" %><%= f.text_field :package_content_unit, placeholder: "Gläser, Flaschen …", class: "admin-field", data: { catalog_variant_picker_target: "packageContentUnit" } %></div>
+      <div><%= f.label :supplier_sku, "Händler-SKU", class: "admin-field-label" %><%= f.text_field :supplier_sku, class: "admin-field" %></div>
+      <div><%= f.label :lead_time_days_override, "Abweichender Vorlauf (Tage)", class: "admin-field-label" %><%= f.number_field :lead_time_days_override, min: 0, placeholder: "Beschaffungsart verwenden", class: "admin-field" %></div>
+      <div><%= f.label :return_policy_override, "Rückgabe abweichend", class: "admin-field-label" %><%= f.select :return_policy_override, [["Beschaffungsart verwenden", ""], ["Unbekannt", "unknown"], ["Rückgabefähig", "returnable"], ["Nicht rückgabefähig", "non_returnable"]], {}, class: "admin-field" %></div>
+      <div><%= f.label :return_period_days_override, "Abweichende Rückgabefrist (Tage)", class: "admin-field-label" %><%= f.number_field :return_period_days_override, min: 0, class: "admin-field" %></div>
+      <div class="md:col-span-2"><%= f.label :notes, "Interne Notiz", class: "admin-field-label" %><%= f.text_area :notes, rows: 3, class: "admin-field" %></div>
+    </div>
+  </details>
+
+  <div class="flex flex-wrap justify-end gap-3"><%= link_to "Abbrechen", @supplier_offering.supplier_id? ? admin_supplier_path(@supplier_offering.supplier_id) : admin_suppliers_path, class: "admin-secondary-action" %><%= f.submit "Speichern", class: "admin-cta" %></div>
 <% end %>

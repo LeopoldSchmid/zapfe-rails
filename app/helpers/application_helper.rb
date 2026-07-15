@@ -13,6 +13,21 @@ module ApplicationHelper
     end
   end
 
+  def german_time_field(form, attribute, class_name: "admin-field")
+    value = form.object.public_send(attribute)
+    value = value.strftime("%H:%M") if value.respond_to?(:strftime)
+
+    form.text_field(
+      attribute,
+      value: value.to_s.first(5),
+      placeholder: "HH:MM",
+      pattern: "(?:[01][0-9]|2[0-3]):[0-5][0-9]",
+      inputmode: "numeric",
+      autocomplete: "off",
+      class: class_name
+    )
+  end
+
   def signed_inquiry_timestamp_token
     Rails.application.message_verifier(:inquiry_form).generate(Time.current.to_i, purpose: :inquiry_form)
   end

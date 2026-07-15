@@ -65,8 +65,11 @@ class Admin::OfferLineItemsController < Admin::BaseController
     end
     if line_item.product_variant.present? && line_item.description.blank?
       product = line_item.product_variant.product
-      line_item.description = "#{product.brand} #{product.name} · #{line_item.product_variant.size} l"
+      line_item.description = line_item.product_variant.display_label
       line_item.position_type = "product"
+    end
+    if line_item.product_variant.present? && line_item.unit.blank?
+      line_item.unit = line_item.product_variant.sales_unit
     end
     if line_item.product_variant.present? && (line_item.net_unit_price.nil? || line_item.net_unit_price.zero?)
       line_item.net_unit_price = line_item.product_variant.price

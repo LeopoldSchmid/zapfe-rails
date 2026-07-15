@@ -25,9 +25,9 @@ class Offers::CreateFromOrder
         offer.line_items.create!(
           position_type: "product",
           product_variant: variant,
-          description: "#{product.brand} #{product.name} · #{variant.size} l",
+          description: variant.display_label,
           quantity: selection.quantity,
-          unit: selection.unit,
+          unit: selection.unit.presence || variant.sales_unit,
           supplier_offering: supplier_offering,
           net_unit_price: variant.price,
           direct_cost_unit: supplier_offering&.current_price&.purchase_price,

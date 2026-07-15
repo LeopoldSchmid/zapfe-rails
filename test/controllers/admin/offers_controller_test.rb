@@ -127,7 +127,7 @@ class Admin::OffersControllerTest < ActionDispatch::IntegrationTest
 
     line_item = offer.reload.line_items.sole
     assert_equal supplier_offering.product_variant, line_item.product_variant
-    assert_equal "Rothaus Pils · 20.0 l", line_item.description
+    assert_equal "Rothaus Pils · 20 l", line_item.description
   end
 
   test "lists matching supplier alternatives in preferred supplier order" do

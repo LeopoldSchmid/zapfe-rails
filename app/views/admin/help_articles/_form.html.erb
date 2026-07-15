@@ -1,0 +1,25 @@
+<%= form_with model: [ :admin, @help_article ], class: "space-y-6" do |f| %>
+  <section class="admin-panel space-y-4">
+    <div class="grid gap-4 md:grid-cols-2">
+      <div><%= f.label :title, "Titel", class: "admin-field-label" %><%= f.text_field :title, required: true, class: "admin-field" %></div>
+      <div><%= f.label :topic, "Bereich", class: "admin-field-label" %><%= f.select :topic, Admin::HelpCenterHelper::HELP_TOPICS.map { |key, label| [label, key] }, { include_blank: "Bitte wählen" }, required: true, class: "admin-field" %></div>
+    </div>
+    <%= render "admin/shared/rich_text_field", form: f, attribute: :body, label: "Anleitung" %>
+  </section>
+
+  <section class="admin-panel">
+    <h2 class="text-lg font-semibold text-[var(--color-zapfe-navy)]">Häufige Fragen</h2>
+    <div class="mt-4 space-y-4">
+      <%= f.fields_for :faqs do |faq| %>
+        <div class="grid gap-3 rounded-xl bg-slate-50 p-4 md:grid-cols-[1fr_1fr_auto]">
+          <div><%= faq.label :question, "Frage", class: "admin-field-label" %><%= faq.text_field :question, class: "admin-field" %></div>
+          <div><%= faq.label :answer, "Antwort", class: "admin-field-label" %><%= faq.text_area :answer, rows: 2, class: "admin-field" %></div>
+          <label class="flex items-end gap-2 pb-2 text-sm text-rose-700"><%= faq.check_box :_destroy %> Entfernen</label>
+          <%= faq.hidden_field :position, value: faq.index.to_i + 1 %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <div class="flex justify-end"><%= f.submit "Speichern", class: "admin-cta" %></div>
+<% end %>
