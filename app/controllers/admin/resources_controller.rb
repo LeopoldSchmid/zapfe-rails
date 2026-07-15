@@ -3,6 +3,11 @@ class Admin::ResourcesController < Admin::BaseController
 
   def index
     @resources = Resource.includes(reservations: :order).order(:resource_type, :name)
+    @calendar_start = parse_calendar_start
+    @calendar_days = (@calendar_start...(@calendar_start + 7.days)).to_a
+    @calendar_reservations = Reservation.includes(:resource, :order)
+      .where("starts_at < ? AND ends_at >= ?", (@calendar_start + 7.days).beginning_of_day, @calendar_start.beginning_of_day)
+      .order(:starts_at)
   end
 
   def new
@@ -36,6 +41,12 @@ class Admin::ResourcesController < Admin::BaseController
   end
 
   def resource_params
-    params.require(:resource).permit(:name, :resource_type, :active, :configuration_notes)
+    params.require(:resource).permit(:name, :resource_type, :active, :configuration_notes, :rental_position_name, :rental_net_price, :rental_unit)
+  end
+
+  def parse_calendar_start
+    Date.iso8601(params[:week]).beginning_of_week
+  rescue ArgumentError, TypeError
+    Date.current.beginning_of_week
   end
 end

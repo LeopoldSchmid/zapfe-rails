@@ -37,14 +37,14 @@ class Admin::SupplierOfferingsController < Admin::BaseController
 
   def load_form_data
     @suppliers = Supplier.active.order(:name)
-    @profiles = ProcurementProfile.includes(:supplier).order("suppliers.name", :name).references(:supplier)
+    @profiles = ProcurementProfile.includes(:supplier).order(:standard, "suppliers.name", :name).references(:supplier)
     @product_variants = ProductVariant.includes(:product).order("products.brand", "products.name", :size).references(:product)
   end
 
   def offering_params
     params.require(:supplier_offering).permit(
       :supplier_id, :product_variant_id, :procurement_profile_id, :supplier_sku, :active,
-      :lead_time_days_override, :return_policy_override, :notes,
+      :lead_time_days_override, :return_policy_override, :return_period_days_override, :notes,
       supplier_prices_attributes: %i[id purchase_price valid_from valid_until]
     )
   end

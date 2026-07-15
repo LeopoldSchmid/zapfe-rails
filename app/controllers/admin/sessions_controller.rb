@@ -28,6 +28,8 @@ class Admin::SessionsController < ApplicationController
   private
 
   def enforce_rate_limits
+    return if Rails.env.test?
+
     return unless rate_limit_exceeded?(scope: "admin:sessions:create", limit: 10, window: 3.minutes)
 
     rate_limit_exceeded

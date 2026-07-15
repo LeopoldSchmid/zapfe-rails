@@ -15,6 +15,21 @@ class Offers::CreateFromOrder
         recipient_address: @order.event_location
       )
       offer.activities.create!(admin_user: @admin_user, event_type: "created", message: "Angebotsentwurf v#{offer.version} erstellt")
+      @order.product_selections.includes(product_variant: :product).find_each do |selection|
+        variant = selection.product_variant
+        product = variant.product
+        offer.line_items.create!(
+          position_type: "product",
+          product_variant: variant,
+          description: "#{product.brand} #{product.name} · #{variant.size} l",
+          quantity: selection.quantity,
+          unit: selection.unit,
+          net_unit_price: 0,
+          tax_rate: SystemSetting.current.standard_tax_rate,
+          discount_type: "none",
+          discount_value: 0
+        )
+      end
       offer
     end
   end

@@ -21,13 +21,18 @@ class Admin::OrdersController < Admin::BaseController
   def new
     @order = Order.new(responsible_admin_user: current_admin_user, status: "preparing")
     @admin_users = AdminUser.active.order(:name)
+    @order_templates = OrderTemplate.active.order(:name)
   end
 
   def create
     @order = Order.new(order_params)
     @admin_users = AdminUser.active.order(:name)
+    @order_templates = OrderTemplate.active.order(:name)
+    template = @order_templates.find_by(id: params[:order_template_id])
+    Orders::ApplyTemplate.new(order: @order, template: template).apply_defaults! if template
 
     if @order.save
+      Orders::ApplyTemplate.new(order: @order, template: template).materialize! if template
       redirect_to admin_order_path(@order), notice: "Auftrag erstellt."
     else
       render :new, status: :unprocessable_entity

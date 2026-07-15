@@ -23,6 +23,8 @@
 
 <% if @waiting_inquiries.any? %><section class="mt-6 rounded-xl border border-sky-200 bg-sky-50 p-5"><h2 class="font-semibold text-sky-950">Wartet auf Rückmeldung</h2><ul class="mt-3 space-y-2"><% @waiting_inquiries.each do |inquiry| %><li><%= link_to "#{inquiry_status_label(inquiry.status)} · #{inquiry.customer_name}", admin_inquiry_path(inquiry), class: "underline" %></li><% end %></ul></section><% end %>
 
+<% if @due_tasks.any? %><section class="mt-6 rounded-xl border border-violet-200 bg-violet-50 p-5"><div class="flex items-center justify-between"><h2 class="font-semibold text-violet-950">Offene Aufgaben und Fristen</h2><span class="text-sm text-violet-900">nächste 7 Tage</span></div><ul class="mt-3 space-y-2"><% @due_tasks.each do |task| %><li><%= link_to "#{task.due_on} · #{task.order.customer_name}: #{task.title}#{task.assigned_admin_user ? " · #{task.assigned_admin_user.name}" : ""}", admin_order_path(task.order), class: "underline" %></li><% end %></ul></section><% end %>
+
 <div class="grid gap-4 md:grid-cols-3">
   <div class="admin-kpi">
     <p class="proof-kicker">Katalog</p>

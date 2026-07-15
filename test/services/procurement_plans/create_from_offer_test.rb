@@ -25,4 +25,17 @@ class ProcurementPlans::CreateFromOfferTest < ActiveSupport::TestCase
     assert_equal Date.new(2026, 8, 30), task.due_on
     assert_equal(-2, task.relative_offset_days)
   end
+
+  test "includes external rental or combined free positions without a supplier source" do
+    offer = Offer.create!(order: @order, version: 2, valid_until: Date.current + 14.days, recipient_name: "Max Mustermann")
+    offer.line_items.create!(description: "Externe Kühlanhänger-Miete", quantity: 1, unit: "Tag", net_unit_price: 180, tax_rate: 19, direct_cost_unit: 120)
+    Offers::Finalize.new(offer: offer, admin_user: admin_users(:one)).call
+    Offers::Resolve.new(offer: offer, status: "accepted", admin_user: admin_users(:one)).call
+    plan = ProcurementPlans::CreateFromOffer.new(offer: offer).call
+
+    item = plan.items.find_by!(description: "Externe Kühlanhänger-Miete")
+    assert_nil item.supplier_offering
+    assert_equal 120.to_d, item.purchase_price
+    assert_nil item.order_by_on
+  end
 end

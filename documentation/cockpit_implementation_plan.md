@@ -695,7 +695,7 @@ cancelled          → Storniert
 - [x] Im MVP einen zentral konfigurierbaren Standardsteuersatz verwenden; Sonderfälle erst nach realem Bedarf ergänzen.
 - [x] Menge, Einheit, Beschreibung, Netto-Einzelpreis, Rabatt und Steuersatz erfassen.
 - [x] Pro Position passende `SupplierOffering`s vergleichen.
-- [~] Voraussichtlich günstigste beziehungsweise organisatorisch passende Quelle vorschlagen, aber nicht automatisch verbindlich auswählen. (Aktuelle Preise und Vorlaufzeiten sind sichtbar und nach Preis sortiert; eine explizite Empfehlungsregel folgt.)
+- [x] Voraussichtlich günstigste beziehungsweise organisatorisch passende Quelle vorschlagen, aber nicht automatisch verbindlich auswählen. (Preis, Vorlaufzeit und Rückgaberegel bestimmen die Vorschlagsreihenfolge; verbindlich wählt das Team.)
 - [ ] Einkaufspreis, Profil, Vorlauf, Rückgaberegel und direkte Zusatzkosten in die interne Kalkulation übernehmen.
 - [x] Miet- und Lieferleistung im MVP weiterhin als kombinierte freie Position erfassen können.
 - [ ] Pfand technisch als optionalen Kosten-/Zahlungsbaustein vorbereiten, aber nicht automatisch im Kundendokument ausweisen.
@@ -753,7 +753,7 @@ Mit Abschluss von Phase 2 ist die erste praktisch nutzbare Zapfe-Auftragszentral
 - [x] `ProcurementPlan` oder gleichwertige Auftragsstruktur einführen.
 - [~] Passende Quellen anhand von Preis, Vorlauf, Rückgaberegeln und Zusatzleistungen vergleichen. (Preis, Vorlauf und Rückgabe sind sichtbar; Zusatzleistungen folgen.)
 - [x] Bezugsquelle erst nach Auftragsbestätigung und unmittelbar vor der konkreten Beschaffung verbindlich auswählen.
-- [~] Automatischen Vorschlag erlauben; finale Auswahl bleibt beim Team. (Günstigste Quelle wird im Angebot sichtbar; expliziter Vorschlag folgt.)
+- [x] Automatischen Vorschlag erlauben; finale Auswahl bleibt beim Team. (Auswahloptionen werden nach Preis, Vorlaufzeit und Rückgaberegel empfohlen; verbindlich wählt weiterhin das Team.)
 - [ ] Beschaffungsstatus zunächst auf vier Werte begrenzen:
 
 ```text
@@ -765,23 +765,23 @@ done        → Erledigt
 
 - [x] Gewählte Konditionen als Auftragssnapshot sichern.
 - [x] Aufgaben aus Vorlaufzeiten und Bestellfristen erzeugen. (Beim Erstellen eines Beschaffungsplans wird eine relative Bestellaufgabe angelegt.)
-- [ ] Lieferantenangebote und Bestellbestätigungen im MVP als PDF/Bild oder Notiz anhängen, nicht als eigenes strukturiertes Objekt.
-- [ ] Externe Mietartikel und kombinierte Liefer-/Mietleistungen als Beschaffungsposition dokumentieren.
-- [ ] Noch zu entscheiden: konkrete Bestätigungslogik vor einer nicht rückgabefähigen Bestellung.
+- [x] Lieferantenangebote und Bestellbestätigungen im MVP als PDF/Bild oder Notiz anhängen, nicht als eigenes strukturiertes Objekt.
+- [x] Externe Mietartikel und kombinierte Liefer-/Mietleistungen als Beschaffungsposition dokumentieren.
+- [x] Nicht rückgabefähige Positionen erfordern vor dem Status „Bestätigt“ eine bewusste Bestätigung; Zeitpunkt und handelnder Admin werden protokolliert.
 
 ### Aufgaben und Checklisten
 
 - [x] `Task` mit Verantwortlichem, Status und Fälligkeit einführen.
-- [~] Manuelle und aus Vorlagen erzeugte Aufgaben unterstützen. (Manuelle Aufgaben sind umgesetzt; Vorlagen folgen mit Checklisten.)
+- [x] Manuelle und aus Vorlagen erzeugte Aufgaben unterstützen.
 - [x] Im MVP das Veranstaltungsdatum als ersten relativen Anker verwenden.
 - [x] Konfigurierbare Abstände in Tagen vor oder nach der Veranstaltung unterstützen.
 - [x] Bei Terminänderung nicht fixierte Fälligkeiten neu berechnen.
-- [ ] Erinnerungsjobs vorbereiten; Push folgt in Phase 5.
+- [~] Erinnerungsjobs vorbereiten; Push folgt in Phase 5. (Offene Aufgaben und Fristen sind im Dashboard sichtbar; asynchrone Erinnerungen folgen mit Push in Phase 5.)
 - [x] Aufgaben als fachliches **Was** und Checklisten als operatives **Wie** modellieren.
 - [x] Erste Checklisten-Vorlagen für Ape und Kegerator in den Bereichen Packen, Aufbauen und Reinigen anlegen. (Als pflegbare Seed-Vorlagen.)
 - [~] Inhalte der Checklisten später mit dem Team detailliert ausarbeiten. (Startpunkte sind vorhanden; konkrete Handgriffe werden gemeinsam ergänzt.)
 - [x] Pro Checklistenpunkt optional Anleitungstext, Bild/Datei, Link, Video-Link und Hinweis erlauben.
-- [ ] Schäden, Fehlteile und besondere Vorkommnisse als Notiz oder Aufgabe erfassen.
+- [x] Schäden, Fehlteile und besondere Vorkommnisse als Notiz oder Aufgabe erfassen.
 
 ### Ressourcen und Kalender
 
@@ -791,16 +791,16 @@ done        → Erledigt
 - [x] `Reservation` mit konkreter Ressource, Start und Ende anlegen.
 - [x] Im MVP keine automatischen Reinigungs-, Transport- oder Wartungspuffer anwenden.
 - [x] Doppelbuchungen blockieren oder unübersehbar warnen.
-- [~] Ressourcen-Kalender mit Belegungs- und Verfügbarkeitsanzeige bereitstellen. (Kommende Belegungen sind im Ressourcenbereich sichtbar; Kalenderansicht folgt.)
+- [x] Ressourcen-Kalender mit Belegungs- und Verfügbarkeitsanzeige bereitstellen.
 - [ ] Google-Kalender-Synchronisation als getrennten Integrationsschritt analysieren.
 
 ### Wiederkehrende Veranstaltungen
 
-- [ ] Freie Tags unterstützen.
-- [ ] Konfigurierbare `OrderTemplate`s je Veranstaltungsreihe anlegen.
-- [ ] Pro Vorlage frei festlegen können, welche Felder, Produkte, Ressourcen, Aufgaben und Checklisten vorausgefüllt werden.
-- [ ] Pro Vorlage Prozessschritte überspringen können, beispielsweise die Angebotsphase bei einer Eigenveranstaltung.
-- [ ] Jede Durchführung weiterhin als eigenen Auftrag mit eigenem Datum erzeugen.
+- [x] Freie Tags unterstützen.
+- [x] Konfigurierbare `OrderTemplate`s je Veranstaltungsreihe anlegen.
+- [x] Pro Vorlage frei festlegen können, welche Felder, Produkte, Ressourcen, Aufgaben und Checklisten vorausgefüllt werden.
+- [~] Pro Vorlage Prozessschritte überspringen können, beispielsweise die Angebotsphase bei einer Eigenveranstaltung. (Die Einstellung ist erfasst; die konkrete Prozessautomatisierung folgt erst bei einem definierten Eigenveranstaltungsablauf.)
+- [x] Jede Durchführung weiterhin als eigenen Auftrag mit eigenem Datum erzeugen.
 
 ### Arbeitszeit
 
@@ -811,13 +811,13 @@ done        → Erledigt
 
 ### Exit-Kriterien
 
-- [ ] Für einen bestätigten Auftrag kann die beste passende Bezugsquelle vorgeschlagen und bewusst ausgewählt werden.
-- [ ] Beschaffungsstatus und Bestellfristen sind nachvollziehbar.
-- [ ] Aufgaben und relative Fälligkeiten funktionieren bei Terminverschiebungen.
-- [ ] Checklisten führen bei Packen, Aufbau und Reinigung durch konkrete Handgriffe und können Hilfen verlinken.
-- [ ] Ape und Kegerator lassen sich nicht doppelt verbindlich reservieren.
-- [ ] Wiederkehrende Veranstaltungen können aus konfigurierbaren Vorlagen erzeugt werden.
-- [ ] Geplante und tatsächliche Arbeitszeit können verglichen werden.
+- [x] Für einen bestätigten Auftrag kann die beste passende Bezugsquelle vorgeschlagen und bewusst ausgewählt werden.
+- [x] Beschaffungsstatus und Bestellfristen sind nachvollziehbar.
+- [x] Aufgaben und relative Fälligkeiten funktionieren bei Terminverschiebungen.
+- [~] Checklisten führen bei Packen, Aufbau und Reinigung durch konkrete Handgriffe und können Hilfen verlinken. (Technik und Startvorlagen sind umgesetzt; detaillierte Arbeitsinhalte werden noch gemeinsam gepflegt.)
+- [x] Ape und Kegerator lassen sich nicht doppelt verbindlich reservieren.
+- [x] Wiederkehrende Veranstaltungen können aus konfigurierbaren Vorlagen erzeugt werden.
+- [x] Geplante und tatsächliche Arbeitszeit können verglichen werden.
 
 ## Phase 4 – Rechnung, XRechnung und Zahlungsabschluss
 
@@ -1088,7 +1088,7 @@ Die Entscheidungsblöcke vor Phase 1 bis Phase 3 wurden weitgehend geklärt. `[~
 
 - [x] Eine Bezugsquelle wird erst nach Bestätigung des Auftrags und vor der konkreten Beschaffung verbindlich gewählt.
 - [x] Das System darf anhand von Preis, Vorlauf und Bedingungen die beste passende Quelle vorschlagen; ein Mensch bestätigt die Wahl.
-- [ ] Genaue Bestätigungslogik für nicht rückgabefähige Bestellungen festlegen.
+- [x] Genaue Bestätigungslogik für nicht rückgabefähige Bestellungen: Pflicht-Haken vor Status „Bestätigt“, mit Admin und Zeitpunkt.
 - [x] Beschaffungsstatus im MVP: Geplant, Angefragt, Bestätigt, Erledigt.
 - [x] Konkrete Lieferantenangebote werden zunächst als Anlage oder Notiz dokumentiert, nicht als eigenes Objekt.
 - [x] Vermietbare Geräte sind einzelne physische Ressourcen.

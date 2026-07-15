@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_15_012000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -195,6 +195,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.string "position_type", default: "free", null: false
     t.integer "product_variant_id"
     t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.integer "resource_id"
     t.integer "supplier_offering_id"
     t.decimal "tax_rate", precision: 5, scale: 2, default: "19.0", null: false
     t.string "unit", default: "Stk", null: false
@@ -202,6 +203,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.index ["offer_id", "position"], name: "index_offer_line_items_on_offer_id_and_position"
     t.index ["offer_id"], name: "index_offer_line_items_on_offer_id"
     t.index ["product_variant_id"], name: "index_offer_line_items_on_product_variant_id"
+    t.index ["resource_id"], name: "index_offer_line_items_on_resource_id"
     t.index ["supplier_offering_id"], name: "index_offer_line_items_on_supplier_offering_id"
   end
 
@@ -260,6 +262,82 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.index ["order_id"], name: "index_order_checklists_on_order_id"
   end
 
+  create_table "order_product_selections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "order_id", null: false
+    t.integer "product_variant_id", null: false
+    t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.string "unit", default: "Stk", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "product_variant_id"], name: "idx_order_product_selections_unique", unique: true
+    t.index ["order_id"], name: "index_order_product_selections_on_order_id"
+    t.index ["product_variant_id"], name: "index_order_product_selections_on_product_variant_id"
+  end
+
+  create_table "order_template_checklists", force: :cascade do |t|
+    t.integer "checklist_template_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "order_template_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["checklist_template_id"], name: "index_order_template_checklists_on_checklist_template_id"
+    t.index ["order_template_id", "checklist_template_id"], name: "idx_order_template_checklists_unique", unique: true
+    t.index ["order_template_id"], name: "index_order_template_checklists_on_order_template_id"
+  end
+
+  create_table "order_template_product_variants", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "order_template_id", null: false
+    t.integer "product_variant_id", null: false
+    t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.string "unit", default: "Stk", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_template_id", "product_variant_id"], name: "idx_template_product_variants_unique", unique: true
+    t.index ["order_template_id"], name: "index_order_template_product_variants_on_order_template_id"
+    t.index ["product_variant_id"], name: "index_order_template_product_variants_on_product_variant_id"
+  end
+
+  create_table "order_template_resources", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "order_template_id", null: false
+    t.integer "resource_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_template_id", "resource_id"], name: "idx_on_order_template_id_resource_id_a1a3dd74b8", unique: true
+    t.index ["order_template_id"], name: "index_order_template_resources_on_order_template_id"
+    t.index ["resource_id"], name: "index_order_template_resources_on_resource_id"
+  end
+
+  create_table "order_template_tasks", force: :cascade do |t|
+    t.integer "assigned_admin_user_id"
+    t.datetime "created_at", null: false
+    t.text "details"
+    t.integer "order_template_id", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "relative_offset_days"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_admin_user_id"], name: "index_order_template_tasks_on_assigned_admin_user_id"
+    t.index ["order_template_id"], name: "index_order_template_tasks_on_order_template_id"
+  end
+
+  create_table "order_templates", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "customer_message"
+    t.string "end_time"
+    t.date "ends_on"
+    t.string "event_location"
+    t.string "event_type"
+    t.integer "guests"
+    t.string "name", null: false
+    t.text "next_step"
+    t.integer "responsible_admin_user_id"
+    t.boolean "skip_offer", default: false, null: false
+    t.string "start_time"
+    t.date "starts_on"
+    t.datetime "updated_at", null: false
+    t.index ["responsible_admin_user_id"], name: "index_order_templates_on_responsible_admin_user_id"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.datetime "archived_at"
     t.datetime "created_at", null: false
@@ -300,6 +378,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.integer "procurement_plan_id", null: false
     t.decimal "purchase_price", precision: 10, scale: 2
     t.decimal "quantity", precision: 10, scale: 2, null: false
+    t.integer "return_period_days"
     t.string "return_policy"
     t.integer "supplier_offering_id"
     t.string "unit", null: false
@@ -312,12 +391,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
 
   create_table "procurement_plans", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "non_returnable_confirmed_at"
+    t.integer "non_returnable_confirmed_by_id"
     t.text "notes"
     t.integer "offer_id"
     t.date "order_by_on"
     t.integer "order_id", null: false
     t.string "status", default: "planned", null: false
     t.datetime "updated_at", null: false
+    t.index ["non_returnable_confirmed_by_id"], name: "index_procurement_plans_on_non_returnable_confirmed_by_id"
     t.index ["offer_id"], name: "index_procurement_plans_on_offer_id"
     t.index ["order_id", "status"], name: "index_procurement_plans_on_order_id_and_status"
     t.index ["order_id"], name: "index_procurement_plans_on_order_id"
@@ -329,9 +411,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.text "delivery_notes"
     t.integer "lead_time_days", default: 0, null: false
     t.string "name", null: false
+    t.integer "return_period_days"
     t.string "return_policy", default: "unknown", null: false
-    t.integer "supplier_id", null: false
+    t.boolean "standard", default: false, null: false
+    t.integer "supplier_id"
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "idx_standard_procurement_profiles_name", unique: true, where: "standard = 1"
     t.index ["supplier_id", "name"], name: "index_procurement_profiles_on_supplier_id_and_name", unique: true
     t.index ["supplier_id"], name: "index_procurement_profiles_on_supplier_id"
   end
@@ -394,6 +479,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.text "configuration_notes"
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.decimal "rental_net_price", precision: 10, scale: 2
+    t.string "rental_position_name"
+    t.string "rental_unit", default: "Tag", null: false
     t.string "resource_type", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_resources_on_name", unique: true
@@ -446,6 +534,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.text "notes"
     t.integer "procurement_profile_id", null: false
     t.integer "product_variant_id", null: false
+    t.integer "return_period_days_override"
     t.string "return_policy_override"
     t.integer "supplier_id", null: false
     t.string "supplier_sku"
@@ -484,6 +573,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
     t.decimal "internal_hourly_cost", precision: 10, scale: 2
     t.decimal "standard_tax_rate", precision: 5, scale: 2, default: "19.0", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "taggings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "tag_id", null: false
+    t.integer "taggable_id", null: false
+    t.string "taggable_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id", "taggable_type", "taggable_id"], name: "index_taggings_on_tag_id_and_taggable_type_and_taggable_id", unique: true
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
   create_table "tasks", force: :cascade do |t|
@@ -535,17 +642,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
   add_foreign_key "inquiries", "admin_users", column: "assigned_admin_user_id"
   add_foreign_key "offer_line_items", "offers"
   add_foreign_key "offer_line_items", "product_variants"
+  add_foreign_key "offer_line_items", "resources"
   add_foreign_key "offer_line_items", "supplier_offerings"
   add_foreign_key "offers", "orders"
   add_foreign_key "order_checklist_items", "checklist_template_items"
   add_foreign_key "order_checklist_items", "order_checklists"
   add_foreign_key "order_checklists", "checklist_templates"
   add_foreign_key "order_checklists", "orders"
+  add_foreign_key "order_product_selections", "orders"
+  add_foreign_key "order_product_selections", "product_variants"
+  add_foreign_key "order_template_checklists", "checklist_templates"
+  add_foreign_key "order_template_checklists", "order_templates"
+  add_foreign_key "order_template_product_variants", "order_templates"
+  add_foreign_key "order_template_product_variants", "product_variants"
+  add_foreign_key "order_template_resources", "order_templates"
+  add_foreign_key "order_template_resources", "resources"
+  add_foreign_key "order_template_tasks", "admin_users", column: "assigned_admin_user_id"
+  add_foreign_key "order_template_tasks", "order_templates"
+  add_foreign_key "order_templates", "admin_users", column: "responsible_admin_user_id"
   add_foreign_key "orders", "admin_users", column: "responsible_admin_user_id"
   add_foreign_key "orders", "inquiries"
   add_foreign_key "procurement_plan_items", "offer_line_items"
   add_foreign_key "procurement_plan_items", "procurement_plans"
   add_foreign_key "procurement_plan_items", "supplier_offerings"
+  add_foreign_key "procurement_plans", "admin_users", column: "non_returnable_confirmed_by_id"
   add_foreign_key "procurement_plans", "offers"
   add_foreign_key "procurement_plans", "orders"
   add_foreign_key "procurement_profiles", "suppliers"
@@ -559,6 +679,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_232000) do
   add_foreign_key "supplier_offerings", "product_variants"
   add_foreign_key "supplier_offerings", "suppliers"
   add_foreign_key "supplier_prices", "supplier_offerings"
+  add_foreign_key "taggings", "tags"
   add_foreign_key "tasks", "admin_users", column: "assigned_admin_user_id"
   add_foreign_key "tasks", "orders"
   add_foreign_key "tasks", "procurement_plans"

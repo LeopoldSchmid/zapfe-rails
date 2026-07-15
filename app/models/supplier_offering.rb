@@ -13,6 +13,7 @@ class SupplierOffering < ApplicationRecord
   validates :product_variant_id, uniqueness: { scope: :supplier_id }
   validates :lead_time_days_override, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :return_policy_override, inclusion: { in: RETURN_POLICIES }, allow_blank: true
+  validates :return_period_days_override, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validate :profile_belongs_to_supplier
 
   def lead_time_days
@@ -23,6 +24,10 @@ class SupplierOffering < ApplicationRecord
     return_policy_override.presence || procurement_profile.return_policy
   end
 
+  def return_period_days
+    return_period_days_override || procurement_profile.return_period_days
+  end
+
   def current_price(on: Date.current)
     supplier_prices.where("valid_from <= ?", on).where("valid_until IS NULL OR valid_until >= ?", on).order(valid_from: :desc).first
   end
@@ -30,7 +35,7 @@ class SupplierOffering < ApplicationRecord
   private
 
   def profile_belongs_to_supplier
-    return if procurement_profile.blank? || supplier.blank? || procurement_profile.supplier_id == supplier_id
+    return if procurement_profile.blank? || supplier.blank? || procurement_profile.supplier_id.blank? || procurement_profile.supplier_id == supplier_id
 
     errors.add(:procurement_profile, "muss zum selben Händler gehören")
   end

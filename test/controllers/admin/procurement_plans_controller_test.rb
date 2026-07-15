@@ -20,4 +20,29 @@ class Admin::ProcurementPlansControllerTest < ActionDispatch::IntegrationTest
     patch admin_order_procurement_plan_url(@order, plan), params: { procurement_plan: { status: "requested" } }
     assert_equal "requested", plan.reload.status
   end
+
+  test "downloads a procurement attachment through the protected order route" do
+    plan = ProcurementPlans::CreateFromOffer.new(offer: @offer).call
+    plan.attachments.attach(io: StringIO.new("Lieferantenangebot"), filename: "angebot.pdf", content_type: "application/pdf")
+
+    get attachment_admin_order_procurement_plan_url(@order, plan, plan.attachments.last)
+
+    assert_response :success
+    assert_equal "Lieferantenangebot", response.body
+    assert_equal "application/pdf", response.media_type
+  end
+
+  test "requires an explicit confirmation for non-returnable procurement" do
+    plan = @order.procurement_plans.create!(status: "planned")
+    plan.items.create!(description: "Sonderbestellung", quantity: 1, unit: "Stk", return_policy: "non_returnable")
+
+    patch admin_order_procurement_plan_url(@order, plan), params: { procurement_plan: { status: "confirmed" } }
+    assert_equal "planned", plan.reload.status
+    assert_nil plan.non_returnable_confirmed_at
+
+    patch admin_order_procurement_plan_url(@order, plan), params: { procurement_plan: { status: "confirmed" }, confirm_non_returnable: "1" }
+    assert_equal "confirmed", plan.reload.status
+    assert_equal @admin, plan.non_returnable_confirmed_by
+    assert_not_nil plan.non_returnable_confirmed_at
+  end
 end

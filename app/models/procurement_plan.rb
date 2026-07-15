@@ -3,11 +3,18 @@ class ProcurementPlan < ApplicationRecord
 
   belongs_to :order
   belongs_to :offer, optional: true
+  belongs_to :non_returnable_confirmed_by, class_name: "AdminUser", optional: true
   has_many :items, class_name: "ProcurementPlanItem", dependent: :destroy
   has_many :tasks, dependent: :nullify
+  has_many_attached :attachments
 
   validates :status, inclusion: { in: STATUSES }
   validate :offer_belongs_to_order
+  validate :attachments_are_safe
+
+  def requires_non_returnable_confirmation?
+    items.any?(&:non_returnable?)
+  end
 
   private
 
@@ -15,5 +22,12 @@ class ProcurementPlan < ApplicationRecord
     return if offer.blank? || offer.order_id == order_id
 
     errors.add(:offer, "muss zum selben Auftrag gehören")
+  end
+
+  def attachments_are_safe
+    attachments.each do |attachment|
+      errors.add(:attachments, "dürfen höchstens 25 MB groß sein") if attachment.byte_size > 25.megabytes
+      errors.add(:attachments, "müssen PDF- oder Bilddateien sein") unless attachment.content_type.in?(%w[application/pdf image/jpeg image/png image/webp])
+    end
   end
 end

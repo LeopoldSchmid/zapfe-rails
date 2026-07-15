@@ -2,6 +2,8 @@ class OrderTemplate < ApplicationRecord
   belongs_to :responsible_admin_user, class_name: "AdminUser", optional: true
   has_many :order_template_resources, dependent: :destroy
   has_many :resources, through: :order_template_resources
+  has_many :order_template_product_variants, dependent: :destroy
+  has_many :product_variants, through: :order_template_product_variants
   has_many :template_tasks, class_name: "OrderTemplateTask", dependent: :destroy
   has_many :order_template_checklists, dependent: :destroy
   has_many :checklist_templates, through: :order_template_checklists

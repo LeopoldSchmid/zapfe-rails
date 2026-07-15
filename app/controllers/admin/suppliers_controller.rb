@@ -35,13 +35,13 @@ class Admin::SuppliersController < Admin::BaseController
   private
 
   def set_supplier
-    @supplier = Supplier.find(params[:id])
+    @supplier = Supplier.includes(supplier_offerings: [ :procurement_profile, { product_variant: :product } ]).find(params[:id])
   end
 
   def supplier_params
     params.require(:supplier).permit(
       :name, :email, :phone, :notes, :active, :default_supplier,
-      procurement_profiles_attributes: %i[id name lead_time_days return_policy delivery_notes cancellation_notes _destroy]
+      procurement_profiles_attributes: %i[id name lead_time_days return_policy return_period_days delivery_notes cancellation_notes _destroy]
     )
   end
 end

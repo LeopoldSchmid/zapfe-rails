@@ -12,6 +12,7 @@ class Order < ApplicationRecord
   has_many :checklists, class_name: "OrderChecklist", dependent: :destroy
   has_many :taggings, as: :taggable, dependent: :destroy
   has_many :tags, through: :taggings
+  has_many :product_selections, class_name: "OrderProductSelection", dependent: :destroy
 
   after_update_commit :recalculate_relative_task_dates, if: :saved_change_to_event_date?
   has_many_attached :attachments

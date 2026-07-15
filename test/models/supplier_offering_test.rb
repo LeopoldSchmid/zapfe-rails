@@ -25,4 +25,22 @@ class SupplierOfferingTest < ActiveSupport::TestCase
     assert_not offering.valid?
     assert_includes offering.errors.attribute_names, :procurement_profile
   end
+
+  test "accepts a global standard procurement profile for every supplier" do
+    profile = ProcurementProfile.create!(name: "Standard-Test", standard: true, lead_time_days: 3, return_policy: "returnable")
+    offering = SupplierOffering.new(supplier: suppliers(:beck), product_variant: product_variants(:two), procurement_profile: profile)
+
+    assert offering.valid?
+    assert_nil profile.supplier
+  end
+
+  test "uses an offering-specific return period before the profile default" do
+    offering = supplier_offerings(:suedstar_variant)
+    offering.procurement_profile.update!(return_period_days: 14)
+
+    assert_equal 14, offering.return_period_days
+
+    offering.update!(return_period_days_override: 7)
+    assert_equal 7, offering.return_period_days
+  end
 end

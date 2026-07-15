@@ -10,6 +10,7 @@ class ProcurementPlanItem < ApplicationRecord
   validates :purchase_price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :lead_time_days, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :return_policy, inclusion: { in: RETURN_POLICIES }, allow_blank: true
+  validates :return_period_days, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
   def non_returnable?
     return_policy == "non_returnable"

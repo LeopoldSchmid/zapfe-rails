@@ -5,6 +5,7 @@ class OfferLineItem < ApplicationRecord
   belongs_to :offer
   belongs_to :product_variant, optional: true
   belongs_to :supplier_offering, optional: true
+  belongs_to :resource, optional: true
 
   validates :position_type, inclusion: { in: POSITION_TYPES }
   validates :discount_type, inclusion: { in: DISCOUNT_TYPES }
@@ -16,6 +17,7 @@ class OfferLineItem < ApplicationRecord
   validate :supplier_offering_matches_product_variant
   validate :discount_does_not_exceed_line_amount
   validate :offer_must_be_editable
+  validate :resource_and_product_are_exclusive
 
   def gross_before_discount
     (quantity || BigDecimal("0")) * (net_unit_price || BigDecimal("0"))
@@ -63,5 +65,11 @@ class OfferLineItem < ApplicationRecord
     return if offer.blank? || offer.editable?
 
     errors.add(:base, "Positionen eines finalisierten Angebots können nicht geändert werden")
+  end
+
+  def resource_and_product_are_exclusive
+    return unless resource_id.present? && product_variant_id.present?
+
+    errors.add(:base, "Eine Position kann entweder eine Ressource oder ein Produkt sein")
   end
 end

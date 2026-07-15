@@ -42,6 +42,34 @@ Supplier.find_or_create_by!(name: "Getränke Beck") do |supplier|
   supplier.active = true
 end
 
+standard_profile_definitions = {
+  "Lagerware" => { lead_time_days: 2, return_policy: "returnable" },
+  "Bestellware" => { lead_time_days: 7, return_policy: "returnable" },
+  "Sonderbestellung" => { lead_time_days: 14, return_policy: "non_returnable" }
+}
+standard_profiles = standard_profile_definitions.each_with_object({}) do |(name, attributes), profiles|
+  profile = ProcurementProfile.find_or_initialize_by(name: name, supplier_id: nil)
+  profile.assign_attributes(attributes.merge(standard: true))
+  profile.save!
+  profiles[name] = profile
+end
+
+suppliers = Supplier.where(name: [ "Getränkemarkt Südstar", "Getränke Beck" ]).index_by(&:name)
+ProductVariant.find_each do |variant|
+  {
+    "Getränkemarkt Südstar" => standard_profiles.fetch("Lagerware"),
+    "Getränke Beck" => standard_profiles.fetch("Sonderbestellung")
+  }.each do |supplier_name, profile|
+    offering = SupplierOffering.find_or_initialize_by(supplier: suppliers.fetch(supplier_name), product_variant: variant)
+    offering.assign_attributes(procurement_profile: profile, active: true)
+    offering.save!
+    price = offering.supplier_prices.find_or_initialize_by(valid_from: Date.current)
+    price.purchase_price = variant.size * 2
+    price.valid_until = nil
+    price.save!
+  end
+end
+
 {
   "Ape" => {
     "packing" => [ "Ape und Zubehör auf Vollständigkeit prüfen", "Verbrauchsmaterial und Werkzeug einladen" ],

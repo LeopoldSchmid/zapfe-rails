@@ -30,7 +30,9 @@ Rails.application.routes.draw do
     resources :suppliers, except: [ :show, :destroy ]
     resources :resources, except: [ :show, :destroy ]
     resources :checklist_templates, except: [ :show, :destroy ]
+    resources :order_templates, except: [ :show, :destroy ]
     resources :supplier_offerings, only: [ :new, :create, :edit, :update ]
+    resources :procurement_profiles, only: [ :edit, :update ]
     resources :inquiries, only: [ :index, :show ] do
       patch :assign, on: :member
       post :convert_to_order, on: :member
@@ -42,7 +44,10 @@ Rails.application.routes.draw do
     resources :orders, only: [ :index, :show, :new, :create, :update ] do
       resources :reservations, only: [ :create, :destroy ]
       resources :tasks, only: [ :create, :update, :destroy ]
-      resources :procurement_plans, only: [ :create, :update ]
+      resources :procurement_plans, only: [ :create, :update ] do
+        post :add_attachments, on: :member
+        get "attachments/:attachment_id", to: "procurement_plans#download_attachment", on: :member, as: :attachment
+      end
       resources :checklists, controller: "order_checklists", only: [ :create ] do
         resources :items, controller: "order_checklist_items", only: [ :update ]
       end
@@ -55,6 +60,8 @@ Rails.application.routes.draw do
       get "attachments/:attachment_id", to: "orders#download_attachment", on: :member, as: :attachment
     end
     resources :offers, only: [ :show, :update ] do
+      get :position_options, on: :member
+      get :supplier_options, on: :member
       post :finalize, on: :member
       post :duplicate, on: :member
       post :send_mail, on: :member
