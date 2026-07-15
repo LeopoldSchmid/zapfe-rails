@@ -12,7 +12,7 @@ class AdminRichTextNotesTest < ApplicationSystemTestCase
     assert_current_path admin_root_path
 
     visit notes_admin_order_path(order)
-    assert_selector "lexxy-editor"
+    assert_selector "lexxy-editor.lexxy-content.admin-rich-text"
     assert_no_selector "trix-editor"
   end
 end

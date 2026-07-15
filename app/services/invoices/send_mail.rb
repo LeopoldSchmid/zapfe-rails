@@ -8,6 +8,7 @@ class Invoices::SendMail
 
   def call
     @invoice.with_lock do
+      raise NotSendable, CustomerDocumentDelivery::DISABLED_MESSAGE unless CustomerDocumentDelivery.enabled?
       raise NotSendable, "Nur finalisierte Rechnungen können versendet werden." unless @invoice.status == "finalized"
       raise NotSendable, "Für den Versand fehlt die Empfänger-E-Mail-Adresse." if @invoice.recipient_email.blank?
       raise NotSendable, "Für den Versand fehlt das Rechnungs-PDF." unless @invoice.document.attached?

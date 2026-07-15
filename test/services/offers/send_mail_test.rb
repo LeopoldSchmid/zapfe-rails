@@ -25,4 +25,16 @@ class Offers::SendMailTest < ActiveSupport::TestCase
     assert_not_nil @offer.sent_at
     assert_match(/versendet/, @offer.activities.last.message)
   end
+
+  test "does not send a document when external document delivery is disabled" do
+    previous = ENV["CUSTOMER_DOCUMENT_DELIVERY_ENABLED"]
+    ENV["CUSTOMER_DOCUMENT_DELIVERY_ENABLED"] = "false"
+    begin
+      assert_raises(Offers::SendMail::NotSendable) { Offers::SendMail.new(offer: @offer, admin_user: admin_users(:one)).call }
+    ensure
+      ENV["CUSTOMER_DOCUMENT_DELIVERY_ENABLED"] = previous
+    end
+
+    assert_equal "finalized", @offer.reload.status
+  end
 end

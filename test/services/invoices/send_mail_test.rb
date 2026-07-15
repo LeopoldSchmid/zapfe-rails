@@ -18,4 +18,16 @@ class Invoices::SendMailTest < ActiveSupport::TestCase
     assert_equal "sent", @invoice.reload.status
     assert_equal "sent", @invoice.activities.order(:created_at).last.event_type
   end
+
+  test "does not send a document when external document delivery is disabled" do
+    previous = ENV["CUSTOMER_DOCUMENT_DELIVERY_ENABLED"]
+    ENV["CUSTOMER_DOCUMENT_DELIVERY_ENABLED"] = "false"
+    begin
+      assert_raises(Invoices::SendMail::NotSendable) { Invoices::SendMail.new(invoice: @invoice, admin_user: @admin).call }
+    ensure
+      ENV["CUSTOMER_DOCUMENT_DELIVERY_ENABLED"] = previous
+    end
+
+    assert_equal "finalized", @invoice.reload.status
+  end
 end

@@ -99,7 +99,8 @@ class Admin::OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Freie Testnotizen aktualisiert", order.activities.order(:created_at).last.message
 
     get notes_admin_order_url(order)
-    assert_select "h2", text: "Lexxy – freie Notizen"
-    assert_select "lexxy-editor"
+    assert_select "h2", text: "Freie Notizen"
+    assert_select "lexxy-editor.lexxy-content.admin-rich-text"
+    assert_select "link[href*='tailwind']"
   end
 end

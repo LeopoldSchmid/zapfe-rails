@@ -24,6 +24,7 @@ env:
     UMAMI_ENABLED: true
     UMAMI_SCRIPT_URL: https://analytics.duzend.net/script.js
     UMAMI_DOMAINS: staging.zapfe.duzend.net
+    CUSTOMER_DOCUMENT_DELIVERY_ENABLED: false
 
 volumes:
   - "zapfe_rails_staging_storage:/rails/storage"

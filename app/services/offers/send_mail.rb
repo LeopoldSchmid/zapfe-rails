@@ -8,6 +8,7 @@ class Offers::SendMail
 
   def call
     @offer.with_lock do
+      raise NotSendable, CustomerDocumentDelivery::DISABLED_MESSAGE unless CustomerDocumentDelivery.enabled?
       raise NotSendable, "Nur finalisierte Angebote können versendet werden." unless @offer.status == "finalized"
       raise NotSendable, "Für den Versand fehlt die Empfänger-E-Mail-Adresse." if @offer.recipient_email.blank?
       raise NotSendable, "Für den Versand fehlt das Angebots-PDF." unless @offer.document.attached?
