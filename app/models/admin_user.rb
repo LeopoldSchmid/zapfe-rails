@@ -12,6 +12,7 @@ class AdminUser < ApplicationRecord
   has_many :responsible_orders, class_name: "Order", foreign_key: :responsible_admin_user_id, inverse_of: :responsible_admin_user, dependent: :restrict_with_error
   has_many :activities, dependent: :restrict_with_error
   has_many :help_requests, dependent: :restrict_with_error
+  has_many :push_subscriptions, dependent: :destroy
 
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true

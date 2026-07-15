@@ -7,8 +7,22 @@
     <%= link_to "Anfragen öffnen", admin_inquiries_path, class: "admin-cta" %>
     <%= link_to "Auftrag anlegen", new_admin_order_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
     <%= link_to "Getränk anlegen", new_admin_product_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+    <button type="button" hidden class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-pwa-target="install" data-action="pwa#install">App installieren</button>
   </div>
 </div>
+
+<p hidden class="mt-4 text-sm text-slate-600" data-pwa-target="iosHint">Auf iPhone oder iPad: Teilen → „Zum Home-Bildschirm“.</p>
+
+<% if PushNotifications::SendNotification.configured? %>
+  <section class="admin-panel mt-6 flex flex-wrap items-center justify-between gap-4" data-controller="push" data-push-vapid-public-key-value="<%= ENV.fetch("VAPID_PUBLIC_KEY") %>">
+    <div><p class="font-semibold text-[var(--color-zapfe-navy)]">Benachrichtigungen</p><p class="mt-1 text-sm text-slate-600" data-push-target="status">Für dieses Gerät deaktiviert.</p></div>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="admin-cta" data-push-target="enable" data-action="push#enable">Aktivieren</button>
+      <button type="button" hidden class="admin-secondary-action" data-push-target="test" data-action="push#test">Testen</button>
+      <button type="button" hidden class="admin-secondary-action" data-push-target="disable" data-action="push#disable">Deaktivieren</button>
+    </div>
+  </section>
+<% end %>
 
 <div class="mt-8 grid gap-6 lg:grid-cols-2">
   <section class="rounded-xl border border-amber-300 bg-amber-50 p-5">

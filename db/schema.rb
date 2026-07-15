@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_235000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -574,6 +574,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_235000) do
     t.index ["kind"], name: "index_products_on_kind"
   end
 
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.integer "admin_user_id", null: false
+    t.text "auth", null: false
+    t.datetime "created_at", null: false
+    t.text "endpoint", null: false
+    t.text "p256dh", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_push_subscriptions_on_admin_user_id"
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+  end
+
   create_table "reservations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "ends_at", null: false
@@ -729,6 +740,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_235000) do
     t.datetime "created_at", null: false
     t.text "details"
     t.date "due_on"
+    t.date "last_push_reminded_on"
     t.integer "order_id", null: false
     t.integer "procurement_plan_id"
     t.string "relative_anchor"
@@ -810,6 +822,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_235000) do
   add_foreign_key "procurement_profiles", "suppliers"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "categories"
+  add_foreign_key "push_subscriptions", "admin_users"
   add_foreign_key "reservations", "offers"
   add_foreign_key "reservations", "orders"
   add_foreign_key "reservations", "resources"

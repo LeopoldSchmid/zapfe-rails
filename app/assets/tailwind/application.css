@@ -1205,10 +1205,6 @@
     @apply rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm active:bg-slate-50;
   }
 
-  .admin-help-link {
-    @apply grid h-9 w-9 place-items-center rounded-full border border-slate-200 text-sm font-bold text-slate-600 transition hover:border-[var(--color-zapfe-amber)] hover:bg-amber-50 hover:text-[var(--color-zapfe-navy)];
-  }
-
   .admin-help-button {
     @apply fixed bottom-5 right-5 z-30 grid h-11 w-11 place-items-center rounded-full bg-[var(--color-zapfe-navy)] text-lg font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-amber-200;
   }

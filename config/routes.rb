@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "/admin/manifest.webmanifest", to: "pwa#manifest", defaults: { format: :json }
+  get "/service-worker.js", to: "pwa#service_worker", defaults: { format: :js }
+
   root "pages#home"
 
   get "/events", to: "pages#events"
@@ -26,6 +29,9 @@ Rails.application.routes.draw do
 
     root "dashboard#index"
     post :undo, to: "undo#create"
+    resource :push_subscription, only: %i[create destroy] do
+      post :test
+    end
     resources :admin_users, except: [ :show, :destroy ]
     resources :help_articles, except: [ :show, :destroy ]
     resources :help_requests, only: [ :create, :update ]

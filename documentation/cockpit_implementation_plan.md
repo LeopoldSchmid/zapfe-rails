@@ -5,6 +5,8 @@
 **Vorgeschlagener Repository-Pfad:** `documentation/order_management_roadmap.md`  
 **Verantwortung:** Zapfe-Entwicklerteam  
 
+> **Implementierungsstand 2026-07-15:** Phasen 1 bis 3 sind als nutzbarer Arbeitsstand umgesetzt und auf Staging erprobt. Phase 4 besitzt bereits Rechnungsentwurf, Finalisierung, PDF, Versandbestätigung und Zahlungseingang, benötigt aber noch die fachliche Endabnahme. Die verbleibende Arbeit wird in dieser Reihenfolge erledigt: MVP-Härtung (inklusive Beschaffungs-/Dokumentenfälle und Betriebskonzept), mobile Optimierung, PWA, Push und danach die späteren Integrationen. Die nachfolgenden historischen Checkboxen werden schrittweise auf diesen Stand nachgezogen; sie sind kein verlässlicher Live-Fortschrittsindikator mehr.
+
 ## 1. Zweck dieses Dokuments
 
 Dieses Dokument beschreibt die schrittweise Erweiterung von `zapfe-rails` zu einer internen Auftragszentrale. Es ist gleichzeitig:

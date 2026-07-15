@@ -21,6 +21,9 @@ env:
     - RAILS_MASTER_KEY
     - SECRET_KEY_BASE
     - RESEND_API_KEY
+    - VAPID_PUBLIC_KEY
+    - VAPID_PRIVATE_KEY
+    - VAPID_SUBJECT
     - UMAMI_WEBSITE_ID
   clear:
     RAILS_ENV: production

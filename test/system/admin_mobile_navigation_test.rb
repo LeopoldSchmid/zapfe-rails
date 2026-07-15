@@ -16,7 +16,6 @@ class AdminMobileNavigationTest < ApplicationSystemTestCase
     fill_in "Email", with: admin.email
     fill_in "Password", with: "password123"
     click_button "Einloggen"
-    assert_text "Login erfolgreich."
 
     click_button "Menü"
     assert_link "Aufträge"

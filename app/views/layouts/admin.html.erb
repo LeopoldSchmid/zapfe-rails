@@ -3,13 +3,16 @@
   <head>
     <title><%= content_for(:title) || "Zapfe Admin" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="manifest" href="/admin/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icon.png">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "lexxy", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="admin-shell text-slate-900" data-controller="reservation-defaults offer-position-search turbo-scroll action-icons form-dirty">
+  <body class="admin-shell text-slate-900" data-controller="reservation-defaults offer-position-search turbo-scroll action-icons form-dirty pwa">
     <header class="admin-topbar" data-controller="mobile-menu">
       <div class="admin-container">
         <div class="flex min-h-16 items-center justify-between gap-4 py-3">
@@ -19,12 +22,9 @@
               <span><strong>zapfe.</strong><em>intern</em></span>
             <% end %>
           </div>
-          <div class="flex items-center gap-2">
-            <%= link_to "?", admin_help_articles_path, class: "admin-help-link", aria: { label: "Anleitungen verwalten" } %>
-            <button type="button" class="admin-menu-toggle md:hidden" data-action="mobile-menu#toggle" aria-label="Navigation öffnen">
-              Menü
-            </button>
-          </div>
+          <button type="button" class="admin-menu-toggle md:hidden" data-action="mobile-menu#toggle" aria-label="Navigation öffnen">
+            Menü
+          </button>
         </div>
 
         <nav class="admin-navigation hidden" data-mobile-menu-target="panel" aria-label="Hauptnavigation">
