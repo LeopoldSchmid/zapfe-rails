@@ -3,7 +3,7 @@ module PushNotifications
     def self.call(subscription:, title:, body:, path:, tag: nil)
       return unless configured?
 
-      Webpush.payload_send(
+      WebPush.payload_send(
         message: { title: title, body: body, path: path, tag: tag }.to_json,
         endpoint: subscription.endpoint,
         p256dh: subscription.p256dh,
@@ -14,7 +14,7 @@ module PushNotifications
           private_key: ENV.fetch("VAPID_PRIVATE_KEY")
         }
       )
-    rescue Webpush::ExpiredSubscription, Webpush::InvalidSubscription
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
       subscription.destroy!
     end
 
