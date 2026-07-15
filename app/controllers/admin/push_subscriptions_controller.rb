@@ -12,7 +12,7 @@ class Admin::PushSubscriptionsController < Admin::BaseController
   end
 
   def test
-    subscription = current_admin_user.push_subscriptions.find_by!(endpoint: params[:endpoint])
+    subscription = current_admin_user.push_subscriptions.find_by!(endpoint: subscription_params[:endpoint])
     PushNotificationJob.perform_later(
       subscription,
       title: "Push ist aktiv",

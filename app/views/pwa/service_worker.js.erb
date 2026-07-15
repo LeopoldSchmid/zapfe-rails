@@ -27,8 +27,8 @@ self.addEventListener("push", (event) => {
   const title = payload.title || "zapfe.intern"
   const options = {
     body: payload.body,
-    icon: "/icon.png",
-    badge: "/icon.png",
+    icon: "/pwa-icon-512.png",
+    badge: "/pwa-icon-192.png",
     tag: payload.tag,
     data: { path: payload.path || "/admin" }
   }

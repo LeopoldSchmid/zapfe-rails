@@ -37,4 +37,14 @@ class Admin::PushSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :no_content
     assert_equal "new-public-key", PushSubscription.last.p256dh
   end
+
+  test "queues a test notification for an existing subscription" do
+    subscription = PushSubscription.create!(admin_user: admin_users(:one), endpoint: "https://push.example.test/subscription/one", p256dh: "public-key", auth: "auth-key")
+
+    assert_enqueued_with(job: PushNotificationJob) do
+      post test_admin_push_subscription_url, params: { push_subscription: { endpoint: subscription.endpoint } }, as: :json
+    end
+
+    assert_response :accepted
+  end
 end
