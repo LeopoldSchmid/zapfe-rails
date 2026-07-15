@@ -35,7 +35,7 @@ class Admin::InvoicesController < Admin::BaseController
 
   def send_mail
     Invoices::SendMail.new(invoice: @invoice, admin_user: current_admin_user).call
-    redirect_to admin_invoice_path(@invoice), notice: "Rechnung wurde zum Versand eingeplant."
+    redirect_to admin_invoice_path(@invoice), notice: "Rechnung wurde versendet."
   rescue Invoices::SendMail::NotSendable => error
     redirect_to admin_invoice_path(@invoice), alert: error.message
   end

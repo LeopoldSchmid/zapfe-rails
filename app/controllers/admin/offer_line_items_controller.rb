@@ -59,7 +59,9 @@ class Admin::OfferLineItemsController < Admin::BaseController
       line_item.position_type = "free"
       line_item.description = line_item.resource.rental_position_label if line_item.description.blank?
       line_item.unit = line_item.resource.rental_unit if line_item.unit.blank?
-      line_item.net_unit_price = line_item.resource.rental_net_price if line_item.net_unit_price.blank? && line_item.resource.rental_net_price.present?
+      if (line_item.net_unit_price.blank? || line_item.net_unit_price.zero?) && line_item.resource.rental_net_price.present?
+        line_item.net_unit_price = line_item.resource.rental_net_price
+      end
     end
     if line_item.product_variant.present? && line_item.description.blank?
       product = line_item.product_variant.product

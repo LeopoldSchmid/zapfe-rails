@@ -114,6 +114,7 @@ export default class extends Controller {
     if (this.supplierWrapper) this.supplierWrapper.hidden = true
     if (this.sourceWrapper) this.sourceWrapper.hidden = false
     if (this.sourceLabel) this.sourceLabel.textContent = `Eigene Ressource · ${option.text}`
+    this.form.dispatchEvent(new Event("zapfe:dirty"))
   }
 
   async selectProduct() {
@@ -126,6 +127,7 @@ export default class extends Controller {
     if (this.sourceWrapper) this.sourceWrapper.hidden = true
     if (this.supplierWrapper) this.supplierWrapper.hidden = false
     await this.loadSupplierOfferings(option.value)
+    this.form.dispatchEvent(new Event("zapfe:dirty"))
   }
 
   clearSupplierOfferings() {

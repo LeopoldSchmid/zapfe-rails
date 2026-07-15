@@ -1233,8 +1233,12 @@
     @apply rounded-lg px-2.5 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900;
   }
 
+  .admin-flash-stack {
+    @apply pointer-events-none fixed right-4 top-20 z-50 grid w-[min(24rem,calc(100vw-2rem))] gap-2;
+  }
+
   .admin-flash {
-    @apply mb-5 rounded-2xl border px-4 py-3 text-sm font-medium shadow-sm;
+    @apply pointer-events-auto rounded-2xl border px-4 py-3 text-sm font-medium shadow-lg;
   }
 
   .admin-flash-notice {
@@ -1245,14 +1249,41 @@
     @apply border-rose-200 bg-rose-50 text-rose-900;
   }
 
-  .admin-process { @apply flex flex-nowrap gap-2 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm md:justify-center; }
-  .admin-process-step { @apply flex min-w-[8.5rem] shrink-0 items-center justify-center gap-3 rounded-xl px-3 py-3 text-center text-slate-500 transition hover:bg-slate-50; }
+  .admin-process { @apply sticky top-20 z-20 grid grid-cols-7 gap-1 rounded-2xl border border-slate-200 bg-white/95 p-2 shadow-sm backdrop-blur; }
+  .admin-process-step { @apply flex min-w-0 items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-center text-slate-500 transition hover:bg-slate-50; }
   .admin-process-step > span { @apply grid h-7 w-7 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs font-bold text-slate-500; }
-  .admin-process-step strong { @apply block text-sm font-semibold text-slate-700; }
+  .admin-process-step strong { @apply hidden min-w-0 truncate text-sm font-semibold text-slate-700; }
+  .admin-process-active strong { @apply block; }
   .admin-process-active { @apply bg-[var(--color-zapfe-navy)] text-white hover:bg-[var(--color-zapfe-navy)]; }
   .admin-process-active > span { @apply border-amber-300 bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]; }
   .admin-process-active strong { @apply text-white; }
   .admin-process-ready > span { @apply border-emerald-300 bg-emerald-50 text-emerald-700; }
+  .admin-process-ready:not(.admin-process-active) strong { @apply text-emerald-800; }
+
+  .admin-date-stepper { @apply mt-1 flex items-stretch; }
+  .admin-date-stepper .admin-field { @apply mt-0 rounded-none first:rounded-l-xl last:rounded-r-xl; }
+  .admin-date-stepper-button { @apply grid w-10 place-items-center border border-slate-300 bg-slate-50 text-lg font-semibold text-slate-600 transition hover:bg-slate-100; }
+  .admin-date-stepper-button:first-child { @apply rounded-l-xl; }
+  .admin-date-stepper-button:last-child { @apply rounded-r-xl; }
+
+  .admin-task-status { @apply inline-flex min-h-10 items-center rounded-xl px-3 text-sm font-semibold; }
+  .admin-task-status-open { @apply bg-slate-100 text-slate-700; }
+  .admin-task-status-in_progress { @apply bg-amber-100 text-amber-900; }
+  .admin-task-status-done { @apply bg-emerald-100 text-emerald-800; }
+
+  .admin-order-message { @apply rounded-xl border border-slate-200 bg-slate-50 p-3; }
+  .admin-order-message > summary { @apply cursor-pointer text-sm font-semibold text-[var(--color-zapfe-navy)]; }
+  .admin-order-message-preview { @apply mt-4 rounded-lg bg-white p-4 text-sm leading-6 text-slate-700 shadow-sm; }
+  .admin-order-message-preview p + p { @apply mt-3; }
+  .admin-order-message-preview table { @apply mt-3 w-full border-collapse text-left; }
+  .admin-order-message-preview th { @apply border-b border-slate-300 pb-2 pr-3 text-xs font-bold uppercase tracking-wide text-slate-500; }
+  .admin-order-message-preview td { @apply border-b border-slate-100 py-2 pr-3 align-top; }
+
+  @media (min-width: 640px) {
+    .admin-process { @apply grid-cols-7 gap-2; }
+    .admin-process-step { @apply gap-2 px-3 py-3; }
+    .admin-process-step strong { @apply block; }
+  }
 
   .admin-rich-text-field lexxy-editor { @apply mt-3 block min-h-80 rounded-xl border border-slate-300 bg-white text-slate-800 shadow-sm focus-within:border-[var(--color-zapfe-blue)] focus-within:ring-2 focus-within:ring-blue-100; }
   .lexxy-content { @apply leading-7 text-slate-700; }
@@ -1368,6 +1399,12 @@
   .admin-secondary-action {
     @apply rounded-xl border border-slate-200 px-4 py-2 text-center text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50;
   }
+
+  .admin-icon { @apply h-4 w-4 shrink-0; }
+  .admin-action-with-icon { @apply inline-flex items-center justify-center gap-2; }
+  .admin-icon-only { @apply grid h-10 w-10 place-items-center rounded-xl; }
+  .admin-action-disabled { @apply cursor-not-allowed opacity-40; }
+  .admin-undo-button { @apply rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-900 hover:bg-emerald-50; }
 
   .admin-danger-action {
     @apply w-full rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50;

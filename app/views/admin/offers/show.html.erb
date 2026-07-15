@@ -8,6 +8,8 @@
 <%= render "shared/form_errors", object: @offer %>
 <%= render "details_form", offer: @offer %>
 
+<%= render "new_line_item", offer: @offer, line_item: @line_item if @offer.editable? %>
+
 <div class="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
   <section class="admin-panel">
     <div class="flex flex-wrap items-baseline justify-between gap-2"><div><p class="proof-kicker">Leistungen</p><h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]">Positionen</h2></div><p class="text-sm text-slate-500">Kundenpreise netto · EK nur intern</p></div>
@@ -16,5 +18,4 @@
   <%= render "summary", offer: @offer %>
 </div>
 
-<%= render "new_line_item", offer: @offer, line_item: @line_item if @offer.editable? %>
 <%= render "time_entries", offer: @offer %>

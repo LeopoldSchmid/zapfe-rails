@@ -11,12 +11,14 @@ class Admin::ProcurementPlansController < Admin::BaseController
   end
 
   def update
+    previous_status = @plan.status
     if confirming_non_returnable_without_acknowledgement?
       return redirect_to(procurement_admin_order_path(@order), alert: "Nicht rückgabefähige Positionen müssen vor der Bestätigung bewusst bestätigt werden.")
     end
 
     confirm_non_returnable! if confirming_non_returnable?
     if @plan.update(plan_params)
+      register_undo(@plan, attribute: :status, from: previous_status, path: procurement_admin_order_path(@order)) if @plan.saved_change_to_status?
       redirect_to procurement_admin_order_path(@order), notice: "Beschaffungsplan aktualisiert."
     else
       redirect_to procurement_admin_order_path(@order), alert: @plan.errors.full_messages.to_sentence

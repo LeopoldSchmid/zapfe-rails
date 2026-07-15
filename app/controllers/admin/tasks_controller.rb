@@ -5,6 +5,7 @@ class Admin::TasksController < Admin::BaseController
   def create
     @task = @order.tasks.build(task_params)
     if @task.save
+      @order.activities.create!(admin_user: current_admin_user, event_type: "task_created", message: "Aufgabe angelegt: #{@task.title}", metadata: { task_id: @task.id, due_on: @task.due_on })
       redirect_to execution_admin_order_path(@order), notice: "Aufgabe hinzugefügt."
     else
       redirect_to execution_admin_order_path(@order), alert: @task.errors.full_messages.to_sentence
@@ -12,7 +13,13 @@ class Admin::TasksController < Admin::BaseController
   end
 
   def update
+    previous_status = @task.status
     if @task.update(task_params)
+      changes = @task.previous_changes.slice("title", "details", "status", "due_on", "assigned_admin_user_id").except("updated_at")
+      if changes.present?
+        @order.activities.create!(admin_user: current_admin_user, event_type: "task_updated", message: "Aufgabe aktualisiert: #{@task.title}", metadata: { task_id: @task.id, changes: changes })
+      end
+      register_undo(@task, attribute: :status, from: previous_status, path: execution_admin_order_path(@order)) if @task.saved_change_to_status?
       redirect_to execution_admin_order_path(@order), notice: "Aufgabe aktualisiert."
     else
       redirect_to execution_admin_order_path(@order), alert: @task.errors.full_messages.to_sentence
@@ -20,7 +27,9 @@ class Admin::TasksController < Admin::BaseController
   end
 
   def destroy
+    task_title = @task.title
     @task.destroy!
+    @order.activities.create!(admin_user: current_admin_user, event_type: "task_deleted", message: "Aufgabe entfernt: #{task_title}")
     redirect_to execution_admin_order_path(@order), notice: "Aufgabe entfernt."
   end
 

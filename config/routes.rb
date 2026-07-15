@@ -25,10 +25,14 @@ Rails.application.routes.draw do
     patch "/password/edit", to: "passwords#update"
 
     root "dashboard#index"
+    post :undo, to: "undo#create"
     resources :admin_users, except: [ :show, :destroy ]
     resource :system_settings, only: [ :edit, :update ]
     resources :suppliers, except: [ :show, :destroy ]
     resources :resources, except: [ :show, :destroy ]
+    resources :customers, except: [ :show, :destroy ] do
+      get :contact_options, on: :member
+    end
     resources :checklist_templates, except: [ :show, :destroy ]
     resources :order_templates, except: [ :show, :destroy ]
     resources :supplier_offerings, only: [ :new, :create, :edit, :update ]

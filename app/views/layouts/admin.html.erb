@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
   <head>
     <title><%= content_for(:title) || "Zapfe Admin" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,7 +9,7 @@
     <%= stylesheet_link_tag "lexxy", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="admin-shell text-slate-900" data-controller="reservation-defaults offer-position-search">
+  <body class="admin-shell text-slate-900" data-controller="reservation-defaults offer-position-search turbo-scroll action-icons form-dirty">
     <header class="admin-topbar" data-controller="mobile-menu">
       <div class="admin-container">
         <div class="flex min-h-16 items-center justify-between gap-4 py-3">
@@ -25,7 +25,7 @@
         </div>
 
         <nav class="admin-navigation hidden" data-mobile-menu-target="panel" aria-label="Hauptnavigation">
-          <div class="admin-nav-group"><span>Arbeit</span><%= link_to "Übersicht", admin_root_path, class: "admin-nav-link #{'admin-nav-link-active' if current_page?(admin_root_path)}" %><%= link_to "Anfragen", admin_inquiries_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'inquiries'}" %><%= link_to "Aufträge", admin_orders_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'orders' || controller_name == 'offers'}" %></div>
+          <div class="admin-nav-group"><span>Arbeit</span><%= link_to "Übersicht", admin_root_path, class: "admin-nav-link #{'admin-nav-link-active' if current_page?(admin_root_path)}" %><%= link_to "Anfragen", admin_inquiries_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'inquiries'}" %><%= link_to "Aufträge", admin_orders_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'orders' || controller_name == 'offers'}" %><%= link_to "Kunden", admin_customers_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'customers'}" %></div>
           <div class="admin-nav-group"><span>Katalog</span><%= link_to "Getränke", admin_products_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'products' || controller_name == 'categories'}" %><%= link_to "Händler & Preise", admin_suppliers_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'suppliers' || controller_name == 'supplier_offerings' || controller_name == 'procurement_profiles'}" %><%= link_to "Ressourcen", admin_resources_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'resources'}" %></div>
           <div class="admin-nav-group"><span>Einrichtung</span><%= link_to "Vorlagen", admin_order_templates_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'order_templates'}" %><%= link_to "Checklisten", admin_checklist_templates_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'checklist_templates'}" %><%= link_to "Events", admin_events_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'events'}" %><%= link_to "Einstellungen", edit_admin_system_settings_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'system_settings'}" %></div>
           <div class="admin-nav-footer"><%= link_to "Konten", admin_admin_users_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'admin_users'}" %><%= button_to "Abmelden", admin_logout_path, method: :delete, class: "admin-logout" %></div>
@@ -36,14 +36,18 @@
     <div class="admin-desktop-shell">
       <aside class="admin-sidebar" aria-label="Arbeitsbereiche">
         <%= link_to admin_root_path, class: "admin-brand" do %><span class="admin-brand-mark">Z</span><span><strong>zapfe.</strong><em>intern</em></span><% end %>
-        <nav class="mt-8 space-y-6"><div class="admin-sidebar-group"><span>Arbeit</span><%= link_to "Übersicht", admin_root_path, class: "admin-nav-link #{'admin-nav-link-active' if current_page?(admin_root_path)}" %><%= link_to "Anfragen", admin_inquiries_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'inquiries'}" %><%= link_to "Aufträge", admin_orders_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'orders' || controller_name == 'offers'}" %></div><div class="admin-sidebar-group"><span>Katalog</span><%= link_to "Getränke", admin_products_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'products' || controller_name == 'categories'}" %><%= link_to "Händler & Preise", admin_suppliers_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'suppliers' || controller_name == 'supplier_offerings' || controller_name == 'procurement_profiles'}" %><%= link_to "Ressourcen", admin_resources_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'resources'}" %></div><div class="admin-sidebar-group"><span>Einrichtung</span><%= link_to "Vorlagen", admin_order_templates_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'order_templates'}" %><%= link_to "Checklisten", admin_checklist_templates_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'checklist_templates'}" %><%= link_to "Einstellungen", edit_admin_system_settings_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'system_settings'}" %></div></nav>
+        <nav class="mt-8 space-y-6"><div class="admin-sidebar-group"><span>Arbeit</span><%= link_to "Übersicht", admin_root_path, class: "admin-nav-link #{'admin-nav-link-active' if current_page?(admin_root_path)}" %><%= link_to "Anfragen", admin_inquiries_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'inquiries'}" %><%= link_to "Aufträge", admin_orders_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'orders' || controller_name == 'offers'}" %><%= link_to "Kunden", admin_customers_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'customers'}" %></div><div class="admin-sidebar-group"><span>Katalog</span><%= link_to "Getränke", admin_products_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'products' || controller_name == 'categories'}" %><%= link_to "Händler & Preise", admin_suppliers_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'suppliers' || controller_name == 'supplier_offerings' || controller_name == 'procurement_profiles'}" %><%= link_to "Ressourcen", admin_resources_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'resources'}" %></div><div class="admin-sidebar-group"><span>Einrichtung</span><%= link_to "Vorlagen", admin_order_templates_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'order_templates'}" %><%= link_to "Checklisten", admin_checklist_templates_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'checklist_templates'}" %><%= link_to "Einstellungen", edit_admin_system_settings_path, class: "admin-nav-link #{'admin-nav-link-active' if controller_name == 'system_settings'}" %></div></nav>
         <div class="mt-auto pt-8"><%= link_to "Konten", admin_admin_users_path, class: "admin-nav-link" %><%= button_to "Abmelden", admin_logout_path, method: :delete, class: "admin-logout" %></div>
       </aside>
     <main class="admin-container py-5 pb-10 sm:py-7">
-      <% flash.each do |type, message| %>
-        <% tone = type.to_s == "alert" ? "admin-flash-alert" : "admin-flash-notice" %>
-        <div class="admin-flash <%= tone %>" role="status"><%= message %></div>
-      <% end %>
+      <div class="admin-flash-stack" aria-live="polite">
+        <% flash.each do |type, message| %>
+          <% next if type.to_s == "undo_available" %>
+          <% tone = type.to_s == "alert" ? "admin-flash-alert" : "admin-flash-notice" %>
+          <div class="admin-flash <%= tone %>" role="status"><%= message %></div>
+        <% end %>
+        <% if flash[:undo_available] %><div class="admin-flash admin-flash-notice flex items-center justify-between gap-3" role="status"><span>Änderung gespeichert.</span><%= button_to "Rückgängig", admin_undo_path, class: "admin-undo-button" %></div><% end %>
+      </div>
       <%= yield %>
     </main></div>
   </body>

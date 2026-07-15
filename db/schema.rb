@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_143000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_15_151000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -129,6 +129,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_143000) do
     t.index ["solution_variant_id"], name: "index_configuration_sessions_on_solution_variant_id"
     t.index ["status"], name: "index_configuration_sessions_on_status"
     t.index ["submitted_at"], name: "index_configuration_sessions_on_submitted_at"
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "customer_id", null: false
+    t.string "email"
+    t.string "name", null: false
+    t.string "phone"
+    t.boolean "primary", default: false, null: false
+    t.string "role"
+    t.datetime "updated_at", null: false
+    t.index ["customer_id", "name"], name: "index_contacts_on_customer_id_and_name"
+    t.index ["customer_id"], name: "index_contacts_on_customer_id"
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.text "notes"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_customers_on_name", unique: true
   end
 
   create_table "events", force: :cascade do |t|
@@ -395,8 +416,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_143000) do
 
   create_table "orders", force: :cascade do |t|
     t.datetime "archived_at"
+    t.integer "contact_id"
     t.datetime "created_at", null: false
     t.string "customer_email"
+    t.integer "customer_id"
     t.text "customer_message"
     t.string "customer_name", null: false
     t.string "customer_phone"
@@ -416,6 +439,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_143000) do
     t.string "status", default: "preparing", null: false
     t.datetime "updated_at", null: false
     t.index ["archived_at"], name: "index_orders_on_archived_at"
+    t.index ["contact_id"], name: "index_orders_on_contact_id"
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["event_date"], name: "index_orders_on_event_date"
     t.index ["inquiry_id"], name: "index_orders_on_inquiry_id", unique: true
     t.index ["next_step_due_on"], name: "index_orders_on_next_step_due_on"
@@ -703,6 +728,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_143000) do
   add_foreign_key "configuration_sessions", "scenes"
   add_foreign_key "configuration_sessions", "solution_variants"
   add_foreign_key "configuration_sessions", "solutions"
+  add_foreign_key "contacts", "customers"
   add_foreign_key "inquiries", "admin_users", column: "assigned_admin_user_id"
   add_foreign_key "invoice_line_items", "invoices"
   add_foreign_key "invoices", "offers"
@@ -728,6 +754,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_143000) do
   add_foreign_key "order_template_tasks", "order_templates"
   add_foreign_key "order_templates", "admin_users", column: "responsible_admin_user_id"
   add_foreign_key "orders", "admin_users", column: "responsible_admin_user_id"
+  add_foreign_key "orders", "contacts"
+  add_foreign_key "orders", "customers"
   add_foreign_key "orders", "inquiries"
   add_foreign_key "procurement_plan_items", "offer_line_items"
   add_foreign_key "procurement_plan_items", "procurement_plans"

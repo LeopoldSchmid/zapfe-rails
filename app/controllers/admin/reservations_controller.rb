@@ -13,7 +13,9 @@ class Admin::ReservationsController < Admin::BaseController
   end
 
   def update
+    previous_status = @reservation.status
     if @reservation.update(reservation_params)
+      register_undo(@reservation, attribute: :status, from: previous_status, path: admin_order_path(@order)) if @reservation.saved_change_to_status?
       record_activity(@reservation.reserved? ? "Ressource verbindlich reserviert" : "Ressourcenanfrage aktualisiert")
       redirect_to admin_order_path(@order), notice: @reservation.reserved? ? "Ressource verbindlich reserviert." : "Ressourcenanfrage aktualisiert."
     else

@@ -6,6 +6,7 @@ class OfferLineItem < ApplicationRecord
   belongs_to :product_variant, optional: true
   belongs_to :supplier_offering, optional: true
   belongs_to :resource, optional: true
+  has_many :procurement_plan_items, dependent: :nullify
 
   validates :position_type, inclusion: { in: POSITION_TYPES }
   validates :discount_type, inclusion: { in: DISCOUNT_TYPES }

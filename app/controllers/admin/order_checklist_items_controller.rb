@@ -3,8 +3,10 @@ class Admin::OrderChecklistItemsController < Admin::BaseController
 
   def update
     item = @checklist.items.find(params[:id])
+    previous_completed = item.completed?
     item.update!(item_params)
     @checklist.refresh_status!
+    register_undo(item, attribute: :completed, from: previous_completed, path: execution_admin_order_path(@order)) if item.saved_change_to_completed?
     redirect_to execution_admin_order_path(@order), notice: "Checklistenpunkt aktualisiert."
   rescue ActiveRecord::RecordInvalid => error
     redirect_to execution_admin_order_path(@order), alert: error.message

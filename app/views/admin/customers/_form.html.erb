@@ -1,0 +1,9 @@
+<%= render "shared/form_errors", object: @customer %>
+<%= form_with model: [:admin, @customer], class: "max-w-4xl space-y-5" do |f| %>
+  <section class="admin-panel">
+    <div class="grid gap-4 md:grid-cols-2"><div><%= f.label :name, "Firma / Kunde", class: "admin-field-label" %><%= f.text_field :name, required: true, class: "admin-field" %></div><div><%= f.label :notes, "Interne Notiz", class: "admin-field-label" %><%= f.text_field :notes, class: "admin-field" %></div></div>
+  </section>
+  <section class="admin-panel"><h2 class="text-lg font-semibold">Ansprechpartner</h2><div class="mt-4 space-y-3"><%= f.fields_for :contacts do |contact| %><div class="grid gap-3 rounded-xl bg-slate-50 p-4 md:grid-cols-2"><div><%= contact.label :name, "Name", class: "admin-field-label" %><%= contact.text_field :name, class: "admin-field" %></div><div><%= contact.label :role, "Rolle", class: "admin-field-label" %><%= contact.text_field :role, placeholder: "z. B. Eventleitung", class: "admin-field" %></div><div><%= contact.label :email, "E-Mail", class: "admin-field-label" %><%= contact.email_field :email, class: "admin-field" %></div><div><%= contact.label :phone, "Telefon", class: "admin-field-label" %><%= contact.telephone_field :phone, class: "admin-field" %></div><label class="inline-flex items-center gap-2 text-sm"><%= contact.check_box :primary %> Standardansprechpartner</label><% if contact.object.persisted? %><label class="inline-flex items-center gap-2 text-sm text-rose-700"><%= contact.check_box :_destroy %> Entfernen</label><% end %></div><% end %></div>
+  </section>
+  <%= f.submit @customer.persisted? ? "Kunde speichern" : "Kunde anlegen", class: "admin-cta" %>
+<% end %>

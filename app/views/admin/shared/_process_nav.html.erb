@@ -5,13 +5,15 @@
 <% phases << ["Beschaffung", procurement_admin_order_path(order), :procurement] %>
 <% phases << ["Durchführung", execution_admin_order_path(order), :execution] %>
 <% phases << ["Rechnung", admin_order_invoices_path(order), :invoice] %>
-<% phases << ["Freie Notizen", notes_admin_order_path(order), :notes] %>
-<nav class="admin-process" aria-label="Auftragsprozess">
-  <% phases.each_with_index do |(label, path, phase), index| %>
-    <% if phase.to_s == current_phase.to_s %>
-      <span class="admin-process-step admin-process-active" aria-current="page"><span><%= index + 1 %></span><strong><%= label %></strong></span>
-    <% else %>
-      <%= link_to path, class: "admin-process-step" do %><span><%= index + 1 %></span><strong><%= label %></strong><% end %>
+  <% phases << ["Freie Notizen", notes_admin_order_path(order), :notes] %>
+  <nav class="admin-process" aria-label="Auftragsprozess">
+    <% phases.each_with_index do |(label, path, phase), index| %>
+      <% completed = process_phase_completed?(order, phase) %>
+      <% classes = ["admin-process-step", ("admin-process-active" if phase.to_s == current_phase.to_s), ("admin-process-ready" if completed)] %>
+      <% if phase.to_s == current_phase.to_s %>
+        <span class="<%= classes.compact.join(" ") %>" aria-current="page"><span><%= completed ? "✓" : index + 1 %></span><strong><%= label %></strong></span>
+      <% else %>
+        <%= link_to path, class: classes.compact.join(" ") do %><span><%= completed ? "✓" : index + 1 %></span><strong><%= label %></strong><% end %>
+      <% end %>
     <% end %>
-  <% end %>
-</nav>
+  </nav>

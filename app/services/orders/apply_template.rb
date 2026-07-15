@@ -29,6 +29,14 @@ class Orders::ApplyTemplate
           relative_offset_days: template_task.relative_offset_days
         )
       end
+      if @order.next_step.present?
+        @order.tasks.create!(
+          assigned_admin_user: @order.responsible_admin_user,
+          title: @order.next_step,
+          status: "open",
+          due_on: @order.next_step_due_on
+        )
+      end
       @template.checklist_templates.active.find_each { |template| copy_checklist(template) }
       reserve_resources!
     end

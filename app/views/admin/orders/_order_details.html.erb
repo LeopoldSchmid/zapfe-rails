@@ -1,9 +1,37 @@
-<div class="grid gap-6 xl:grid-cols-2">
+<div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
   <%= form_with model: [:admin, @order], class: "admin-panel" do |f| %>
-    <h2 class="text-xl font-semibold text-[var(--color-zapfe-navy)]">Auftrag planen</h2>
-    <div class="mt-5 grid gap-4 sm:grid-cols-2"><div><%= f.label :status, "Status", class: "block text-sm font-medium" %><%= f.select :status, Order::STATUSES.map { |status| [order_status_label(status), status] }, {}, class: "admin-field" %></div><div><%= f.label :responsible_admin_user_id, "Verantwortlich", class: "block text-sm font-medium" %><%= f.collection_select :responsible_admin_user_id, @admin_users, :id, :name, {}, class: "admin-field" %></div><div class="sm:col-span-2"><%= f.label :next_step, "Nächster Schritt", class: "block text-sm font-medium" %><%= f.text_area :next_step, rows: 2, class: "admin-field" %></div><div><%= f.label :next_step_due_on, "Fällig am", class: "block text-sm font-medium" %><%= f.date_field :next_step_due_on, class: "admin-field" %></div></div>
-    <h3 class="mt-7 text-base font-semibold">Veranstaltung und Kontakt</h3>
-    <div class="mt-4 grid gap-4 sm:grid-cols-2"><div><%= f.label :customer_name, "Name oder Firma", class: "block text-sm font-medium" %><%= f.text_field :customer_name, required: true, class: "admin-field" %></div><div><%= f.label :event_date, "Veranstaltungsdatum", class: "block text-sm font-medium" %><%= f.date_field :event_date, class: "admin-field" %></div><div><%= f.label :event_location, "Veranstaltungsort", class: "block text-sm font-medium" %><%= f.text_field :event_location, required: true, class: "admin-field" %></div><div><%= f.label :customer_email, "E-Mail", class: "block text-sm font-medium" %><%= f.email_field :customer_email, class: "admin-field" %></div><div><%= f.label :customer_phone, "Telefon", class: "block text-sm font-medium" %><%= f.telephone_field :customer_phone, class: "admin-field" %></div><div class="sm:col-span-2"><%= f.label :customer_message, "Kundennachricht", class: "block text-sm font-medium" %><%= f.text_area :customer_message, rows: 3, class: "admin-field" %></div></div>
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div><p class="proof-kicker">Auftragsstatus</p><h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]"><%= order_status_label(@order.status) %></h2></div>
+      <%= link_to execution_admin_order_path(@order), class: "admin-secondary-action" do %><%= @open_task_count %> offene Aufgaben<% end %>
+    </div>
+    <div class="mt-5 grid gap-4 sm:grid-cols-2">
+      <div><%= f.label :status, "Status", class: "block text-sm font-medium" %><%= f.select :status, Order::STATUSES.map { |status| [order_status_label(status), status] }, {}, class: "admin-field" %></div>
+      <div><%= f.label :responsible_admin_user_id, "Verantwortlich", class: "block text-sm font-medium" %><%= f.collection_select :responsible_admin_user_id, @admin_users, :id, :name, {}, class: "admin-field" %></div>
+    </div>
+
+    <details class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4" open>
+      <summary class="cursor-pointer font-semibold text-[var(--color-zapfe-navy)]">Veranstaltung</summary>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div><%= f.label :event_type, "Art", class: "block text-sm font-medium" %><%= f.text_field :event_type, class: "admin-field" %></div>
+        <div><%= f.label :event_date, "Datum", class: "block text-sm font-medium" %><%= f.date_field :event_date, class: "admin-field" %></div>
+        <div><%= f.label :start_time, "Beginn", class: "block text-sm font-medium" %><%= f.time_field :start_time, step: 900, lang: "de", class: "admin-field" %></div>
+        <div><%= f.label :end_time, "Ende", class: "block text-sm font-medium" %><%= f.time_field :end_time, step: 900, lang: "de", class: "admin-field" %></div>
+        <div><%= f.label :event_location, "Ort", class: "block text-sm font-medium" %><%= f.text_field :event_location, required: true, class: "admin-field" %></div>
+        <div><%= f.label :guests, "Gäste", class: "block text-sm font-medium" %><%= f.number_field :guests, min: 0, class: "admin-field" %></div>
+      </div>
+    </details>
+
+    <details class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4" data-controller="order-customer-contact">
+      <summary class="cursor-pointer font-semibold text-[var(--color-zapfe-navy)]">Kontakt · <%= @order.customer_name %></summary>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div><%= f.label :customer_id, "Kunde", class: "block text-sm font-medium" %><%= f.collection_select :customer_id, @customers, :id, :name, { include_blank: "Neuer / einmaliger Kunde" }, class: "admin-field", data: { order_customer_contact_target: "customer", action: "change->order-customer-contact#loadContacts" } %></div>
+        <div><%= f.label :contact_id, "Ansprechpartner", class: "block text-sm font-medium" %><%= f.collection_select :contact_id, @contacts, :id, :name, { include_blank: "Ohne Ansprechpartner" }, class: "admin-field", data: { order_customer_contact_target: "contact", order_customer_contact_selected_id: @order.contact_id, action: "change->order-customer-contact#applyContact" } %></div>
+        <div><%= f.label :customer_name, "Name oder Firma", class: "block text-sm font-medium" %><%= f.text_field :customer_name, required: true, class: "admin-field", data: { order_customer_contact_target: "name" } %></div>
+        <div><%= f.label :customer_email, "E-Mail", class: "block text-sm font-medium" %><%= f.email_field :customer_email, class: "admin-field", data: { order_customer_contact_target: "email" } %></div>
+        <div><%= f.label :customer_phone, "Telefon", class: "block text-sm font-medium" %><%= f.telephone_field :customer_phone, class: "admin-field", data: { order_customer_contact_target: "phone" } %></div>
+        <div class="sm:col-span-2"><%= f.label :customer_message, "Kundennachricht", class: "block text-sm font-medium" %><%= f.text_area :customer_message, rows: 3, class: "admin-field" %></div>
+      </div>
+    </details>
     <%= f.submit "Auftrag speichern", class: "admin-cta mt-5" %>
   <% end %>
   <div class="space-y-6"><%= render "planning_resources", order: @order, reservations: @reservations, resources: @resources %><%= render "attachments" %></div>

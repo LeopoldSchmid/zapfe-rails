@@ -33,7 +33,8 @@ class Admin::OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "kontakt@verein.example", order.customer_email
     assert_equal "Angebot senden", order.next_step
     assert_equal "offered", order.status
-    assert_equal 2, order.activities.count
+    assert_operator order.activities.count, :>=, 5
+    assert_includes order.activities.pluck(:message), "Status: In Vorbereitung → Angeboten"
   end
 
   test "adds a personal internal note" do

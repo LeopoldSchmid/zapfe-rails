@@ -1,4 +1,18 @@
 module ApplicationHelper
+  ADMIN_ICON_PATHS = {
+    save: [ "M5 3h11l3 3v15H5z", "M8 3v6h8", "M8 18h8v-5H8z" ],
+    trash: [ "M4 7h16", "M10 11v6", "M14 11v6", "M6 7l1 13h10l1-13", "M9 7V4h6v3" ],
+    copy: [ "M9 9h10v10H9z", "M5 15H4V5h10v1" ],
+    plus: [ "M12 5v14", "M5 12h14" ]
+  }.freeze
+
+  def admin_icon(name, label: nil)
+    paths = ADMIN_ICON_PATHS.fetch(name.to_sym)
+    content_tag(:svg, class: "admin-icon", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round", aria: { hidden: label.blank?, label: label }) do
+      safe_join(paths.map { |path| tag.path(d: path) })
+    end
+  end
+
   def signed_inquiry_timestamp_token
     Rails.application.message_verifier(:inquiry_form).generate(Time.current.to_i, purpose: :inquiry_form)
   end

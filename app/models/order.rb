@@ -2,6 +2,8 @@ class Order < ApplicationRecord
   STATUSES = %w[preparing offered confirmed in_progress completed cancelled].freeze
 
   belongs_to :inquiry, optional: true
+  belongs_to :customer, optional: true
+  belongs_to :contact, optional: true
   belongs_to :responsible_admin_user, class_name: "AdminUser", inverse_of: :responsible_orders
   has_many :activities, as: :subject, dependent: :destroy
   has_many :offers, dependent: :destroy
@@ -23,12 +25,32 @@ class Order < ApplicationRecord
 
   validates :status, inclusion: { in: STATUSES }
   validates :customer_name, :event_location, presence: true
+  validate :contact_belongs_to_customer
+
+  before_validation :apply_selected_contact
 
   def archived?
     archived_at.present?
   end
 
   private
+
+  def apply_selected_contact
+    self.customer ||= contact&.customer
+    return unless customer_id_changed? || contact_id_changed?
+
+    self.customer_name = customer.name if customer.present?
+    return unless contact.present?
+
+    self.customer_email = contact.email if contact.email.present?
+    self.customer_phone = contact.phone if contact.phone.present?
+  end
+
+  def contact_belongs_to_customer
+    return if contact.blank? || customer.blank? || contact.customer_id == customer_id
+
+    errors.add(:contact, "muss zum gewählten Kunden gehören")
+  end
 
   def recalculate_relative_task_dates
     tasks.find_each(&:recalculate_due_on!)

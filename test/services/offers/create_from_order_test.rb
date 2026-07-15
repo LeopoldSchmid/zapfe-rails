@@ -16,5 +16,6 @@ class Offers::CreateFromOrderTest < ActiveSupport::TestCase
     assert_equal product_variants(:one), line_item.product_variant
     assert_equal 2.to_d, line_item.quantity
     assert_equal "Fass", line_item.unit
+    assert_equal product_variants(:one).price, line_item.net_unit_price
   end
 end
