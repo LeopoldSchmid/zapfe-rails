@@ -38,7 +38,9 @@ class Admin::SupplierOfferingsController < Admin::BaseController
   def load_form_data
     @suppliers = Supplier.active.order(:name)
     selected_supplier_id = @supplier_offering&.supplier_id
-    @profiles = ProcurementProfile.where(supplier_id: [ nil, selected_supplier_id ].compact).includes(:supplier).order(:standard, :name)
+    standard_profiles = ProcurementProfile.standard
+    custom_profiles = selected_supplier_id.present? ? ProcurementProfile.custom.where(supplier_id: selected_supplier_id) : ProcurementProfile.none
+    @profiles = standard_profiles.or(custom_profiles).includes(:supplier).order(standard: :desc, name: :asc)
     @product_variants = ProductVariant.includes(:product).order("products.brand", "products.name", :size).references(:product)
   end
 

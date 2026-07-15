@@ -26,6 +26,15 @@ class Admin::SuppliersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_suppliers_url
   end
 
+  test "shows standard procurement profiles when creating a new offering" do
+    profile = ProcurementProfile.create!(name: "Lagerware", standard: true, lead_time_days: 2, return_policy: "returnable")
+
+    get new_admin_supplier_offering_url
+
+    assert_response :success
+    assert_select "select[name='supplier_offering[procurement_profile_id]'] option[value='#{profile.id}']", text: "Lagerware"
+  end
+
   test "shows supplier offerings with their current purchase price" do
     offering = supplier_offerings(:suedstar_variant)
     SupplierPrice.create!(supplier_offering: offering, purchase_price: 72.5, valid_from: Date.current)
