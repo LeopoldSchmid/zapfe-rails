@@ -44,6 +44,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2"
+gem "lexxy", "~> 0.9"
 
 group :development, :test do
   gem "dotenv-rails"

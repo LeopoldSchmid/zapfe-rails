@@ -26,4 +26,19 @@ class Offers::FinalizeTest < ActiveSupport::TestCase
     @offer.line_items.first.description = "Geändert"
     assert_not @offer.line_items.first.save
   end
+
+  test "freezes the selected supplier conditions with the offer" do
+    offering = supplier_offerings(:suedstar_variant)
+    @offer.order.update!(event_date: Date.current + 10.days)
+    @offer.line_items.first.update!(product_variant: offering.product_variant, supplier_offering: offering, direct_cost_unit: 72.5)
+
+    Offers::Finalize.new(offer: @offer, admin_user: admin_users(:one)).call
+
+    procurement = @offer.reload.document_snapshot_data.fetch("line_items").first.fetch("procurement")
+    assert_equal "Getränkemarkt Südstar", procurement.fetch("supplier_name")
+    assert_equal "Lagerware", procurement.fetch("profile_name")
+    assert_equal 2, procurement.fetch("lead_time_days")
+    assert_equal "returnable", procurement.fetch("return_policy")
+    assert_equal (Date.current + 8.days).iso8601, procurement.fetch("order_by_on")
+  end
 end

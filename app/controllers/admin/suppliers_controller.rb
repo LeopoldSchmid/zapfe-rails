@@ -2,7 +2,10 @@ class Admin::SuppliersController < Admin::BaseController
   before_action :set_supplier, only: %i[edit update]
 
   def index
-    @suppliers = Supplier.includes(procurement_profiles: { supplier_offerings: :product_variant }).order(:name)
+    @suppliers = Supplier.includes(
+      :procurement_profiles,
+      supplier_offerings: [ :procurement_profile, :supplier_prices, { product_variant: :product } ]
+    ).order(:name)
   end
 
   def new

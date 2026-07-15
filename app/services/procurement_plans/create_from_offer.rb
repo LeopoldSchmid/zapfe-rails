@@ -4,7 +4,7 @@ class ProcurementPlans::CreateFromOffer
   end
 
   def call
-    raise ActiveRecord::RecordInvalid, @offer unless @offer.status == "accepted"
+    raise ActiveRecord::RecordInvalid, @offer if @offer.status.in?(%w[rejected expired])
 
     @offer.order.with_lock do
       plan = @offer.order.procurement_plans.create!(offer: @offer, status: "planned", order_by_on: nil)

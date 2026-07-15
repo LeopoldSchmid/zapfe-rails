@@ -8,6 +8,7 @@ class Offer < ApplicationRecord
   has_many :time_entries, dependent: :nullify
   has_many :reservations, dependent: :nullify
   has_many :procurement_plans, dependent: :nullify
+  has_many :invoices, dependent: :nullify
   has_one_attached :document
 
   validates :version, numericality: { only_integer: true, greater_than: 0 }, uniqueness: { scope: :order_id }

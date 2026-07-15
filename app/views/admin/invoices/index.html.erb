@@ -1,0 +1,25 @@
+<%= render "admin/orders/workspace_header", order: @order, section: "Rechnung" %>
+<div class="mt-6"><%= render "admin/shared/process_nav", order: @order, current_phase: "invoice" %></div>
+
+<section class="admin-panel mt-6">
+  <div><p class="proof-kicker">Abschluss</p><h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]">Rechnungen</h2><p class="mt-2 text-sm text-slate-600">Eine Rechnung übernimmt die akzeptierte Angebotsversion als Entwurf. Vor der Finalisierung kannst du Empfänger, Lieferdatum und Zahlungsfrist prüfen.</p></div>
+  <% if @accepted_offers.any? %>
+    <%= form_with url: admin_order_invoices_path(@order), class: "mt-5 flex flex-wrap items-end gap-3 rounded-2xl bg-slate-50 p-4" do |f| %>
+      <div><%= f.label :offer_id, "Angenommenes Angebot", class: "admin-field-label" %><%= f.collection_select :offer_id, @accepted_offers, :id, ->(offer) { offer.offer_number.presence || "Angebot v#{offer.version}" }, {}, class: "admin-field" %></div>
+      <%= f.submit "Rechnungsentwurf erstellen", class: "admin-cta" %>
+    <% end %>
+  <% else %>
+    <p class="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-950">Für diesen Auftrag gibt es noch kein angenommenes Angebot. Eine Rechnung wird bewusst erst nach Annahme erstellt.</p>
+  <% end %>
+
+  <% if @order.invoices.any? %>
+    <div class="mt-6 space-y-3">
+      <% @order.invoices.order(created_at: :desc).each do |invoice| %>
+        <%= link_to admin_invoice_path(invoice), class: "block rounded-xl border border-slate-200 p-4 transition hover:border-slate-300 hover:bg-slate-50" do %>
+          <div class="flex items-center justify-between gap-3"><strong><%= invoice.invoice_number.presence || "Rechnungsentwurf" %></strong><span class="admin-product-badge <%= invoice.status == "paid" ? "bg-emerald-100 text-emerald-900" : "bg-slate-100 text-slate-700" %>"><%= { "draft" => "Entwurf", "finalized" => "Finalisiert", "sent" => "Versendet", "paid" => "Bezahlt", "cancelled" => "Storniert", "overdue" => "Überfällig" }.fetch(invoice.status) %></span></div>
+          <p class="mt-1 text-sm text-slate-600"><%= number_to_currency(invoice.gross_total, unit: "€", format: "%n %u") %> · fällig <%= invoice.due_on ? l(invoice.due_on) : "offen" %></p>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

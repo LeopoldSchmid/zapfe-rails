@@ -5,23 +5,23 @@ class Admin::TasksController < Admin::BaseController
   def create
     @task = @order.tasks.build(task_params)
     if @task.save
-      redirect_to admin_order_path(@order), notice: "Aufgabe hinzugefügt."
+      redirect_to execution_admin_order_path(@order), notice: "Aufgabe hinzugefügt."
     else
-      redirect_to admin_order_path(@order), alert: @task.errors.full_messages.to_sentence
+      redirect_to execution_admin_order_path(@order), alert: @task.errors.full_messages.to_sentence
     end
   end
 
   def update
     if @task.update(task_params)
-      redirect_to admin_order_path(@order), notice: "Aufgabe aktualisiert."
+      redirect_to execution_admin_order_path(@order), notice: "Aufgabe aktualisiert."
     else
-      redirect_to admin_order_path(@order), alert: @task.errors.full_messages.to_sentence
+      redirect_to execution_admin_order_path(@order), alert: @task.errors.full_messages.to_sentence
     end
   end
 
   def destroy
     @task.destroy!
-    redirect_to admin_order_path(@order), notice: "Aufgabe entfernt."
+    redirect_to execution_admin_order_path(@order), notice: "Aufgabe entfernt."
   end
 
   private

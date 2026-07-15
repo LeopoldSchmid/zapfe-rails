@@ -15,9 +15,9 @@ class Admin::OrderChecklistsController < Admin::BaseController
       )
       copy.attachment.attach(item.attachment.blob) if item.attachment.attached?
     end
-    redirect_to admin_order_path(@order), notice: "Checkliste hinzugefügt."
+    redirect_to execution_admin_order_path(@order), notice: "Checkliste hinzugefügt."
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => error
-    redirect_to admin_order_path(@order), alert: error.message
+    redirect_to execution_admin_order_path(@order), alert: error.message
   end
 
   private

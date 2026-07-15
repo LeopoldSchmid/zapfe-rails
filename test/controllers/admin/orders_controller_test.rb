@@ -76,4 +76,30 @@ class Admin::OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Beispiel-PDF", response.body
     assert_equal "application/pdf", response.media_type
   end
+
+  test "renders dedicated procurement and execution work areas" do
+    order = orders(:from_inquiry)
+
+    get procurement_admin_order_url(order)
+    assert_response :success
+    assert_select "h2", text: "Bestellungen vorbereiten und verfolgen"
+
+    get execution_admin_order_url(order)
+    assert_response :success
+    assert_select "h2", text: "Ist-Zeit erfassen"
+  end
+
+  test "saves freeform test notes in their own workspace" do
+    order = orders(:from_inquiry)
+
+    patch notes_admin_order_url(order), params: { order: { freeform_notes: "Kunde fragt nach Gläsern und Kühlung." } }
+
+    assert_redirected_to notes_admin_order_url(order)
+    assert_equal "Kunde fragt nach Gläsern und Kühlung.", order.reload.freeform_notes.to_plain_text
+    assert_equal "Freie Testnotizen aktualisiert", order.activities.order(:created_at).last.message
+
+    get notes_admin_order_url(order)
+    assert_select "h2", text: "Lexxy – freie Notizen"
+    assert_select "lexxy-editor"
+  end
 end

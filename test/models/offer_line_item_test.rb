@@ -1,6 +1,16 @@
 require "test_helper"
 
 class OfferLineItemTest < ActiveSupport::TestCase
+
+  test "requires an integer quantity" do
+    line_item = OfferLineItem.new(
+      offer: @offer, position_type: "free", description: "Halbe Miete",
+      quantity: 0.5, unit: "Stk", net_unit_price: 10, tax_rate: 19, discount_type: "none", discount_value: 0
+    )
+
+    assert_not line_item.valid?
+    assert_equal :not_an_integer, line_item.errors.details[:quantity].first[:error]
+  end
   setup do
     @offer = Offer.create!(order: orders(:from_inquiry), version: 1, valid_until: Date.current + 14.days, recipient_name: "Max Mustermann")
   end

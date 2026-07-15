@@ -6,8 +6,7 @@
   <div class="flex flex-wrap gap-2">
     <%= link_to "Anfragen öffnen", admin_inquiries_path, class: "admin-cta" %>
     <%= link_to "Auftrag anlegen", new_admin_order_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
-    <%= link_to "Produkt anlegen", new_admin_product_path, class: "admin-cta" %>
-    <%= link_to "Event anlegen", new_admin_event_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
+    <%= link_to "Getränk anlegen", new_admin_product_path, class: "rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" %>
   </div>
 </div>
 
@@ -23,15 +22,9 @@
 
 <% if @waiting_inquiries.any? %><section class="mt-6 rounded-xl border border-sky-200 bg-sky-50 p-5"><h2 class="font-semibold text-sky-950">Wartet auf Rückmeldung</h2><ul class="mt-3 space-y-2"><% @waiting_inquiries.each do |inquiry| %><li><%= link_to "#{inquiry_status_label(inquiry.status)} · #{inquiry.customer_name}", admin_inquiry_path(inquiry), class: "underline" %></li><% end %></ul></section><% end %>
 
-<% if @due_tasks.any? %><section class="mt-6 rounded-xl border border-violet-200 bg-violet-50 p-5"><div class="flex items-center justify-between"><h2 class="font-semibold text-violet-950">Offene Aufgaben und Fristen</h2><span class="text-sm text-violet-900">nächste 7 Tage</span></div><ul class="mt-3 space-y-2"><% @due_tasks.each do |task| %><li><%= link_to "#{task.due_on} · #{task.order.customer_name}: #{task.title}#{task.assigned_admin_user ? " · #{task.assigned_admin_user.name}" : ""}", admin_order_path(task.order), class: "underline" %></li><% end %></ul></section><% end %>
+<% if @due_tasks.any? %><section class="mt-6 rounded-xl border border-violet-200 bg-violet-50 p-5"><div class="flex items-center justify-between"><h2 class="font-semibold text-violet-950">Offene Aufgaben und Fristen</h2><span class="text-sm text-violet-900">nächste 7 Tage</span></div><ul class="mt-3 space-y-2"><% @due_tasks.each do |task| %><% task_path = task.procurement_plan ? procurement_admin_order_path(task.order) : execution_admin_order_path(task.order, task_id: task.id, anchor: "task-#{task.id}") %><li><%= link_to "#{task.due_on} · #{task.order.customer_name}: #{task.title}#{task.assigned_admin_user ? " · #{task.assigned_admin_user.name}" : ""}", task_path, class: "underline" %></li><% end %></ul></section><% end %>
 
-<div class="grid gap-4 md:grid-cols-3">
-  <div class="admin-kpi">
-    <p class="proof-kicker">Katalog</p>
-    <p class="mt-2 text-3xl font-bold text-slate-900"><%= @products_count %></p>
-    <p class="mt-1 text-sm text-slate-500">Produkte</p>
-  </div>
-
+<div class="grid gap-4 md:grid-cols-2">
   <div class="admin-kpi">
     <p class="proof-kicker">Inhalte</p>
     <p class="mt-2 text-3xl font-bold text-slate-900"><%= @events_count %></p>

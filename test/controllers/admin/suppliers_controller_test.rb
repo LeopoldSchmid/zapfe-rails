@@ -25,4 +25,15 @@ class Admin::SuppliersControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to admin_suppliers_url
   end
+
+  test "shows supplier offerings with their current purchase price" do
+    offering = supplier_offerings(:suedstar_variant)
+    SupplierPrice.create!(supplier_offering: offering, purchase_price: 72.5, valid_from: Date.current)
+
+    get admin_suppliers_url
+
+    assert_response :success
+    assert_match(/72[,.]50 €/, response.body)
+    assert_select "a[href='#{edit_admin_supplier_offering_path(offering)}']", text: "Bearbeiten"
+  end
 end

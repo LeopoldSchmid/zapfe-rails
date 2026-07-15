@@ -18,6 +18,7 @@ class OfferLineItem < ApplicationRecord
   validate :discount_does_not_exceed_line_amount
   validate :offer_must_be_editable
   validate :resource_and_product_are_exclusive
+  validate :quantity_is_a_whole_number
 
   def gross_before_discount
     (quantity || BigDecimal("0")) * (net_unit_price || BigDecimal("0"))
@@ -71,5 +72,11 @@ class OfferLineItem < ApplicationRecord
     return unless resource_id.present? && product_variant_id.present?
 
     errors.add(:base, "Eine Position kann entweder eine Ressource oder ein Produkt sein")
+  end
+
+  def quantity_is_a_whole_number
+    return if quantity.blank? || quantity.to_d.frac.zero?
+
+    errors.add(:quantity, :not_an_integer)
   end
 end

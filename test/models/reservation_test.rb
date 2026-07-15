@@ -20,4 +20,13 @@ class ReservationTest < ActiveSupport::TestCase
 
     assert adjacent.valid?
   end
+
+  test "allows overlapping resource requests but prevents confirming a conflicting request" do
+    first = Reservation.create!(resource: @resource, order: @order, status: "requested", starts_at: Time.zone.parse("2026-08-01 10:00"), ends_at: Time.zone.parse("2026-08-01 22:00"))
+    second = Reservation.create!(resource: @resource, order: @order, status: "requested", starts_at: Time.zone.parse("2026-08-01 18:00"), ends_at: Time.zone.parse("2026-08-02 10:00"))
+
+    assert first.update(status: "reserved")
+    assert_not second.update(status: "reserved")
+    assert_includes second.errors.attribute_names, :resource
+  end
 end

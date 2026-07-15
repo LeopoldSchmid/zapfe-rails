@@ -42,9 +42,13 @@ Rails.application.routes.draw do
       get "attachments/:attachment_id", to: "inquiries#download_attachment", on: :member, as: :attachment
     end
     resources :orders, only: [ :index, :show, :new, :create, :update ] do
-      resources :reservations, only: [ :create, :destroy ]
+      get :procurement, on: :member
+      get :execution, on: :member
+      get :notes, on: :member
+      patch :notes, action: :update_notes, on: :member
+      resources :reservations, only: [ :create, :update, :destroy ]
       resources :tasks, only: [ :create, :update, :destroy ]
-      resources :procurement_plans, only: [ :create, :update ] do
+      resources :procurement_plans, only: [ :create, :update, :destroy ] do
         post :add_attachments, on: :member
         get "attachments/:attachment_id", to: "procurement_plans#download_attachment", on: :member, as: :attachment
       end
@@ -52,7 +56,8 @@ Rails.application.routes.draw do
         resources :items, controller: "order_checklist_items", only: [ :update ]
       end
       resources :actual_time_entries, controller: "order_time_entries", only: [ :create, :destroy ]
-      resources :offers, only: [ :create ]
+      resources :offers, only: [ :index, :create ]
+      resources :invoices, only: [ :index, :create ]
       post :add_attachments, on: :member
       post :add_note, on: :member
       patch :archive, on: :member
@@ -70,10 +75,18 @@ Rails.application.routes.draw do
       resources :line_items, controller: "offer_line_items", only: [ :create, :update, :destroy ]
       resources :time_entries, only: [ :create, :destroy ]
     end
+    resources :invoices, only: [ :show, :update ] do
+      post :finalize, on: :member
+      post :send_mail, on: :member
+      patch :mark_paid, on: :member
+      get :document, on: :member
+    end
     resources :categories, except: [ :show ]
     resources :events, except: [ :show ]
     resources :products, except: [ :show ] do
       post :bulk_update_prices, on: :collection
+      post :import, on: :collection
+      get :import_template, on: :collection
     end
   end
 

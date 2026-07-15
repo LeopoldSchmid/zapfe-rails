@@ -32,6 +32,15 @@ class SupplierOffering < ApplicationRecord
     supplier_prices.where("valid_from <= ?", on).where("valid_until IS NULL OR valid_until >= ?", on).order(valid_from: :desc).first
   end
 
+  def order_by_on(event_date)
+    event_date && event_date - lead_time_days.days
+  end
+
+  def procurement_overdue?(event_date, on: Date.current)
+    deadline = order_by_on(event_date)
+    deadline.present? && deadline < on
+  end
+
   private
 
   def profile_belongs_to_supplier

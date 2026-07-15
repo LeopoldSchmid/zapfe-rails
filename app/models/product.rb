@@ -9,7 +9,7 @@ class Product < ApplicationRecord
   validates :article_number, uniqueness: true
   validates :featured_position, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
 
-  scope :with_catalog_includes, -> { includes(:category, :product_variants) }
+  scope :with_catalog_includes, -> { includes(:category, product_variants: :supplier_offerings) }
   scope :featured_only, -> { where(featured: true) }
   scope :featured_first, lambda {
     order(Arel.sql(<<~SQL.squish))

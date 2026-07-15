@@ -8,6 +8,10 @@ export default class extends Controller {
 
     this.form.dataset.positionSearchReady = "true"
     this.supplierSelect = this.form.querySelector('select[name="offer_line_item[supplier_offering_id]"]')
+    this.resourceSelect = this.form.querySelector('select[name="offer_line_item[resource_id]"]')
+    this.supplierWrapper = this.form.querySelector("[data-position-supplier]")
+    this.sourceWrapper = this.form.querySelector("[data-position-source]")
+    this.sourceLabel = this.form.querySelector("[data-position-source-label]")
     this.clearSupplierOfferings()
     this.productSelect.addEventListener("change", () => this.selectProduct())
     this.bindLineItemDeletes()
@@ -18,8 +22,8 @@ export default class extends Controller {
   insertSearchField() {
     const wrapper = document.createElement("div")
     wrapper.className = "md:col-span-2"
-    wrapper.innerHTML = '<label class="block text-sm font-medium" for="offer-position-search">Position suchen</label><input id="offer-position-search" type="search" placeholder="Getränk, Ape, Kegerator …" autocomplete="off" class="mt-1 w-full rounded border border-slate-300 px-3 py-2"><div class="mt-2 hidden overflow-hidden rounded-lg border border-slate-200 bg-white" data-position-search-results></div><p class="mt-1 text-xs text-slate-500">Treffer erscheinen beim Tippen. Ein Klick übernimmt die Position.</p>'
-    this.productSelect.closest("div").before(wrapper)
+    wrapper.innerHTML = '<label class="block text-sm font-medium" for="offer-position-search">Suchen und auswählen</label><input id="offer-position-search" type="search" placeholder="Getränk, Zapfanlage, Kegerator …" autocomplete="off" class="admin-field"><div class="mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" data-position-search-results></div><p class="mt-1 text-xs text-slate-500">Treffer erscheinen beim Tippen und übernehmen die passende Konfiguration.</p>'
+    this.form.querySelector("[data-position-search-anchor]").before(wrapper)
     this.searchInput = wrapper.querySelector("input")
     this.results = wrapper.querySelector("[data-position-search-results]")
     this.searchInput.addEventListener("input", (event) => this.filter(event.target.value))
@@ -31,11 +35,8 @@ export default class extends Controller {
     if (!response.ok) return
 
     const resources = await response.json()
-    const wrapper = document.createElement("div")
-    wrapper.className = "md:col-span-2"
-    wrapper.innerHTML = '<label class="block text-sm font-medium" for="offer_line_item_resource_id">Mietposition aus Ressource (optional)</label><select id="offer_line_item_resource_id" name="offer_line_item[resource_id]" class="mt-1 w-full rounded border border-slate-300 px-3 py-2"><option value="">Keine Ressource</option></select>'
-    this.productSelect.closest("div").after(wrapper)
-    this.resourceSelect = wrapper.querySelector("select")
+    if (!this.resourceSelect) return
+    this.resourceSelect.replaceChildren(new Option("", ""))
     resources.forEach((resource) => {
       const option = new Option(resource.label, resource.id)
       option.dataset.price = resource.price || ""
@@ -106,9 +107,13 @@ export default class extends Controller {
     const price = this.form.querySelector('input[name="offer_line_item[net_unit_price]"]')
     const unit = this.form.querySelector('input[name="offer_line_item[unit]"]')
     const description = this.form.querySelector('input[name="offer_line_item[description]"]')
-    if (price && !price.value) price.value = option.dataset.price
-    if (unit && !unit.value) unit.value = option.dataset.unit
-    if (description && !description.value) description.value = option.text
+    if (price) price.value = option.dataset.price
+    if (unit) unit.value = option.dataset.unit
+    if (description) description.value = option.text
+    this.clearSupplierOfferings()
+    if (this.supplierWrapper) this.supplierWrapper.hidden = true
+    if (this.sourceWrapper) this.sourceWrapper.hidden = false
+    if (this.sourceLabel) this.sourceLabel.textContent = `Eigene Ressource · ${option.text}`
   }
 
   async selectProduct() {
@@ -117,7 +122,9 @@ export default class extends Controller {
 
     if (this.resourceSelect) this.resourceSelect.value = ""
     const description = this.form.querySelector('input[name="offer_line_item[description]"]')
-    if (description && !description.value) description.value = option.text
+    if (description) description.value = option.text
+    if (this.sourceWrapper) this.sourceWrapper.hidden = true
+    if (this.supplierWrapper) this.supplierWrapper.hidden = false
     await this.loadSupplierOfferings(option.value)
   }
 
@@ -126,6 +133,7 @@ export default class extends Controller {
 
     this.supplierSelect.replaceChildren(new Option("Zuerst Getränk auswählen", ""))
     this.supplierSelect.disabled = true
+    if (this.supplierWrapper) this.supplierWrapper.hidden = true
   }
 
   async loadSupplierOfferings(productVariantId) {
@@ -141,6 +149,7 @@ export default class extends Controller {
     this.supplierSelect.replaceChildren(new Option("Keine Bezugsquelle", ""))
     offerings.forEach((offering) => this.supplierSelect.add(new Option(offering.label, offering.id, offering.preferred, offering.preferred)))
     this.supplierSelect.disabled = offerings.length === 0
+    if (this.supplierWrapper) this.supplierWrapper.hidden = false
     const price = this.form.querySelector('input[name="offer_line_item[net_unit_price]"]')
     if (price && (!price.value || Number(price.value) === 0)) price.value = net_unit_price
   }

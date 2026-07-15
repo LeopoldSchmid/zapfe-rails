@@ -1,0 +1,20 @@
+<section class="admin-panel mt-6">
+  <div><p class="proof-kicker">Leistung ergänzen</p><h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]">Position hinzufügen</h2><p class="mt-1 text-sm text-slate-600">Suche zuerst nach dem Getränk oder der Ressource. Die passende Bezugsquelle und Preise werden anschließend gezielt eingeblendet.</p></div>
+  <%= form_with model: [:admin, offer, line_item], url: admin_offer_line_items_path(offer), class: "offer-line-item-form mt-5", data: { position_form: true } do |f| %>
+    <div class="grid gap-3 md:grid-cols-4">
+      <div class="md:col-span-2" data-position-search-anchor>
+        <%= f.label :description, "Position", class: "block text-sm font-medium" %>
+        <%= f.text_field :description, class: "admin-field", placeholder: "Getränk, Zapfanlage oder freie Leistung" %>
+      </div>
+      <div><%= f.label :quantity, "Menge", class: "block text-sm font-medium" %><%= f.number_field :quantity, step: 1, min: 1, required: true, class: "admin-field" %></div>
+      <div><%= f.label :unit, "Einheit", class: "block text-sm font-medium" %><%= f.text_field :unit, class: "admin-field" %></div>
+      <div><%= f.label :net_unit_price, "Netto/Stück", class: "block text-sm font-medium" %><%= f.number_field :net_unit_price, step: 0.01, min: 0, required: true, class: "admin-field" %></div>
+      <div><%= f.label :tax_rate, "MwSt. %", class: "block text-sm font-medium" %><%= f.number_field :tax_rate, step: 0.01, min: 0, class: "admin-field" %></div>
+      <div class="md:col-span-2" data-position-source hidden><label class="block text-sm font-medium">Bezugsquelle (intern)</label><p class="admin-readonly-field" data-position-source-label>Eigene Ressource</p></div>
+      <div class="md:col-span-2" data-position-supplier hidden><%= f.label :supplier_offering_id, "Bezugsquelle (intern)", class: "block text-sm font-medium" %><%= f.select :supplier_offering_id, [], { include_blank: "Zuerst Getränk auswählen" }, disabled: true, class: "admin-field" %></div>
+    </div>
+    <%= f.select :product_variant_id, @product_variants.map { |variant| ["#{variant.product.brand} #{variant.product.name} · #{variant.size} l", variant.id] }, { include_blank: "" }, class: "hidden", tabindex: -1, aria: { hidden: true } %>
+    <%= f.select :resource_id, [], { include_blank: "" }, class: "hidden", tabindex: -1, aria: { hidden: true } %>
+    <div class="mt-4 flex justify-end"><%= f.submit "Position hinzufügen", class: "admin-cta" %></div>
+  <% end %>
+</section>

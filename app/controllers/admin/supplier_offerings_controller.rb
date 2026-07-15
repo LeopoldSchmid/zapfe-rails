@@ -3,7 +3,7 @@ class Admin::SupplierOfferingsController < Admin::BaseController
   before_action :load_form_data, only: %i[new create edit update]
 
   def new
-    @supplier_offering = SupplierOffering.new(active: true)
+    @supplier_offering = SupplierOffering.new(active: true, supplier_id: params[:supplier_id])
     @supplier_offering.supplier_prices.build(valid_from: Date.current)
   end
 
@@ -37,7 +37,8 @@ class Admin::SupplierOfferingsController < Admin::BaseController
 
   def load_form_data
     @suppliers = Supplier.active.order(:name)
-    @profiles = ProcurementProfile.includes(:supplier).order(:standard, "suppliers.name", :name).references(:supplier)
+    selected_supplier_id = @supplier_offering&.supplier_id
+    @profiles = ProcurementProfile.where(supplier_id: [ nil, selected_supplier_id ].compact).includes(:supplier).order(:standard, :name)
     @product_variants = ProductVariant.includes(:product).order("products.brand", "products.name", :size).references(:product)
   end
 

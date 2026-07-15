@@ -38,4 +38,14 @@ class ProcurementPlans::CreateFromOfferTest < ActiveSupport::TestCase
     assert_equal 120.to_d, item.purchase_price
     assert_nil item.order_by_on
   end
+
+  test "creates a clearly provisional procurement plan from a draft offer" do
+    offer = Offer.create!(order: @order, version: 2, valid_until: Date.current + 14.days, recipient_name: "Max Mustermann")
+    offer.line_items.create!(description: "Vorläufiges Fass", quantity: 1, unit: "Fass", net_unit_price: 120, tax_rate: 19)
+
+    plan = ProcurementPlans::CreateFromOffer.new(offer: offer).call
+
+    assert_equal offer, plan.offer
+    assert_equal "draft", plan.offer.status
+  end
 end

@@ -5,6 +5,7 @@ class Order < ApplicationRecord
   belongs_to :responsible_admin_user, class_name: "AdminUser", inverse_of: :responsible_orders
   has_many :activities, as: :subject, dependent: :destroy
   has_many :offers, dependent: :destroy
+  has_many :invoices, dependent: :destroy
   has_many :time_entries, dependent: :destroy
   has_many :reservations, dependent: :destroy
   has_many :tasks, dependent: :destroy
@@ -13,6 +14,7 @@ class Order < ApplicationRecord
   has_many :taggings, as: :taggable, dependent: :destroy
   has_many :tags, through: :taggings
   has_many :product_selections, class_name: "OrderProductSelection", dependent: :destroy
+  has_rich_text :freeform_notes
 
   after_update_commit :recalculate_relative_task_dates, if: :saved_change_to_event_date?
   has_many_attached :attachments

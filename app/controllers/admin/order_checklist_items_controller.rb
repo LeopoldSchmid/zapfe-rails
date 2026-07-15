@@ -5,9 +5,9 @@ class Admin::OrderChecklistItemsController < Admin::BaseController
     item = @checklist.items.find(params[:id])
     item.update!(item_params)
     @checklist.refresh_status!
-    redirect_to admin_order_path(@order), notice: "Checklistenpunkt aktualisiert."
+    redirect_to execution_admin_order_path(@order), notice: "Checklistenpunkt aktualisiert."
   rescue ActiveRecord::RecordInvalid => error
-    redirect_to admin_order_path(@order), alert: error.message
+    redirect_to execution_admin_order_path(@order), alert: error.message
   end
 
   private

@@ -50,7 +50,8 @@ class Offers::Finalize
         gross: @offer.gross_total.to_s("F"),
         direct_cost: @offer.direct_cost_total.to_s("F")
       },
-      line_items: @offer.line_items.order(:position, :created_at).map do |line_item|
+      line_items: @offer.line_items.includes(supplier_offering: [ :supplier, :procurement_profile ]).order(:position, :created_at).map do |line_item|
+        offering = line_item.supplier_offering
         {
           description: line_item.description,
           quantity: line_item.quantity.to_s("F"),
@@ -64,7 +65,16 @@ class Offers::Finalize
           tax_amount: line_item.tax_amount.to_s("F"),
           gross_total: line_item.gross_total.to_s("F"),
           supplier_offering_id: line_item.supplier_offering_id,
-          direct_cost_unit: line_item.direct_cost_unit&.to_s("F")
+          direct_cost_unit: line_item.direct_cost_unit&.to_s("F"),
+          procurement: offering && {
+            supplier_name: offering.supplier.name,
+            supplier_sku: offering.supplier_sku,
+            profile_name: offering.procurement_profile.name,
+            lead_time_days: offering.lead_time_days,
+            return_policy: offering.return_policy,
+            return_period_days: offering.return_period_days,
+            order_by_on: offering.order_by_on(@offer.order.event_date)&.iso8601
+          }
         }
       end,
       planned_time_entries: @offer.time_entries.where(entry_type: "planned").map do |entry|

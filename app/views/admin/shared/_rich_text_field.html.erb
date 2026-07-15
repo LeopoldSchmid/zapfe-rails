@@ -1,0 +1,7 @@
+<% label = local_assigns.fetch(:label) %>
+<% help = local_assigns[:help] %>
+<div class="admin-rich-text-field">
+  <%= form.label attribute, label, class: "admin-field-label" %>
+  <% if help.present? %><p class="mt-1 text-sm text-slate-500"><%= help %></p><% end %>
+  <%= form.rich_text_area attribute, class: "admin-rich-text" %>
+</div>

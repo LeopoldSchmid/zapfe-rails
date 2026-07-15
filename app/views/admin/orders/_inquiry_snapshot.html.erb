@@ -1,0 +1,4 @@
+<section class="admin-panel">
+  <div class="flex flex-wrap items-baseline justify-between gap-3"><div><p class="proof-kicker">Phase 1 · Anfrage</p><h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]">Ursprüngliche Anfrage</h2></div><%= link_to "Anfrage vollständig öffnen", admin_inquiry_path(inquiry), class: "admin-link" %></div>
+  <div class="mt-5 grid gap-5 text-sm md:grid-cols-3"><p><strong>Kontakt</strong><br><%= inquiry.customer_name %><br><%= inquiry.email.presence || "Keine E-Mail" %><br><%= inquiry.phone.presence || "Keine Telefonnummer" %></p><p><strong>Veranstaltung</strong><br><%= inquiry.event_type.presence || "Nicht angegeben" %><br><%= inquiry.event_date || inquiry.starts_on || "Termin offen" %><br><%= inquiry.delivery_address.presence || "Ort offen" %></p><p><strong>Kundennachricht</strong><br><%= inquiry.message.presence || "Keine Nachricht" %></p></div>
+</section>

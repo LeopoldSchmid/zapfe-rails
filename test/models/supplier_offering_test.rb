@@ -43,4 +43,13 @@ class SupplierOfferingTest < ActiveSupport::TestCase
     offering.update!(return_period_days_override: 7)
     assert_equal 7, offering.return_period_days
   end
+
+  test "calculates and flags an elapsed order deadline" do
+    offering = supplier_offerings(:suedstar_variant)
+    event_date = Date.current + 1.day
+
+    assert_equal Date.current - 1.day, offering.order_by_on(event_date)
+    assert offering.procurement_overdue?(event_date)
+    assert_not offering.procurement_overdue?(Date.current + 3.days)
+  end
 end

@@ -1,0 +1,18 @@
+<%= render "workspace_header", order: @order, section: "Freie Notizen" %>
+<div class="mt-6"><%= render "admin/shared/process_nav", order: @order, current_phase: "notes" %></div>
+
+<section class="admin-panel mt-6 max-w-4xl">
+  <div class="max-w-2xl">
+    <p class="proof-kicker">Testphase</p>
+    <h2 class="mt-1 text-xl font-semibold text-[var(--color-zapfe-navy)]">Lexxy – freie Notizen</h2>
+    <p class="mt-2 text-sm leading-6 text-slate-600">Hier ist bewusst alles erlaubt: Beobachtungen, Sonderfälle, fehlende Felder oder Ideen für den nächsten Ausbau. Diese Notizen sind nur intern und werden weder im Angebot noch in anderen Kundendokumenten ausgegeben.</p>
+  </div>
+
+  <%= form_with model: [:admin, @order], url: notes_admin_order_path(@order), method: :patch, class: "mt-6" do |f| %>
+    <%= render "admin/shared/rich_text_field", form: f, attribute: :freeform_notes, label: "Freitext", help: "Formatierung, Überschriften, Listen, Links und Bilder stehen direkt in der Werkzeugleiste zur Verfügung." %>
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <p class="text-sm text-slate-500">Beim Speichern wird ein Eintrag in der Bearbeitungschronik erzeugt.</p>
+      <%= f.submit "Notizen speichern", class: "admin-cta" %>
+    </div>
+  <% end %>
+</section>

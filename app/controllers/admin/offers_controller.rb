@@ -1,6 +1,10 @@
 class Admin::OffersController < Admin::BaseController
   before_action :set_offer, only: %i[show update finalize duplicate document send_mail resolve position_options supplier_options]
 
+  def index
+    @order = Order.includes(:responsible_admin_user, :inquiry).find(params[:order_id])
+  end
+
   def create
     order = Order.find(params[:order_id])
     offer = Offers::CreateFromOrder.new(order: order, admin_user: current_admin_user).call

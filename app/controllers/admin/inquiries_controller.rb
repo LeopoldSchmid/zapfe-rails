@@ -1,14 +1,18 @@
 class Admin::InquiriesController < Admin::BaseController
+  FILTER_KEYS = %w[archived status assigned_admin_user_id unassigned due].freeze
   before_action :set_inquiry, only: %i[show assign convert_to_order add_attachments add_note archive download_attachment]
 
   def index
+    persist_filters
+    filters = @active_filters
     @inquiries = Inquiry.includes(:assigned_admin_user, :order).order(created_at: :desc)
-    @inquiries = params[:archived] == "1" ? @inquiries.where.not(archived_at: nil) : @inquiries.where(archived_at: nil)
-    @inquiries = @inquiries.where(status: params[:status]) if params[:status].present?
-    @inquiries = @inquiries.where(assigned_admin_user_id: params[:assigned_admin_user_id]) if params[:assigned_admin_user_id].present?
-    @inquiries = @inquiries.where(assigned_admin_user_id: nil) if params[:unassigned] == "1"
-    @inquiries = @inquiries.where(next_step_due_on: ..Date.current) if params[:due] == "overdue"
-    @inquiries = @inquiries.where(next_step_due_on: Date.current..7.days.from_now.to_date) if params[:due] == "next_7_days"
+    @inquiries = filters["archived"] == "1" ? @inquiries.where.not(archived_at: nil) : @inquiries.where(archived_at: nil)
+    @inquiries = @inquiries.where(status: filters["status"]) if filters["status"].present?
+    @inquiries = @inquiries.where.not(status: %w[closed discarded]) if filters["status"].blank? && filters["archived"] != "1"
+    @inquiries = @inquiries.where(assigned_admin_user_id: filters["assigned_admin_user_id"]) if filters["assigned_admin_user_id"].present?
+    @inquiries = @inquiries.where(assigned_admin_user_id: nil) if filters["unassigned"] == "1"
+    @inquiries = @inquiries.where(next_step_due_on: ..Date.current) if filters["due"] == "overdue"
+    @inquiries = @inquiries.where(next_step_due_on: Date.current..7.days.from_now.to_date) if filters["due"] == "next_7_days"
     @admin_users = AdminUser.active.order(:name)
   end
 
@@ -60,6 +64,13 @@ class Admin::InquiriesController < Admin::BaseController
   end
 
   private
+
+  def persist_filters
+    session.delete(:inquiry_filters) if params[:clear_filters] == "1"
+    submitted = params.permit(*FILTER_KEYS).to_h.compact_blank
+    session[:inquiry_filters] = session.fetch(:inquiry_filters, {}).merge(submitted) if submitted.any?
+    @active_filters = session.fetch(:inquiry_filters, {}).slice(*FILTER_KEYS)
+  end
 
   def set_inquiry
     @inquiry = Inquiry.includes(:assigned_admin_user, :order).find(params[:id])

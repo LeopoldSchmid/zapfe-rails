@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_012000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_15_143000) do
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -179,6 +189,51 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_012000) do
     t.index ["source"], name: "index_inquiries_on_source"
     t.index ["starts_on"], name: "index_inquiries_on_starts_on"
     t.index ["status"], name: "index_inquiries_on_status"
+  end
+
+  create_table "invoice_line_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.string "discount_reason"
+    t.string "discount_type", default: "none", null: false
+    t.decimal "discount_value", precision: 10, scale: 2, default: "0.0", null: false
+    t.integer "invoice_id", null: false
+    t.decimal "net_unit_price", precision: 10, scale: 2, default: "0.0", null: false
+    t.integer "position", default: 0, null: false
+    t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.decimal "tax_rate", precision: 5, scale: 2, default: "19.0", null: false
+    t.string "unit", default: "Stk", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id", "position"], name: "index_invoice_line_items_on_invoice_id_and_position"
+    t.index ["invoice_id"], name: "index_invoice_line_items_on_invoice_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.datetime "cancelled_at"
+    t.datetime "created_at", null: false
+    t.date "delivery_on"
+    t.text "document_snapshot"
+    t.date "due_on"
+    t.datetime "finalized_at"
+    t.string "global_discount_reason"
+    t.string "global_discount_type", default: "none", null: false
+    t.decimal "global_discount_value", precision: 10, scale: 2, default: "0.0", null: false
+    t.text "internal_note"
+    t.string "invoice_number"
+    t.date "issue_date"
+    t.integer "offer_id"
+    t.integer "order_id", null: false
+    t.datetime "paid_at"
+    t.text "recipient_address"
+    t.string "recipient_email"
+    t.string "recipient_name", null: false
+    t.datetime "sent_at"
+    t.string "status", default: "draft", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
+    t.index ["offer_id"], name: "index_invoices_on_offer_id"
+    t.index ["order_id"], name: "index_invoices_on_order_id"
+    t.index ["status"], name: "index_invoices_on_status"
   end
 
   create_table "offer_line_items", force: :cascade do |t|
@@ -466,12 +521,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_012000) do
     t.integer "order_id", null: false
     t.integer "resource_id", null: false
     t.datetime "starts_at", null: false
+    t.string "status", default: "reserved", null: false
     t.datetime "updated_at", null: false
     t.index ["offer_id"], name: "index_reservations_on_offer_id"
     t.index ["order_id", "starts_at"], name: "index_reservations_on_order_id_and_starts_at"
     t.index ["order_id"], name: "index_reservations_on_order_id"
     t.index ["resource_id", "starts_at", "ends_at"], name: "index_reservations_on_resource_id_and_starts_at_and_ends_at"
     t.index ["resource_id"], name: "index_reservations_on_resource_id"
+    t.index ["status"], name: "index_reservations_on_status"
   end
 
   create_table "resources", force: :cascade do |t|
@@ -569,10 +626,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_012000) do
   end
 
   create_table "system_settings", force: :cascade do |t|
+    t.string "bank_name", default: "Finom PAYMENTS B.V."
+    t.string "bic", default: "FNOMDEB2XXXX"
+    t.text "company_address", default: "Habsburgerstraße 38\n79104 Freiburg"
+    t.string "company_name", default: "Ape2tap UG"
     t.datetime "created_at", null: false
+    t.string "iban", default: "DE61100180000698968244"
     t.decimal "internal_hourly_cost", precision: 10, scale: 2
+    t.integer "payment_terms_days", default: 14, null: false
     t.decimal "standard_tax_rate", precision: 5, scale: 2, default: "19.0", null: false
     t.datetime "updated_at", null: false
+    t.string "vat_id", default: "DE369035041"
   end
 
   create_table "taggings", force: :cascade do |t|
@@ -640,6 +704,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_012000) do
   add_foreign_key "configuration_sessions", "solution_variants"
   add_foreign_key "configuration_sessions", "solutions"
   add_foreign_key "inquiries", "admin_users", column: "assigned_admin_user_id"
+  add_foreign_key "invoice_line_items", "invoices"
+  add_foreign_key "invoices", "offers"
+  add_foreign_key "invoices", "orders"
   add_foreign_key "offer_line_items", "offers"
   add_foreign_key "offer_line_items", "product_variants"
   add_foreign_key "offer_line_items", "resources"

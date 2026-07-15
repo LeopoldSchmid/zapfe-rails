@@ -6,6 +6,7 @@
   </div>
   <div class="flex flex-wrap items-center gap-3">
     <span class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 shadow-sm"><%= @products.size %> Produkte</span>
+    <details class="admin-bulk-details"><summary><span>CSV-Import</span><span class="text-xs font-medium text-slate-500">Produkte & Varianten</span></summary><div class="mt-4 border-t border-slate-200 pt-4"><p class="text-sm text-slate-600">Eine Zeile entspricht einer Variante. Bestehende Artikelnummern und SKUs werden aktualisiert.</p><%= link_to "CSV-Vorlage laden", import_template_admin_products_path, class: "admin-link mt-3 inline-block" %><%= form_with url: import_admin_products_path, multipart: true, class: "mt-3 flex flex-wrap items-center gap-3" do |f| %><%= file_field_tag :file, accept: ".csv,text/csv", required: true, class: "text-sm" %><%= f.submit "CSV importieren", class: "admin-secondary-action" %><% end %></div></details>
     <%= link_to "Neues Produkt", new_admin_product_path, class: "admin-cta" %>
   </div>
 </div>
@@ -219,6 +220,7 @@
                 <span class="font-semibold text-slate-700"><%= variant.sku %></span>
                 <span><%= variant.size.to_f %>L</span>
                 <span><%= number_to_currency(variant.price, unit: "€", separator: ",", delimiter: ".") %></span>
+                <span><%= variant.supplier_offerings.count(&:active?) %> Bezugsquellen</span>
                 <span><%= variant.is_available? ? "Verfügbar" : "Deaktiviert" %></span>
               </span>
             <% end %>

@@ -1,3 +1,5 @@
+require "csv"
+
 class Admin::ProductsController < Admin::BaseController
   before_action :set_product, only: %i[edit update destroy]
   before_action :load_index_dependencies, only: %i[index bulk_update_prices]
@@ -59,6 +61,24 @@ class Admin::ProductsController < Admin::BaseController
       flash.now[:alert] = result.error_message
       render :index, status: :unprocessable_entity
     end
+  end
+
+  def import
+    file = params[:file]
+    return redirect_to(admin_products_path, alert: "Bitte eine CSV-Datei auswählen.") if file.blank?
+
+    result = Catalog::CsvImport.new(content: file.read).call
+    redirect_to admin_products_path, notice: "Import abgeschlossen: #{result.products} Produktzeilen und #{result.variants} Varianten verarbeitet."
+  rescue Catalog::CsvImport::ImportError => error
+    redirect_to admin_products_path, alert: error.message
+  end
+
+  def import_template
+    csv = CSV.generate do |rows|
+      rows << Catalog::CsvImport::HEADERS
+      rows << [ "B100", "Zapfe", "Pils", "Bier", "Bier", "Pils", "5.0", "true", "B100-30", "30", "120.00", "true", "Instant" ]
+    end
+    send_data csv, filename: "zapfe-produktimport.csv", type: "text/csv; charset=utf-8", disposition: "attachment"
   end
 
   def destroy

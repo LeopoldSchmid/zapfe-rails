@@ -27,6 +27,15 @@ class Admin::OffersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "renders the offers work area for an order" do
+    order = orders(:from_inquiry)
+
+    get admin_order_offers_url(order)
+
+    assert_response :success
+    assert_select "h2", text: "Angebote erstellen und bearbeiten"
+  end
+
   test "removes an editable line item" do
     offer = Offer.create!(order: orders(:from_inquiry), version: 1, valid_until: Date.current + 14.days, recipient_name: "Max Mustermann")
     line_item = offer.line_items.create!(description: "Lieferung", quantity: 1, unit: "Pauschale", net_unit_price: 50, tax_rate: 19)
@@ -121,12 +130,12 @@ class Admin::OffersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Rothaus Pils · 20.0 l", line_item.description
   end
 
-  test "lists supplier alternatives by price, lead time and return policy" do
+  test "lists matching supplier alternatives in preferred supplier order" do
     offer = Offer.create!(order: orders(:from_inquiry), version: 1, valid_until: Date.current + 14.days, recipient_name: "Max Mustermann")
-    get admin_offer_url(offer)
+    get supplier_options_admin_offer_url(offer), params: { product_variant_id: product_variants(:one).id }, as: :json
 
     assert_response :success
-    assert_operator response.body.index("Getränkemarkt Südstar · Rothaus Pils"), :<, response.body.index("Getränke Beck · Rothaus Pils")
+    assert_equal [ "Getränkemarkt Südstar", "Getränke Beck" ], response.parsed_body.fetch("offerings").map { |offering| offering.fetch("label").split(" · ").first }
   end
 
   test "returns active resource rental positions for the offer search" do

@@ -16,6 +16,9 @@ class Admin::SystemSettingsController < Admin::BaseController
   private
 
   def system_setting_params
-    params.require(:system_setting).permit(:standard_tax_rate, :internal_hourly_cost)
+    params.require(:system_setting).permit(
+      :standard_tax_rate, :internal_hourly_cost, :company_name, :company_address, :vat_id,
+      :bank_name, :iban, :bic, :payment_terms_days
+    )
   end
 end

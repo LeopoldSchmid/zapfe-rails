@@ -29,12 +29,24 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
 
   test "shows due operational tasks" do
     order = orders(:from_inquiry)
-    Task.create!(order: order, assigned_admin_user: @admin, title: "Beschaffung bestellen", status: "open", due_on: Date.current + 1.day)
+    task = Task.create!(order: order, assigned_admin_user: @admin, title: "Beschaffung bestellen", status: "open", due_on: Date.current + 1.day)
 
     post admin_login_url, params: { email: @admin.email, password: "password123" }
     get admin_root_url
 
     assert_select "section", text: /Offene Aufgaben und Fristen/
     assert_select "a", text: /Beschaffung bestellen/
+    assert_select "a[href='#{execution_admin_order_path(order, task_id: task.id, anchor: "task-#{task.id}")}']", text: /Beschaffung bestellen/
+  end
+
+  test "links procurement tasks to the procurement work area" do
+    order = orders(:from_inquiry)
+    plan = order.procurement_plans.create!(status: "planned")
+    Task.create!(order: order, procurement_plan: plan, assigned_admin_user: @admin, title: "Bestellung auslösen", status: "open", due_on: Date.current + 1.day)
+
+    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    get admin_root_url
+
+    assert_select "a[href='#{procurement_admin_order_path(order)}']", text: /Bestellung auslösen/
   end
 end

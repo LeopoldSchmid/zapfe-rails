@@ -7,15 +7,15 @@ class Admin::OrderTimeEntriesController < Admin::BaseController
     @time_entry.admin_user = current_admin_user
 
     if @time_entry.save
-      redirect_to admin_order_path(@order), notice: "Tatsächliche Arbeitszeit erfasst."
+      redirect_to execution_admin_order_path(@order), notice: "Tatsächliche Arbeitszeit erfasst."
     else
-      redirect_to admin_order_path(@order), alert: @time_entry.errors.full_messages.to_sentence
+      redirect_to execution_admin_order_path(@order), alert: @time_entry.errors.full_messages.to_sentence
     end
   end
 
   def destroy
     @time_entry.destroy!
-    redirect_to admin_order_path(@order), notice: "Arbeitszeit entfernt."
+    redirect_to execution_admin_order_path(@order), notice: "Arbeitszeit entfernt."
   end
 
   private
