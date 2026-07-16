@@ -895,37 +895,37 @@ Offizielle technische Referenzen für die Analyse:
 
 ### PWA-Grundlage
 
-- [ ] Vorhandenes Rails-PWA-Gerüst analysieren und aktivieren.
-- [ ] Eigenes internes Manifest mit Zapfe-Branding erstellen.
-- [ ] Start-URL und Scope sinnvoll auf den Adminbereich ausrichten.
-- [ ] App-Icons, Theme-Farben und Standalone-Darstellung fertigstellen.
-- [ ] Service Worker registrieren.
-- [ ] Installationsfluss auf aktuellem Android und mindestens einem weiteren Browser testen.
+- [x] Vorhandenes Rails-PWA-Gerüst analysieren und aktivieren.
+- [x] Eigenes internes Manifest mit Zapfe-Branding erstellen.
+- [x] Start-URL und Scope sinnvoll auf den Adminbereich ausrichten.
+- [x] App-Icons, Theme-Farben und Standalone-Darstellung fertigstellen.
+- [x] Service Worker registrieren.
+- [~] Installationsfluss auf Android erfolgreich getestet; zweiter manueller Browser-Test folgt.
 
 ### Push
 
-- [ ] `PushSubscription` pro Admin-Benutzer und Gerät speichern.
-- [ ] Berechtigungsabfrage bewusst und nicht beim ersten Seitenaufruf anzeigen.
-- [ ] Web-Push-Versand über einen Job umsetzen.
-- [ ] Klick auf eine Benachrichtigung öffnet direkt den relevanten Auftrag.
-- [ ] Ungültige Abonnements automatisch entfernen.
+- [x] `PushSubscription` pro Admin-Benutzer und Gerät speichern.
+- [x] Berechtigungsabfrage bewusst und nicht beim ersten Seitenaufruf anzeigen.
+- [x] Web-Push-Versand über einen Job umsetzen.
+- [x] Klick auf eine Benachrichtigung öffnet direkt den relevanten Auftrag.
+- [x] Ungültige Abonnements automatisch entfernen.
 
 ### Erste sinnvolle Benachrichtigungen
 
-- [ ] Nächster Schritt oder automatisch erzeugte Standardaufgabe ist fällig beziehungsweise überfällig.
+- [x] Zugewiesene, fällige und überfällige Aufgaben benachrichtigen.
 - [ ] Beschaffungs- oder Vorbereitungsfrist nähert sich, zum Beispiel Getränke 14 Tage vor Veranstaltung bestellen.
 - [ ] Nachgelagerte Aufgabe wird fällig, zum Beispiel Rechnung einige Tage nach Rückgabe erstellen.
 - [ ] Veranstaltung beginnt in einem konfigurierbaren Zeitraum.
 - [ ] Auftrag ist bestätigt und benötigt Vorbereitung.
 - [ ] Rechnung ist überfällig.
-- [ ] Ein Teammitglied weist eine Aufgabe zu.
+- [x] Ein Teammitglied weist eine Aufgabe zu.
 
 ### Exit-Kriterien
 
-- [ ] Zapfe Intern kann als PWA installiert werden.
-- [ ] Push ist pro Gerät aktivierbar und deaktivierbar.
-- [ ] Benachrichtigungen werden nicht doppelt versendet.
-- [ ] Kritische Prozesse funktionieren weiterhin vollständig ohne Push.
+- [x] Zapfe Intern kann als PWA installiert werden.
+- [x] Push ist pro Gerät aktivierbar und deaktivierbar.
+- [x] Fälligkeitserinnerungen werden pro Aufgabe höchstens einmal täglich versendet.
+- [x] Kritische Prozesse funktionieren weiterhin vollständig ohne Push.
 
 ---
 

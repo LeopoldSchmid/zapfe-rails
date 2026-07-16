@@ -96,6 +96,12 @@ cp .kamal/deploy.env.example .kamal/deploy.env
 set -a; source .kamal/deploy.env; set +a
 ```
 
+Für PWA-Push einmalig VAPID-Schlüssel erzeugen und **nur** in `.kamal/deploy.env` hinterlegen:
+```bash
+bin/rails push:vapid_keys
+```
+Die drei ausgegebenen Werte `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` und `VAPID_SUBJECT` gehören in `.kamal/deploy.env`. In `.kamal/secrets.staging` stehen nur die Verweise `NAME=$NAME`. `.env` bleibt ausschließlich für die lokale Rails-Entwicklung.
+
 Erstsetup und Deploy:
 ```bash
 script/kamal_with_env setup -d staging
