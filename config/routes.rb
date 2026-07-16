@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   get "/sitemap.xml", to: "pages#sitemap", defaults: { format: :xml }
   get "/monitoring/inquiry_flow", to: "monitoring#inquiry_flow"
 
+  get "/architecture-review", to: "architecture_reviews#show" unless Rails.env.production?
+
   resources :inquiries, only: [ :create ]
 
   namespace :admin do

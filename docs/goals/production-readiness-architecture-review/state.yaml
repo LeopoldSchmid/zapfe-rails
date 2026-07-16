@@ -1,0 +1,366 @@
+# GoalBuddy v2 state.yaml
+# Board truth lives here. goal.md is the editable charter; notes/ holds long receipts only.
+
+version: 2
+
+goal:
+  title: "Produktionsreife- und Architekturreview"
+  slug: "production-readiness-architecture-review"
+  kind: audit
+  tranche: "Vollständiger read-only Audit und ein evidenzbasiertes Ergebnisdokument; keine Produktkorrekturen"
+  status: done
+  oracle:
+    signal: "Final geprüfter Auditbericht mit vollständiger Feldabdeckung, konkreten Belegen, Prioritäten, Grenzen und umsetzbarer Folgereihenfolge"
+    cadence: "nach jedem Prüfpaket und beim finalen Audit"
+    final_proof: "Receipt-basierter Abgleich aller Prüffelder mit dem Ergebnisdokument und full_outcome_complete: true"
+  intake:
+    original_request: "Webapp von A bis Z prüfen, besonders Security, DSGVO und Legalität in Deutschland, und alle Befunde dokumentieren."
+    interpreted_outcome: "Der Betreiber erhält eine belastbare, priorisierte Entscheidungsgrundlage, um die Webapp anschließend produktionssicherer und rechtssicherer zu machen."
+    input_shape: audit
+    audience: "Betreiber und Entwicklungsteam"
+    authority: requested
+    proof_type: source_backed_answer
+    completion_proof: "Ein vollständiges Auditdokument ist im Repository abgelegt und durch einen finalen Abdeckungs- und Evidenzcheck bestätigt."
+    likely_misfire: "Generische Checkliste, unbelegte Rechtsbehauptungen, falsches Compliance-Versprechen oder unbeauftragte Korrekturen."
+    blind_spots_considered:
+      - "Nicht alle Produktions- und Betreiberprozesse sind im Repository sichtbar."
+      - "Rechtliche Pflichten hängen von realem Betreiber, Zielgruppe, Datenflüssen, Dienstleistern und Deployment ab."
+      - "Technischer Review ersetzt keine anwaltliche Rechtsberatung."
+      - "PWA, Push, Offline-Caches und Benachrichtigungsinhalte können zusätzliche Privacy-Risiken erzeugen."
+    existing_plan_facts:
+      - "Zuerst nur prüfen und dokumentieren."
+      - "Danach gemeinsam besprechen."
+      - "Korrekturen erst in gesonderten Folgeschritten umsetzen."
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+  slice_policy:
+    max_consecutive_tiny_tasks: 2
+    prefer_vertical_slices: true
+    judge_picks_largest_safe_slice: true
+    worker_completes_whole_slice: true
+
+agents:
+  scout: bundled_not_installed
+  worker: bundled_not_installed
+  judge: bundled_not_installed
+
+visual_board:
+  selected: none
+  local:
+    status: not_requested
+    url: null
+    command: "node <skill-path>/surfaces/local-goal-board/scripts/local-goal-board.mjs --goal docs/goals/production-readiness-architecture-review"
+
+active_task: null
+
+tasks:
+  - id: T001
+    type: scout
+    assignee: Scout
+    status: done
+    reasoning_hint: high
+    objective: "Repository, Produktzweck, Komponenten, Datenmodell, Datenflüsse, Trust Boundaries und Verifikationsmöglichkeiten vollständig kartieren."
+    inputs:
+      - "gesamtes Repository"
+      - "Git-Status und aktueller Commit"
+      - "README, Dokumentation, Gemfile und Konfiguration"
+      - "Routen, Modelle, Controller, Jobs, Mailer, JavaScript und Tests"
+    constraints:
+      - "Read-only; keine Produktdateien ändern."
+      - "Keine realen Produktionsdaten oder Secrets ausgeben."
+      - "Konkrete Pfade und Zeilen als Evidenz notieren."
+    expected_output:
+      - "System- und Komponentenkarte"
+      - "Datenklassen, Datenflüsse und Trust Boundaries"
+      - "Verifikationsbefehle und Scope-Grenzen"
+      - "Erste risikobasierte Prüfhypothesen"
+    receipt:
+      result: done
+      harness: codex
+      summary: "Rails-Monolith, öffentliche und interne Systemgrenzen, sensible Datenklassen, zentrale Datenflüsse, neun Trust Boundaries, externe Dienste und Audit-Gates wurden mit Repository-Belegen kartiert. Sieben konkrete Risikohypothesen gehen in die Fachprüfungen ein."
+      note: notes/T001-system-map.md
+      evidence:
+        - config/routes.rb
+        - db/schema.rb
+        - app/controllers/inquiries_controller.rb
+        - app/controllers/application_controller.rb
+        - app/models
+        - app/services
+        - app/views/pwa/service_worker.js.erb
+        - config/database.yml
+        - config/deploy.yml
+        - .github/workflows/ci.yml
+
+  - id: T002
+    type: scout
+    assignee: Scout
+    status: done
+    reasoning_hint: xhigh
+    objective: "Security-Architektur und Implementierung systematisch prüfen und sichere statische sowie dynamische Checks ausführen."
+    inputs:
+      - "T001 receipt"
+      - "OWASP-orientierte Angriffsklassen"
+      - "Authentifizierung, Autorisierung, Sessions, Eingaben, Ausgaben, Uploads, Secrets, Header und Abhängigkeiten"
+    constraints:
+      - "Read-only und nicht destruktiv."
+      - "Keine aktiven Angriffe auf externe oder produktive Systeme."
+      - "Scanner-Ergebnisse manuell auf Relevanz und Fehlalarme prüfen."
+    expected_output:
+      - "Belegte Security-Befunde mit Schweregrad"
+      - "Positive Schutzmaßnahmen"
+      - "Ergebnisse von Tests und Security-Scannern"
+      - "Nicht prüfbare externe Sicherheitsannahmen"
+    receipt:
+      result: done
+      harness: codex
+      summary: "Security-Review abgeschlossen: ein kritischer Dependency-Gate-Befund, vier hohe und mehrere mittlere Härtungs-/Betriebsrisiken wurden mit Code- und Scannerbelegen validiert; positive Rails-, Header-, CSRF-, Download- und Secrets-Schutzmaßnahmen wurden ebenfalls bestätigt."
+      note: notes/T002-security-review.md
+      evidence:
+        - Gemfile.lock
+        - app/controllers/admin/sessions_controller.rb
+        - app/controllers/admin/passwords_controller.rb
+        - app/controllers/admin/admin_users_controller.rb
+        - app/models/admin_user.rb
+        - app/models/inquiry.rb
+        - config/initializers/content_security_policy.rb
+        - config/environments/production.rb
+        - app/controllers/monitoring_controller.rb
+        - app/views/pwa/service_worker.js.erb
+
+  - id: T003
+    type: scout
+    assignee: Scout
+    status: done
+    reasoning_hint: xhigh
+    objective: "DSGVO, Privacy by Design und Deutschland-spezifische rechtliche Pflichtpunkte anhand der Implementierung und aktueller offizieller Primärquellen prüfen."
+    inputs:
+      - "T001 receipt"
+      - "Datenmodell und Datenflüsse"
+      - "UI-Texte, Formulare, PWA/Push, Cookies, Drittanbieter und rechtliche Seiten"
+      - "offizielle EU- und deutsche Primärquellen"
+    constraints:
+      - "Read-only; keine Rechtssicherheitsgarantie abgeben."
+      - "Rechtsaussage, technische Beobachtung und offene Betreiberfrage klar unterscheiden."
+      - "Zeitkritische Aussagen mit aktuellen offiziellen Quellen belegen."
+    expected_output:
+      - "Privacy- und DSGVO-Befunde"
+      - "Deutschland-spezifische Legal-Checks"
+      - "Drittanbieter-, Transfer-, Aufbewahrungs- und Betroffenenrechte-Matrix"
+      - "Punkte für anwaltliche oder organisatorische Validierung"
+    receipt:
+      result: done
+      harness: codex
+      summary: "Privacy-/Legal-Review abgeschlossen: zehn DSGVO/Privacy- und acht Deutschland-spezifische Befunde wurden gegen Implementierung und aktuelle amtliche Quellen geprüft; bedingte Betreiberpflichten sind klar von bestätigten technischen Lücken getrennt."
+      note: notes/T003-privacy-legal-review.md
+      evidence:
+        - app/views/pages/datenschutz.html.erb
+        - app/views/pages/impressum.html.erb
+        - app/views/inquiries/_inquiry_form.html.erb
+        - app/javascript/controllers/calculator_controller.js
+        - app/services/invoices/finalize.rb
+        - app/services/invoices/pdf_renderer.rb
+        - config/deploy.yml
+        - https://eur-lex.europa.eu/eli/reg/2016/679/oj/?locale=de
+        - https://www.gesetze-im-internet.de/ttdsg/__25.html
+        - https://www.gesetze-im-internet.de/ustg_1980/__14.html
+        - https://www.bundesfinanzministerium.de/Content/DE/FAQ/e-rechnung.html
+
+  - id: T004
+    type: scout
+    assignee: Scout
+    status: done
+    reasoning_hint: high
+    objective: "Produktionsbetrieb, Zuverlässigkeit, Deployment, Datenbank, Backups, Jobs, E-Mail, Monitoring, Incident Response, Performance und Recovery prüfen."
+    inputs:
+      - "T001 receipt"
+      - "Deployment- und Environment-Konfiguration"
+      - "Datenbank, Migrationen, Jobs, Mailer, Logging und Observability"
+      - "Tests und vorhandene Betriebsdokumentation"
+    constraints:
+      - "Read-only und nicht destruktiv."
+      - "Produktionsannahmen ohne Beleg als offen kennzeichnen."
+    expected_output:
+      - "Operations- und Reliability-Befunde"
+      - "Backup/Restore- und Incident-Readiness-Bewertung"
+      - "Performance- und Skalierungsrisiken"
+      - "Produktions- und Betreiberfragen"
+    receipt:
+      result: done
+      harness: codex
+      summary: "Operations-Review abgeschlossen: fehlender Backup-/Restore-Nachweis und ein destruktives Produktionsersatz-Skript sind kritisch; Mail-/Jobzustände, Monitoring, Migrationen, Single-node-Ausfallkopplung, Logs und Deploy-Härtung erfordern vor Produktion konkrete Maßnahmen."
+      note: notes/T004-operations-review.md
+      evidence:
+        - config/deploy.yml
+        - config/database.yml
+        - config/environments/production.rb
+        - config/queue.yml
+        - config/recurring.yml
+        - app/services/offers/send_mail.rb
+        - app/services/invoices/send_mail.rb
+        - app/jobs/application_job.rb
+        - app/controllers/monitoring_controller.rb
+        - script/replace_prod_storage_from_staging
+        - Dockerfile
+        - documentation/monitoring.md
+
+  - id: T005
+    type: scout
+    assignee: Scout
+    status: done
+    reasoning_hint: high
+    objective: "Code- und Architekturqualität, Accessibility, PWA-Verhalten, Abhängigkeiten und Testabdeckung prüfen und die verfügbaren Gate-Suites ausführen."
+    inputs:
+      - "T001 receipt"
+      - "Anwendungs- und Testcode"
+      - "Ruby-, Rails-, JavaScript- und Browser-Testwerkzeuge"
+    constraints:
+      - "Read-only; keine automatischen Fixer mit Schreibwirkung."
+      - "Fehlschläge und bereits bestehende rote Checks wahrheitsgemäß dokumentieren."
+    expected_output:
+      - "Architektur- und Maintainability-Befunde"
+      - "Test- und Coverage-Lücken"
+      - "Accessibility- und PWA-Befunde"
+      - "Gate-Suite-Ergebnisse"
+    receipt:
+      result: done
+      harness: codex
+      summary: "Architektur-/Quality-Review abgeschlossen: Unit-/Controller-Suite und Seeds sind grün, RuboCop und beide Browser-Gates rot. Schema-Drift, partielle Template-Erstellung, ungetestete Failure-/Concurrency-Pfade sowie Accessibility-/PWA-Lücken sind belegt."
+      note: notes/T005-architecture-quality-review.md
+      evidence:
+        - db/schema.rb
+        - app/controllers/admin/orders_controller.rb
+        - app/services/orders/apply_template.rb
+        - app/services/offers/finalize.rb
+        - app/services/invoices/finalize.rb
+        - app/views/layouts/application.html.erb
+        - app/views/layouts/admin.html.erb
+        - app/javascript/controllers/mobile_menu_controller.js
+        - app/javascript/controllers/lazy_video_controller.js
+        - app/views/pwa/service_worker.js.erb
+        - .github/workflows/ci.yml
+        - test/system
+        - tests
+
+  - id: T006
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: xhigh
+    objective: "Alle Rohbefunde deduplizieren, Evidenz challengen, Schweregrade kalibrieren und die vollständige Berichtsgliederung freigeben."
+    inputs:
+      - "T001-T005 receipts und ausführliche Notes"
+    constraints:
+      - "Nicht implementieren."
+      - "Unbelegte oder spekulative Befunde zurückweisen oder ausdrücklich als Hypothese markieren."
+      - "Security-Risiko, Rechtsrisiko und Qualitätsverbesserung nicht vermischen."
+    expected_output:
+      - "Validierte und deduplizierte Findings"
+      - "Kalibrierte Prioritäten und Begründungen"
+      - "Vollständigkeitslücken"
+      - "Freigegebene Berichtsstruktur"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      rationale: "Alle Prüfpakete sind evidenzbasiert und dedupliziert; der freigegebene Worker-Paketumfang ist die Erstellung des vereinbarten Ergebnisdokuments."
+      harness: codex
+      summary: "Evidenz und Prioritäten validiert: drei kritische Blocker, klar abgegrenzte hohe Release-Risiken, deduplizierte Cross-Domain-Befunde und bedingte Rechtsfragen bilden die freigegebene Berichtsstruktur."
+      note: notes/T006-judge-synthesis.md
+      evidence:
+        - notes/T001-system-map.md
+        - notes/T002-security-review.md
+        - notes/T003-privacy-legal-review.md
+        - notes/T004-operations-review.md
+        - notes/T005-architecture-quality-review.md
+
+  - id: T007
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Das validierte Ergebnisdokument erstellen, ohne Produktdateien zu verändern."
+    allowed_files:
+      - "docs/architecture-review-2026-07-16.md"
+    verify:
+      - "test -f docs/architecture-review-2026-07-16.md"
+      - "rg -n 'Executive Summary|Security|DSGVO|Legal|Betrieb|Priorität|Offene Fragen' docs/architecture-review-2026-07-16.md"
+    stop_if:
+      - "Ein Befund soll ohne nachvollziehbaren Beleg als Tatsache dargestellt werden."
+      - "Eine Produktdatei müsste geändert werden."
+      - "Das Dokument würde eine verbindliche Rechts- oder Compliance-Garantie behaupten."
+    receipt:
+      result: done
+      changed_files:
+        - docs/architecture-review-2026-07-16.md
+      commands:
+        - cmd: "test -f docs/architecture-review-2026-07-16.md"
+          status: pass
+        - cmd: "rg -n 'Executive Summary|Security Findings|DSGVO|Legalität|Betrieb|Priorisierte Umsetzungsreihenfolge|Offene Betreiber' docs/architecture-review-2026-07-16.md"
+          status: pass
+      harness: codex
+      summary: "Das konsolidierte Ergebnisdokument wurde erstellt: 3.147 Wörter, 57 priorisierte ID-Nennungen, Systemübersicht, positive Kontrollen, vollständige Security-/Privacy-/Legal-/Operations-/Quality-Abdeckung, Gate-Protokoll, Betreiberfragen und vier Maßnahmenwellen."
+      note: ../../architecture-review-2026-07-16.md
+      evidence:
+        - docs/architecture-review-2026-07-16.md
+
+  - id: T999
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: xhigh
+    objective: "Den fertigen Bericht gegen Originalauftrag, Review-Felder, Evidenzstandard und Dokumentvertrag final auditieren."
+    inputs:
+      - "Alle Task-Receipts und Notes"
+      - "docs/architecture-review-2026-07-16.md"
+      - "letzte Verifikationsresultate"
+    constraints:
+      - "Nicht implementieren."
+      - "Completion ablehnen, wenn ein Prüffeld fehlt oder wesentliche Aussagen unbelegt sind."
+      - "Completion ablehnen, wenn Produktdateien verändert wurden."
+      - "Completion ablehnen, wenn Grenzen und offene Betreiberfragen fehlen."
+    expected_output:
+      - "complete | not_complete"
+      - "full_outcome_complete: true | false"
+      - "Abdeckungsmatrix aller Review-Felder"
+      - "fehlende Evidenz oder konkrete nächste Task"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: true
+      rationale: "Der Bericht deckt alle zwölf Review-Felder mit Repository- oder Primärquellen-Evidenz ab, enthält alle 60 eindeutigen Finding-IDs, dokumentiert Grenzen und offene Betreiberfragen und verändert keine Produktdateien."
+      harness: codex
+      summary: "Finaler Abdeckungs- und Evidenzcheck bestanden; der vereinbarte read-only Audit und sein Ergebnisdokument sind vollständig. Die im Bericht festgestellte fehlende Produktionsreife bleibt Gegenstand der anschließenden Umsetzung."
+      note: notes/T999-final-audit.md
+      evidence:
+        - docs/architecture-review-2026-07-16.md
+        - notes/T001-system-map.md
+        - notes/T002-security-review.md
+        - notes/T003-privacy-legal-review.md
+        - notes/T004-operations-review.md
+        - notes/T005-architecture-quality-review.md
+        - notes/T006-judge-synthesis.md
+
+checks:
+  dirty_fingerprint: unknown
+  last_verification:
+    result: pass
+    task: T999
+    commands:
+      - "GoalBuddy state checker"
+      - "Finding-ID coverage comparison"
+      - "Report heading and file checks"
+      - "Git product-diff check"

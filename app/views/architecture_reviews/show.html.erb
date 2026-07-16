@@ -1,0 +1,173 @@
+<div class="review-shell" data-controller="review-quest" data-review-quest-total-value="<%= @finding_count %>">
+  <header class="review-topbar">
+    <a class="review-brand" href="#top" aria-label="Zur Übersicht">
+      <span class="review-brand__mark" aria-hidden="true">Z!</span>
+      <span>ZAPFE // READINESS QUEST</span>
+    </a>
+    <div class="review-topbar__meta">
+      <span class="review-build"><span aria-hidden="true"></span> LOCAL REVIEW BUILD</span>
+      <span>16.07.2026</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="review-hero" aria-labelledby="review-title">
+      <div class="review-hero__copy">
+        <p class="review-kicker"><span>CAMPAIGN 01</span> Architektur &amp; Produktionsreife</p>
+        <h1 id="review-title">Mach die App<br><em>produktionsreif.</em></h1>
+        <p class="review-lede">60 Findings. Drei kritische Boss-Kämpfe. Ein klarer Weg zum Go-Live. Öffne jede Quest, verstehe das Risiko und arbeite dich durch die vier Release-Wellen.</p>
+        <div class="review-hero__actions">
+          <a class="review-button review-button--primary" href="#boss-arena">Boss-Kämpfe ansehen <span aria-hidden="true">↓</span></a>
+          <a class="review-button review-button--ghost" href="#mission-deck">Alle Quests</a>
+        </div>
+      </div>
+
+      <aside class="review-status-panel" aria-label="Aktueller Review-Status">
+        <div class="review-status-panel__signal">
+          <span class="review-status-panel__eyebrow">RELEASE STATUS</span>
+          <strong>NO–GO</strong>
+          <span class="review-status-panel__pulse">3 BLOCKER ACTIVE</span>
+        </div>
+        <dl class="review-stats">
+          <div><dt>Findings</dt><dd><%= @finding_count %></dd></div>
+          <div><dt>Bosses</dt><dd><%= @bosses.size %></dd></div>
+          <div><dt>Wellen</dt><dd>04</dd></div>
+        </dl>
+        <div class="review-progress">
+          <div class="review-progress__label">
+            <span>Dein Review-Fortschritt</span>
+            <strong data-review-quest-target="progressLabel">0 / <%= @finding_count %></strong>
+          </div>
+          <progress data-review-quest-target="progress" max="<%= @finding_count %>" value="0">0 von <%= @finding_count %></progress>
+          <span class="review-xp" data-review-quest-target="xp">0 XP gesammelt</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="review-arena" id="boss-arena" aria-labelledby="boss-title">
+      <div class="review-section-heading">
+        <div>
+          <p class="review-kicker"><span>WELLE 0</span> zuerst lösen</p>
+          <h2 id="boss-title">Die drei Boss-Kämpfe</h2>
+        </div>
+        <p>Ohne diese drei Siege gibt es keine verantwortbare Produktionsfreigabe.</p>
+      </div>
+
+      <div class="review-boss-grid">
+        <% @bosses.each_with_index do |finding, index| %>
+          <article class="review-boss" data-severity="critical">
+            <span class="review-boss__number" aria-hidden="true">0<%= index + 1 %></span>
+            <div class="review-boss__icon" aria-hidden="true"><span></span></div>
+            <p class="review-boss__id"><%= finding[:id] %></p>
+            <h3><%= finding[:title] %></h3>
+            <p><%= finding[:impact].split(".").first %>.</p>
+            <button class="review-text-button" type="button" data-action="review-quest#open" <%= tag.attributes(data: review_finding_data(finding)) %>>Boss analysieren <span aria-hidden="true">↗</span></button>
+          </article>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="review-roadmap" aria-labelledby="roadmap-title">
+      <div class="review-section-heading review-section-heading--compact">
+        <div>
+          <p class="review-kicker"><span>CAMPAIGN MAP</span> empfohlene Reihenfolge</p>
+          <h2 id="roadmap-title">Vier Wellen bis zum Release</h2>
+        </div>
+      </div>
+      <ol class="review-waves">
+        <li class="review-wave review-wave--active"><span>00</span><div><strong>Überleben</strong><small>Dependencies · Backup · Skript sperren</small></div></li>
+        <li><span>01</span><div><strong>Release sichern</strong><small>Auth · Datenschutz · Rechnungen · Gates</small></div></li>
+        <li><span>02</span><div><strong>System härten</strong><small>Uploads · Monitoring · Accessibility</small></div></li>
+        <li><span>03</span><div><strong>Skalieren</strong><small>Entkopplung · Supply Chain · PWA</small></div></li>
+      </ol>
+    </section>
+
+    <section class="review-deck" id="mission-deck" aria-labelledby="deck-title">
+      <div class="review-section-heading">
+        <div>
+          <p class="review-kicker"><span>MISSION DECK</span> <%= @findings.size %> Karten · <%= @finding_count %> Findings</p>
+          <h2 id="deck-title">Wähle deine nächste Quest</h2>
+        </div>
+        <p>„Verstanden“ bedeutet nur: Du hast Risiko und nächsten Schritt geprüft – nicht, dass das Finding behoben ist.</p>
+      </div>
+
+      <div class="review-controls" aria-label="Findings filtern">
+        <div class="review-filter-group" aria-label="Nach Priorität filtern">
+          <% [["all", "Alle"], ["critical", "Boss"], ["high", "Hoch"], ["medium", "Mittel"], ["low", "Niedrig"]].each do |value, label| %>
+            <button type="button" class="review-filter" data-severity-filter="<%= value %>" data-action="review-quest#filterSeverity" aria-pressed="<%= value == "all" %>"><%= label %></button>
+          <% end %>
+        </div>
+        <label class="review-search">
+          <span class="sr-only">Findings durchsuchen</span>
+          <span aria-hidden="true">⌕</span>
+          <input type="search" placeholder="ID, Risiko oder Maßnahme suchen …" data-review-quest-target="query" data-action="input->review-quest#search">
+        </label>
+        <label class="review-select">
+          <span class="sr-only">Bereich auswählen</span>
+          <select data-action="change->review-quest#filterDomain">
+            <option value="all">Alle Bereiche</option>
+            <% @domains.each do |domain| %><option value="<%= domain %>"><%= domain %></option><% end %>
+          </select>
+        </label>
+      </div>
+
+      <p class="review-result-count" aria-live="polite" data-review-quest-target="resultCount"><%= @findings.size %> Quest-Karten sichtbar</p>
+
+      <div class="review-card-grid">
+        <% @findings.each do |finding| %>
+          <article class="review-card review-card--<%= finding[:severity] %>" <%= tag.attributes(data: review_finding_data(finding, target: true)) %>>
+            <button class="review-card__main" type="button" data-action="review-quest#open" aria-label="<%= finding[:id] %>: <%= finding[:title] %> öffnen">
+              <div class="review-card__topline">
+                <span class="review-card__id"><%= finding[:id] %></span>
+                <span class="review-card__severity"><%= review_severity_label(finding[:severity]) %></span>
+              </div>
+              <span class="review-card__domain"><%= finding[:domain] %></span>
+              <h3><%= finding[:title] %></h3>
+              <p><%= truncate(finding[:impact], length: 150, separator: " ") %></p>
+              <span class="review-card__meta">Aufwand <strong><%= finding[:effort] %></strong><i aria-hidden="true">↗</i></span>
+            </button>
+            <button class="review-card__check" type="button" data-action="review-quest#markCard" aria-pressed="false"><span aria-hidden="true">✓</span> verstanden</button>
+          </article>
+        <% end %>
+      </div>
+
+      <div class="review-empty" hidden data-review-quest-target="empty">
+        <span aria-hidden="true">∅</span>
+        <h3>Keine Quest gefunden</h3>
+        <p>Ändere Suchbegriff oder Filter und versuche es erneut.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="review-footer">
+    <span>ZAPFE! ARCHITECTURE REVIEW · TEMPORARY LOCAL TOOL</span>
+    <span>Kein Finding gilt durch „Verstanden“ als behoben.</span>
+  </footer>
+
+  <dialog class="review-dialog" data-review-quest-target="dialog" data-action="click->review-quest#closeOnBackdrop">
+    <div class="review-dialog__panel">
+      <div class="review-dialog__header">
+        <div>
+          <span class="review-dialog__domain" data-review-quest-target="dialogDomain"></span>
+          <span class="review-dialog__severity" data-review-quest-target="dialogSeverity"></span>
+        </div>
+        <button class="review-dialog__close" type="button" data-action="review-quest#close" aria-label="Dialog schließen">×</button>
+      </div>
+      <p class="review-dialog__id" data-review-quest-target="dialogId"></p>
+      <h2 data-review-quest-target="dialogTitle"></h2>
+      <div class="review-dialog__section">
+        <span class="review-dialog__label">WARUM DAS WICHTIG IST</span>
+        <p data-review-quest-target="dialogImpact"></p>
+      </div>
+      <div class="review-dialog__section review-dialog__section--action">
+        <span class="review-dialog__label">DEIN NÄCHSTER ZUG</span>
+        <p data-review-quest-target="dialogAction"></p>
+      </div>
+      <div class="review-dialog__footer">
+        <div><span>Priorität / Wahrscheinlichkeit</span><strong data-review-quest-target="dialogPriority"></strong></div>
+        <div><span>Geschätzter Aufwand</span><strong data-review-quest-target="dialogEffort"></strong></div>
+        <button class="review-button review-button--complete" type="button" data-review-quest-target="dialogMark" data-action="review-quest#markCurrent" aria-pressed="false">✓ Als verstanden markieren</button>
+      </div>
+    </div>
+  </dialog>
+</div>

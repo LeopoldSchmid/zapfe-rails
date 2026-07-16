@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <title>Production Readiness Quest · Zapfe!</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <meta name="description" content="Temporäre, lokale Oberfläche zum Architektur- und Produktionsreife-Review von Zapfe!">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "architecture_review", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="review-body">
+    <a class="review-skip-link" href="#mission-deck">Zu den Findings springen</a>
+    <%= yield %>
+  </body>
+</html>
