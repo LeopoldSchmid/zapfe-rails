@@ -9,13 +9,11 @@ class AdminMobileNavigationTest < ApplicationSystemTestCase
     }
 
   test "opens the mobile menu and navigates between order work areas" do
+    page.current_window.resize_to(390, 844)
     admin = admin_users(:one)
     order = orders(:from_inquiry)
 
-    visit admin_login_path
-    fill_in "Email", with: admin.email
-    fill_in "Password", with: "password123"
-    click_button "Einloggen"
+    sign_in_admin_through_ui(admin)
 
     click_button "Menü"
     assert_link "Aufträge"

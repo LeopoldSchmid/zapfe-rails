@@ -1,5 +1,12 @@
 class Task < ApplicationRecord
+  include TransitionPolicy
+
   STATUSES = %w[open in_progress done].freeze
+  allows_status_transitions(
+    "open" => %w[in_progress done],
+    "in_progress" => %w[open done],
+    "done" => %w[open in_progress]
+  )
   RELATIVE_ANCHORS = %w[event_date].freeze
 
   belongs_to :order

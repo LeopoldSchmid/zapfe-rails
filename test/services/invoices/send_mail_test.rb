@@ -11,12 +11,21 @@ class Invoices::SendMailTest < ActiveSupport::TestCase
   end
 
   test "queues the finalized invoice email" do
-    assert_enqueued_with(job: ActionMailer::MailDeliveryJob) do
-      Invoices::SendMail.new(invoice: @invoice, admin_user: @admin).call
+    assert_enqueued_with(job: CustomerDocumentDeliveryJob) do
+      @delivery = Invoices::SendMail.new(invoice: @invoice, admin_user: @admin).call
     end
 
-    assert_equal "sent", @invoice.reload.status
-    assert_equal "sent", @invoice.activities.order(:created_at).last.event_type
+    assert_equal "finalized", @invoice.reload.status
+    assert_nil @invoice.sent_at
+    assert_equal "queued", @delivery.status
+    assert_equal "delivery_queued", @invoice.activities.order(:created_at).last.event_type
+  end
+
+  test "mail contains checksum-verified PDF and XRechnung attachments" do
+    email = InvoiceMailer.invoice(@invoice)
+
+    assert_equal [ "#{@invoice.invoice_number}.pdf", "#{@invoice.invoice_number}.xml" ], email.attachments.map(&:filename)
+    assert_equal [ "application/pdf", "application/xml" ], email.attachments.map(&:mime_type)
   end
 
   test "does not send a document when external document delivery is disabled" do

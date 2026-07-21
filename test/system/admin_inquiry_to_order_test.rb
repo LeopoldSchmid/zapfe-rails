@@ -6,10 +6,7 @@ class AdminInquiryToOrderTest < ApplicationSystemTestCase
     inquiry = inquiries(:two)
     admin.update!(name: "Systemtest Admin")
 
-    visit admin_login_path
-    fill_in "Email", with: admin.email
-    fill_in "Password", with: "password123"
-    click_button "Einloggen"
+    sign_in_admin_through_ui(admin)
 
     click_link "Anfragen"
     within "article", text: inquiry.customer_name do
@@ -29,6 +26,6 @@ class AdminInquiryToOrderTest < ApplicationSystemTestCase
     assert_text "Anfrage wurde in einen Auftrag umgewandelt."
     assert_text inquiry.customer_name
     assert_text "In Vorbereitung"
-    assert_link "Ursprungsanfrage öffnen"
+    within(".admin-process") { assert_link "Anfrage" }
   end
 end

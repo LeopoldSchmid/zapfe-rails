@@ -6,7 +6,7 @@ class Admin::OffersControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @admin = admin_users(:one)
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
   end
 
   test "creates a draft and adds a free line item" do
@@ -75,12 +75,13 @@ class Admin::OffersControllerTest < ActionDispatch::IntegrationTest
     offer.line_items.create!(description: "Miete", quantity: 1, unit: "Tag", net_unit_price: 100, tax_rate: 19)
     Offers::Finalize.new(offer: offer, admin_user: @admin).call
 
-    assert_enqueued_emails 1 do
+    assert_enqueued_with(job: CustomerDocumentDeliveryJob) do
       post send_mail_admin_offer_url(offer)
     end
 
     assert_redirected_to admin_offer_url(offer)
-    assert_equal "sent", offer.reload.status
+    assert_equal "finalized", offer.reload.status
+    assert_equal "queued", DocumentDelivery.find_by!(deliverable: offer).status
   end
 
   test "uses the selected matching supplier offering as direct cost" do

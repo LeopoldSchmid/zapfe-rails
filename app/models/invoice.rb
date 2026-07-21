@@ -1,14 +1,28 @@
 class Invoice < ApplicationRecord
+  include TransitionPolicy
+
   STATUSES = %w[draft finalized sent paid cancelled overdue].freeze
+  allows_status_transitions(
+    "draft" => %w[finalized],
+    "finalized" => %w[sent paid cancelled overdue],
+    "sent" => %w[paid cancelled overdue],
+    "overdue" => %w[paid cancelled],
+    "paid" => [], "cancelled" => []
+  )
+  INVOICE_TYPES = %w[invoice credit_note correction].freeze
   DISCOUNT_TYPES = OfferLineItem::DISCOUNT_TYPES
 
   belongs_to :order
   belongs_to :offer, optional: true
+  belongs_to :correction_of, class_name: "Invoice", optional: true
+  has_many :corrections, class_name: "Invoice", foreign_key: :correction_of_id, dependent: :restrict_with_error
   has_many :line_items, class_name: "InvoiceLineItem", dependent: :destroy
   has_many :activities, as: :subject, dependent: :destroy
   has_one_attached :document
+  has_one_attached :e_invoice
 
   validates :status, inclusion: { in: STATUSES }
+  validates :invoice_type, inclusion: { in: INVOICE_TYPES }
   validates :recipient_name, presence: true
   validates :global_discount_type, inclusion: { in: DISCOUNT_TYPES }
   validates :global_discount_value, numericality: { greater_than_or_equal_to: 0 }
@@ -28,11 +42,17 @@ class Invoice < ApplicationRecord
     end
   end
   def net_total = subtotal_net - global_discount_amount
-  def tax_total
-    return BigDecimal("0") if subtotal_net.zero?
+  def tax_breakdown
+    return [] if subtotal_net.zero?
 
-    line_items.sum { |line_item| line_item.tax_amount - global_discount_amount * (line_item.net_total / subtotal_net) * line_item.tax_rate / 100 }
+    line_items.group_by(&:tax_rate).map do |rate, items|
+      group_net = items.sum(&:net_total)
+      discount_share = global_discount_amount * group_net / subtotal_net
+      taxable_basis = (group_net - discount_share).round(2)
+      { rate: rate.to_d, allowance_amount: discount_share.round(2), taxable_basis: taxable_basis, tax_amount: (taxable_basis * rate / 100).round(2) }
+    end.sort_by { |entry| entry.fetch(:rate) }
   end
+  def tax_total = tax_breakdown.sum { |entry| entry.fetch(:tax_amount) }
   def gross_total = net_total + tax_total
   def document_snapshot_data = JSON.parse(document_snapshot.presence || "{}")
 

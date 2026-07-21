@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_16_151500) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -63,17 +63,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.index ["subject_type", "subject_id"], name: "index_activities_on_subject"
   end
 
+  create_table "admin_security_events", force: :cascade do |t|
+    t.integer "actor_admin_user_id"
+    t.datetime "created_at", null: false
+    t.string "event_type", null: false
+    t.string "ip_address_digest"
+    t.json "metadata", default: {}, null: false
+    t.string "request_id"
+    t.integer "target_admin_user_id"
+    t.datetime "updated_at", null: false
+    t.string "user_agent_family"
+    t.index ["actor_admin_user_id"], name: "index_admin_security_events_on_actor_admin_user_id"
+    t.index ["event_type", "created_at"], name: "index_admin_security_events_on_event_type_and_created_at"
+    t.index ["request_id"], name: "index_admin_security_events_on_request_id"
+    t.index ["target_admin_user_id"], name: "index_admin_security_events_on_target_admin_user_id"
+  end
+
   create_table "admin_users", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.text "email_signature"
+    t.datetime "last_signed_in_at"
+    t.datetime "mfa_enabled_at"
+    t.integer "mfa_last_used_at"
+    t.json "mfa_recovery_code_digests", default: [], null: false
+    t.text "mfa_secret_ciphertext"
     t.string "name", default: "Unbekannt", null: false
     t.json "notification_preferences", default: {}, null: false
     t.string "password_digest", null: false
     t.string "phone"
+    t.string "role", default: "owner", null: false
+    t.integer "session_version", default: 1, null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
+    t.index ["role"], name: "index_admin_users_on_role"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -152,6 +176,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.index ["name"], name: "index_customers_on_name", unique: true
   end
 
+  create_table "document_deliveries", force: :cascade do |t|
+    t.integer "attempts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "deliverable_id", null: false
+    t.string "deliverable_type", null: false
+    t.datetime "delivered_at"
+    t.datetime "failed_at"
+    t.string "idempotency_key", null: false
+    t.string "last_error_class"
+    t.string "last_error_digest"
+    t.string "provider_message_id"
+    t.datetime "queued_at", null: false
+    t.string "recipient", null: false
+    t.integer "requested_by_id", null: false
+    t.string "status", default: "queued", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deliverable_type", "deliverable_id"], name: "index_document_deliveries_on_deliverable"
+    t.index ["idempotency_key"], name: "index_document_deliveries_on_idempotency_key", unique: true
+    t.index ["requested_by_id"], name: "index_document_deliveries_on_requested_by_id"
+    t.index ["status", "queued_at"], name: "index_document_deliveries_on_status_and_queued_at"
+  end
+
   create_table "events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date_from"
@@ -223,9 +269,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.text "message"
     t.text "next_step"
     t.date "next_step_due_on"
-    t.string "phone", null: false
+    t.string "phone"
     t.text "pricing_snapshot"
     t.boolean "privacy_accepted", default: false, null: false
+    t.datetime "privacy_notice_acknowledged_at"
+    t.string "privacy_notice_version", default: "2026-07-16", null: false
     t.integer "rental_days"
     t.string "rental_mode"
     t.text "selected_options"
@@ -262,18 +310,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.index ["invoice_id"], name: "index_invoice_line_items_on_invoice_id"
   end
 
+  create_table "invoice_sequences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "next_value", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.integer "year", null: false
+    t.index ["year"], name: "index_invoice_sequences_on_year", unique: true
+  end
+
   create_table "invoices", force: :cascade do |t|
     t.datetime "cancelled_at"
+    t.integer "correction_of_id"
     t.datetime "created_at", null: false
     t.date "delivery_on"
+    t.string "document_sha256"
     t.text "document_snapshot"
     t.date "due_on"
+    t.string "e_invoice_sha256"
     t.datetime "finalized_at"
     t.string "global_discount_reason"
     t.string "global_discount_type", default: "none", null: false
     t.decimal "global_discount_value", precision: 10, scale: 2, default: "0.0", null: false
     t.text "internal_note"
     t.string "invoice_number"
+    t.string "invoice_type", default: "invoice", null: false
     t.date "issue_date"
     t.integer "offer_id"
     t.integer "order_id", null: false
@@ -284,6 +344,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.datetime "sent_at"
     t.string "status", default: "draft", null: false
     t.datetime "updated_at", null: false
+    t.index ["correction_of_id"], name: "index_invoices_on_correction_of_id"
     t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
     t.index ["offer_id"], name: "index_invoices_on_offer_id"
     t.index ["order_id"], name: "index_invoices_on_order_id"
@@ -338,6 +399,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.index ["order_id", "version"], name: "index_offers_on_order_id_and_version", unique: true
     t.index ["order_id"], name: "index_offers_on_order_id"
     t.index ["status"], name: "index_offers_on_status"
+  end
+
+  create_table "operational_probes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "nonce", null: false
+    t.datetime "updated_at", null: false
+    t.index ["nonce"], name: "index_operational_probes_on_nonce", unique: true
   end
 
   create_table "order_checklist_items", force: :cascade do |t|
@@ -481,6 +549,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.index ["status"], name: "index_orders_on_status"
   end
 
+  create_table "privacy_erasure_tombstones", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "erased_at", null: false
+    t.json "erased_records", default: {}, null: false
+    t.integer "performed_by_id", null: false
+    t.string "subject_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index ["erased_at"], name: "index_privacy_erasure_tombstones_on_erased_at"
+    t.index ["subject_digest"], name: "index_privacy_erasure_tombstones_on_subject_digest"
+  end
+
+  create_table "privacy_legal_holds", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "created_by_id", null: false
+    t.datetime "expires_at"
+    t.text "reason", null: false
+    t.datetime "released_at"
+    t.integer "released_by_id"
+    t.string "subject_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_privacy_legal_holds_on_expires_at"
+    t.index ["released_at"], name: "index_privacy_legal_holds_on_released_at"
+    t.index ["subject_digest"], name: "index_privacy_legal_holds_on_subject_digest"
+  end
+
   create_table "procurement_plan_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", null: false
@@ -572,6 +665,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
     t.index ["featured", "featured_position"], name: "index_products_on_featured_and_featured_position"
     t.index ["featured"], name: "index_products_on_featured"
     t.index ["kind"], name: "index_products_on_kind"
+  end
+
+  create_table "push_notification_deliveries", force: :cascade do |t|
+    t.integer "attempts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.datetime "failed_at"
+    t.string "kind", null: false
+    t.string "last_error_class"
+    t.string "last_error_digest"
+    t.date "notification_on", null: false
+    t.integer "push_subscription_id", null: false
+    t.string "status", default: "queued", null: false
+    t.integer "task_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["push_subscription_id"], name: "index_push_notification_deliveries_on_push_subscription_id"
+    t.index ["status", "notification_on"], name: "idx_on_status_notification_on_8c3a25e457"
+    t.index ["task_id", "push_subscription_id", "kind", "notification_on"], name: "idx_push_deliveries_idempotency", unique: true
+    t.index ["task_id"], name: "index_push_notification_deliveries_on_task_id"
   end
 
   create_table "push_subscriptions", force: :cascade do |t|
@@ -777,16 +889,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "admin_users"
+  add_foreign_key "admin_security_events", "admin_users", column: "actor_admin_user_id"
+  add_foreign_key "admin_security_events", "admin_users", column: "target_admin_user_id"
   add_foreign_key "checklist_template_items", "checklist_templates"
   add_foreign_key "configuration_sessions", "scenes"
   add_foreign_key "configuration_sessions", "solution_variants"
   add_foreign_key "configuration_sessions", "solutions"
   add_foreign_key "contacts", "customers"
+  add_foreign_key "document_deliveries", "admin_users", column: "requested_by_id"
   add_foreign_key "help_faqs", "help_articles"
   add_foreign_key "help_requests", "admin_users"
   add_foreign_key "help_requests", "help_articles"
   add_foreign_key "inquiries", "admin_users", column: "assigned_admin_user_id"
   add_foreign_key "invoice_line_items", "invoices"
+  add_foreign_key "invoices", "invoices", column: "correction_of_id"
   add_foreign_key "invoices", "offers"
   add_foreign_key "invoices", "orders"
   add_foreign_key "offer_line_items", "offers"
@@ -813,6 +929,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
   add_foreign_key "orders", "contacts"
   add_foreign_key "orders", "customers"
   add_foreign_key "orders", "inquiries"
+  add_foreign_key "privacy_erasure_tombstones", "admin_users", column: "performed_by_id"
+  add_foreign_key "privacy_legal_holds", "admin_users", column: "created_by_id"
+  add_foreign_key "privacy_legal_holds", "admin_users", column: "released_by_id"
   add_foreign_key "procurement_plan_items", "offer_line_items"
   add_foreign_key "procurement_plan_items", "procurement_plans"
   add_foreign_key "procurement_plan_items", "supplier_offerings"
@@ -822,6 +941,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_000000) do
   add_foreign_key "procurement_profiles", "suppliers"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "categories"
+  add_foreign_key "push_notification_deliveries", "push_subscriptions"
+  add_foreign_key "push_notification_deliveries", "tasks"
   add_foreign_key "push_subscriptions", "admin_users"
   add_foreign_key "reservations", "offers"
   add_foreign_key "reservations", "orders"

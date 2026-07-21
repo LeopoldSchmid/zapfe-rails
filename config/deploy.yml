@@ -3,13 +3,25 @@ image: leopoldschmid/zapfe-rails
 
 servers:
   web:
-    - 157.180.19.232
+    hosts:
+      - 157.180.19.232
+    options:
+      memory: 768m
+      cpus: 1.5
+  job:
+    hosts:
+      - 157.180.19.232
+    cmd: bin/jobs
+    options:
+      memory: 512m
+      cpus: 1.0
 
 proxy:
   hosts:
     - zapfe.jetzt
     - www.zapfe.jetzt
   ssl: true
+  app_port: 3000
 
 registry:
   username: leopoldschmid
@@ -28,9 +40,10 @@ env:
   clear:
     RAILS_ENV: production
     RAILS_LOG_TO_STDOUT: true
-    SOLID_QUEUE_IN_PUMA: true
     APP_HOST: zapfe.jetzt
-    UMAMI_ENABLED: true
+    # Fail closed until the provider/transfer/retention and §25 TDDDG / Art. 6
+    # review in the operator pack has been signed off.
+    UMAMI_ENABLED: false
     UMAMI_SCRIPT_URL: https://analytics.duzend.net/script.js
     UMAMI_DOMAINS: zapfe.jetzt,www.zapfe.jetzt
 
@@ -49,6 +62,4 @@ builder:
   arch: amd64
 
 ssh:
-  user: root
-  keys:
-    - /home/leo/.ssh/apeServeBeer.pem
+  user: <%= ENV.fetch("KAMAL_SSH_USER", "zapfe-deploy") %>

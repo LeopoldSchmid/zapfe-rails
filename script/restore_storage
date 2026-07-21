@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+umask 077
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  script/restore_storage --archive ABSOLUTE_FILE --target ABSOLUTE_EMPTY_DIR \
+    [--identity AGE_IDENTITY]
+
+Restores only into a new or empty, non-symlink directory. The archive paths,
+checksums, format marker, and every SQLite database are verified before any
+payload is copied into the target. Existing target data is never deleted.
+USAGE
+}
+
+die() {
+  printf 'restore_storage: %s\n' "$*" >&2
+  exit 64
+}
+
+archive=""
+target_dir=""
+identity=""
+
+while (($#)); do
+  case "$1" in
+    --archive) archive="${2:-}"; shift 2 ;;
+    --target) target_dir="${2:-}"; shift 2 ;;
+    --identity) identity="${2:-}"; shift 2 ;;
+    --help|-h) usage; exit 0 ;;
+    *) die "unknown argument: $1" ;;
+  esac
+done
+
+[[ -n "$archive" ]] || die "--archive is required"
+[[ -n "$target_dir" ]] || die "--target is required"
+[[ "$archive" = /* ]] || die "--archive must be an absolute path"
+[[ "$target_dir" = /* ]] || die "--target must be an absolute path"
+[[ -f "$archive" ]] || die "archive does not exist: $archive"
+[[ ! -L "$archive" ]] || die "archive must not be a symlink"
+[[ ! -L "$target_dir" ]] || die "target must not be a symlink"
+
+archive="$(realpath "$archive")"
+target_dir="$(realpath -m "$target_dir")"
+[[ "$target_dir" != "/" ]] || die "refusing to restore into the filesystem root"
+[[ "$target_dir" != "$(dirname "$archive")" ]] || die "target must not be the archive directory"
+
+if [[ -e "$target_dir" ]]; then
+  [[ -d "$target_dir" ]] || die "target exists and is not a directory"
+  [[ -z "$(find "$target_dir" -mindepth 1 -maxdepth 1 -print -quit)" ]] || die "target must be empty"
+fi
+
+for command_name in sqlite3 tar sha256sum; do
+  command -v "$command_name" >/dev/null || die "required command is missing: $command_name"
+done
+
+work_dir="$(mktemp -d "${TMPDIR:-/tmp}/zapfe-restore.XXXXXX")"
+trap 'rm -rf "$work_dir"' EXIT
+plain_archive="$archive"
+
+if [[ "$archive" == *.age ]]; then
+  [[ -n "$identity" ]] || die "--identity is required for an age-encrypted archive"
+  command -v age >/dev/null || die "age is required to decrypt this archive"
+  plain_archive="$work_dir/zapfe-storage.tar.gz"
+  age --decrypt --identity "$identity" --output "$plain_archive" "$archive"
+elif [[ -n "$identity" ]]; then
+  die "--identity was provided for a plaintext archive"
+fi
+
+# Reject absolute paths and parent traversal before extraction.
+while IFS= read -r entry; do
+  [[ "$entry" != /* ]] || die "archive contains an absolute path"
+  case "/$entry/" in
+    */../*) die "archive contains parent traversal" ;;
+  esac
+done < <(tar -tzf "$plain_archive")
+
+extract_dir="$work_dir/extracted"
+mkdir -p "$extract_dir"
+tar -C "$extract_dir" -xzf "$plain_archive" --no-same-owner --no-same-permissions
+
+[[ "$(head -n 1 "$extract_dir/FORMAT" 2>/dev/null || true)" == "zapfe-storage-backup-v1" ]] || die "unsupported or missing backup format"
+[[ -f "$extract_dir/manifest.sha256" ]] || die "backup manifest is missing"
+[[ -d "$extract_dir/payload" ]] || die "backup payload is missing"
+
+(
+  cd "$extract_dir/payload"
+  sha256sum --quiet --check ../manifest.sha256
+) || die "backup checksum verification failed"
+
+database_count=0
+while IFS= read -r -d '' database; do
+  integrity="$(sqlite3 "$database" 'PRAGMA integrity_check;')"
+  [[ "$integrity" == "ok" ]] || die "SQLite integrity check failed for ${database#"$extract_dir/payload"/}: $integrity"
+  database_count=$((database_count + 1))
+done < <(find "$extract_dir/payload" -type f -name '*.sqlite3' -print0)
+((database_count > 0)) || die "backup contains no SQLite databases"
+
+mkdir -p "$target_dir"
+cp -a "$extract_dir/payload/." "$target_dir/"
+printf 'Restore verified and written to: %s (%d SQLite databases)\n' "$target_dir" "$database_count"

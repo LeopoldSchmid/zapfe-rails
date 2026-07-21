@@ -1,0 +1,13 @@
+<% if @pagination && (@pagination[:previous] || @pagination[:next]) %>
+  <nav class="mt-6 flex items-center justify-between gap-3" aria-label="Seitennavigation">
+    <% if @pagination[:previous] %>
+      <%= link_to "← Vorherige Seite", url_for(request.query_parameters.merge(page: @pagination[:page] - 1)), class: "admin-secondary-action", rel: "prev" %>
+    <% else %>
+      <span></span>
+    <% end %>
+    <span class="text-sm text-slate-600">Seite <%= @pagination[:page] %></span>
+    <% if @pagination[:next] %>
+      <%= link_to "Nächste Seite →", url_for(request.query_parameters.merge(page: @pagination[:page] + 1)), class: "admin-secondary-action", rel: "next" %>
+    <% end %>
+  </nav>
+<% end %>

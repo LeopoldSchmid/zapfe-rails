@@ -5,6 +5,7 @@ class Admin::PasswordsControllerTest < ActionDispatch::IntegrationTest
   include ActionMailer::TestHelper
 
   setup do
+    ApplicationController::RATE_LIMIT_STORE.clear
     @admin = admin_users(:one)
     ActionMailer::Base.deliveries.clear
     clear_enqueued_jobs
@@ -42,12 +43,16 @@ class Admin::PasswordsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to admin_login_url
 
-    post admin_login_url, params: {
-      email: @admin.email,
-      password: "new-secure-password-123"
-    }
+    sign_in_admin(@admin, password: "new-secure-password-123")
+  end
 
-    assert_redirected_to admin_root_url
+  test "rate limits reset mail by account and IP" do
+    assert_enqueued_emails 3 do
+      4.times { post admin_password_url, params: { email: @admin.email } }
+    end
+
+    assert_redirected_to admin_login_url
+    assert_match(/Zu viele Reset-Anfragen/, flash[:alert])
   end
 
   test "invalid token redirects to reset request page" do

@@ -36,6 +36,16 @@
 !/app/assets/builds/.keep
 /public/assets
 
+# Keep non-reproducible media sources in the repository, but out of the build
+# context and runtime image. Production pages use the checked-in WebP and
+# public/optimized variants plus the explicitly retained 720p videos.
+/app/assets/images/*.jpg
+/app/assets/images/*.png
+/app/assets/images/products/*.png
+/app/assets/videos/
+/public/videos/hochzeit_bier_horizontal.mp4
+/public/videos/hochzeit_hugo_vertical.mp4
+
 # Ignore CI service files.
 /.github
 

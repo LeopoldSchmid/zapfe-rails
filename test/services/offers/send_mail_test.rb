@@ -2,7 +2,6 @@ require "test_helper"
 
 class Offers::SendMailTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
-  include ActionMailer::TestHelper
 
   setup do
     clear_enqueued_jobs
@@ -15,15 +14,16 @@ class Offers::SendMailTest < ActiveSupport::TestCase
     clear_enqueued_jobs
   end
 
-  test "queues the final PDF for delivery and records the sent state" do
-    assert_enqueued_emails 1 do
-      Offers::SendMail.new(offer: @offer, admin_user: admin_users(:one)).call
+  test "queues the final PDF without claiming delivery before the job succeeds" do
+    assert_enqueued_with(job: CustomerDocumentDeliveryJob) do
+      @delivery = Offers::SendMail.new(offer: @offer, admin_user: admin_users(:one)).call
     end
 
     @offer.reload
-    assert_equal "sent", @offer.status
-    assert_not_nil @offer.sent_at
-    assert_match(/versendet/, @offer.activities.last.message)
+    assert_equal "finalized", @offer.status
+    assert_nil @offer.sent_at
+    assert_equal "queued", @delivery.status
+    assert_match(/eingereiht/, @offer.activities.last.message)
   end
 
   test "does not send a document when external document delivery is disabled" do

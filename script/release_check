@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+bin/bundler-audit check
+bin/brakeman --no-pager
+bin/importmap audit
+RUBOCOP_CACHE_ROOT="${RUBOCOP_CACHE_ROOT:-/tmp/zapfe-rubocop}" bin/rubocop
+COVERAGE=1 bin/rails test
+bin/rails test:system
+npx playwright test --project=chromium --workers=1
+SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile
+git diff --check
+
+echo "Local release gates passed. CI image scan/SBOM and external operator gates remain mandatory."

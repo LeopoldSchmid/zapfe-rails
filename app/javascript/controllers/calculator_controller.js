@@ -3,15 +3,15 @@ import { clearCart, getCart, saveCart, upsertCartItem } from "controllers/shared
 import { renderCalculatorCart } from "controllers/shared/cart_dom"
 import { filterCardsByQuery, formatCurrency, formatDateDE, normalizeText, setElementVisibility, showToast } from "controllers/shared/ui_helpers"
 
-const STORAGE_KEY = "zapfe_calculator_form_v1"
+const LEGACY_PII_STORAGE_KEY = "zapfe_calculator_form_v1"
 
 export default class extends Controller {
   connect() {
     this.form = document.getElementById("calculator-form")
     if (!this.form) return
 
+    window.localStorage.removeItem(LEGACY_PII_STORAGE_KEY)
     this.cacheElements()
-    this.restoreState()
     this.setupDefaultDates()
     this.syncRentalDates()
     this.bindEvents()
@@ -78,7 +78,6 @@ export default class extends Controller {
     this.pricingDrinksValue = document.getElementById("pricing-drinks-value")
     this.pricingTotalDetail = document.getElementById("pricing-total-detail")
     this.pricingBreakdown = document.getElementById("pricing-breakdown")
-    this.persistedFields = Array.from(this.form.querySelectorAll("input, select, textarea")).filter((field) => field.name)
   }
 
   setupDefaultDates() {
@@ -92,8 +91,6 @@ export default class extends Controller {
   }
 
   bindEvents() {
-    this.form.addEventListener("submit", () => this.saveState())
-
     this.drinkCards.forEach((card) => {
       Array.from(card.querySelectorAll(".calc-variant")).forEach((button) => {
         button.addEventListener("click", () => this.applyVariantStyles(card, button))
@@ -150,55 +147,6 @@ export default class extends Controller {
       if (event.key === "Escape") this.closeClearCartSheet()
     }
     window.addEventListener("keydown", this.escapeHandler)
-  }
-
-  restoreState() {
-    let savedState = null
-
-    try {
-      savedState = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "{}")
-    } catch (_error) {
-      savedState = {}
-    }
-
-    this.persistedFields?.forEach((field) => {
-      const savedValue = savedState[field.name]
-      if (savedValue === undefined) return
-
-      if (field instanceof HTMLInputElement && (field.type === "radio")) {
-        field.checked = field.value === savedValue
-        return
-      }
-
-      if (field instanceof HTMLInputElement && field.type === "checkbox") {
-        field.checked = !!savedValue
-        return
-      }
-
-      field.value = savedValue
-    })
-  }
-
-  saveState() {
-    if (!this.persistedFields?.length) return
-
-    const state = {}
-
-    this.persistedFields.forEach((field) => {
-      if (field instanceof HTMLInputElement && field.type === "radio") {
-        if (field.checked) state[field.name] = field.value
-        return
-      }
-
-      if (field instanceof HTMLInputElement && field.type === "checkbox") {
-        state[field.name] = field.checked
-        return
-      }
-
-      state[field.name] = field.value
-    })
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   }
 
   dayCount() {

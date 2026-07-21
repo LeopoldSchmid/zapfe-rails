@@ -1,4 +1,5 @@
 class Inquiry < ApplicationRecord
+  PRIVACY_NOTICE_VERSION = "2026-07-16"
   SOURCES = %w[contact calculator solutions events].freeze
   STATUSES = %w[new clarifying waiting_customer waiting_external closed discarded].freeze
 
@@ -10,9 +11,10 @@ class Inquiry < ApplicationRecord
   validate :attachments_are_safe
 
   before_validation :normalize_structured_fields
+  before_validation :record_privacy_notice_acknowledgement, if: :privacy_accepted?
 
   validates :source, inclusion: { in: SOURCES }
-  validates :first_name, :last_name, :email, :phone, presence: true
+  validates :first_name, :last_name, :email, presence: true
   validates :privacy_accepted, acceptance: true
   validates :status, inclusion: { in: STATUSES }
   validates :rental_mode, :starts_on, :ends_on, presence: true, if: :calculator?
@@ -27,7 +29,7 @@ class Inquiry < ApplicationRecord
   end
 
   def delivery_address
-    [delivery_street, delivery_postcode, delivery_city].filter_map(&:presence).join(", ")
+    [ delivery_street, delivery_postcode, delivery_city ].filter_map(&:presence).join(", ")
   end
 
   def pricing_snapshot_data
@@ -39,7 +41,7 @@ class Inquiry < ApplicationRecord
   def time_window
     return "" if start_time.blank? && end_time.blank?
 
-    [start_time.presence, end_time.presence].compact.join(" bis ")
+    [ start_time.presence, end_time.presence ].compact.join(" bis ")
   end
 
   def open?
@@ -51,12 +53,13 @@ class Inquiry < ApplicationRecord
   end
 
   def customer_name
-    [first_name, last_name].compact.join(" ")
+    [ first_name, last_name ].compact.join(" ")
   end
 
   private
 
   def normalize_structured_fields
+    self.phone = phone.presence
     snapshot = pricing_snapshot_data
     timing = snapshot.fetch("timing", {})
     delivery = snapshot.fetch("deliveryAddress", {})
@@ -76,14 +79,18 @@ class Inquiry < ApplicationRecord
     self.event_date ||= starts_on
 
     if starts_on.present? && ends_on.present?
-      self.rental_days ||= [(ends_on - starts_on).to_i, 1].max
+      self.rental_days ||= [ (ends_on - starts_on).to_i, 1 ].max
     end
+  end
+
+  def record_privacy_notice_acknowledgement
+    self.privacy_notice_version = PRIVACY_NOTICE_VERSION
+    self.privacy_notice_acknowledged_at ||= Time.current
   end
 
   def attachments_are_safe
     attachments.each do |attachment|
-      errors.add(:attachments, "dürfen höchstens 25 MB groß sein") if attachment.byte_size > 25.megabytes
-      errors.add(:attachments, "müssen PDF- oder Bilddateien sein") unless attachment.content_type.in?(%w[application/pdf image/jpeg image/png image/webp])
+      AttachmentSafety.validate(self, attachment)
     end
   end
 end

@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::TimeEntriesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = admin_users(:one)
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
     SystemSetting.current.update!(internal_hourly_cost: 40)
     @offer = Offer.create!(order: orders(:from_inquiry), version: 1, valid_until: Date.current + 14.days, recipient_name: "Max Mustermann")
   end

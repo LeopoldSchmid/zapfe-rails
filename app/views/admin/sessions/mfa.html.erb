@@ -1,0 +1,11 @@
+<p class="proof-kicker">Zweiter Faktor</p>
+<h1 class="mb-2 mt-2 text-2xl font-semibold text-slate-900">Sicherheitscode eingeben</h1>
+<p class="mb-6 text-sm text-slate-500">Öffne deine Authenticator-App und gib den sechsstelligen Code ein. Alternativ funktioniert ein noch unbenutzter Wiederherstellungscode.</p>
+
+<%= form_with url: admin_login_mfa_path, class: "space-y-4" do |f| %>
+  <div>
+    <%= f.label :code, "Sicherheits- oder Wiederherstellungscode", class: "mb-1 block text-sm font-medium" %>
+    <%= f.text_field :code, required: true, autocomplete: "one-time-code", inputmode: "numeric", autofocus: true, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+  </div>
+  <%= f.submit "Anmeldung abschließen", class: "admin-cta w-full" %>
+<% end %>

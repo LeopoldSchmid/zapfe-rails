@@ -149,7 +149,7 @@ module Catalog
       )
       variant.save!
 
-      [created_product, variant_updated]
+      [ created_product, variant_updated ]
     end
 
     def normalize_prices

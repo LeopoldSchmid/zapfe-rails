@@ -39,6 +39,35 @@ jobs:
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: bin/importmap audit
 
+  scan_image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build production image
+        run: docker build --pull=false --tag zapfe-rails:ci .
+
+      - name: Scan OS and application packages
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: zapfe-rails:ci
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          scanners: vuln
+
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0.20.6
+        with:
+          image: zapfe-rails:ci
+          format: cyclonedx-json
+          artifact-name: zapfe-rails-sbom.cdx.json
+
   lint:
     runs-on: ubuntu-latest
     env:
@@ -86,9 +115,24 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
+          COVERAGE: 1
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
+
+      - name: Keep coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rails-coverage
+          path: coverage
+          if-no-files-found: error
+
+      - name: Prove schema can be rebuilt from migrations
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: sqlite3:storage/schema_rebuild.sqlite3
+        run: bin/rails db:drop db:create db:migrate db:abort_if_pending_migrations
 
   system-test:
     runs-on: ubuntu-latest
@@ -121,4 +165,41 @@ jobs:
         with:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
+          if-no-files-found: ignore
+
+  browser-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install browser test dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright and WCAG gates
+        env:
+          CI: true
+          RAILS_ENV: test
+        run: npx playwright test --project=chromium
+
+      - name: Keep Playwright report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
           if-no-files-found: ignore

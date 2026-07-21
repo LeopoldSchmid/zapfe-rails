@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+umask 077
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  script/upload_offsite_backup --archive ABSOLUTE_FILE.age \
+    --host STORAGE_BOX_HOST --user STORAGE_BOX_USER \
+    --ssh-key ABSOLUTE_PRIVATE_KEY --known-hosts ABSOLUTE_KNOWN_HOSTS \
+    --remote-path RELATIVE_PATH [--port 23]
+
+Uploads an already encrypted backup archive to a Hetzner Storage Box. The
+script refuses plaintext archives, unknown hosts, readable private keys, unsafe
+remote paths, and existing remote targets. It never deletes remote files.
+USAGE
+}
+
+die() {
+  printf 'upload_offsite_backup: %s\n' "$*" >&2
+  exit 64
+}
+
+archive=""
+host=""
+user=""
+ssh_key=""
+known_hosts=""
+remote_path=""
+port="23"
+
+while (($#)); do
+  case "$1" in
+    --archive) archive="${2:-}"; shift 2 ;;
+    --host) host="${2:-}"; shift 2 ;;
+    --user) user="${2:-}"; shift 2 ;;
+    --ssh-key) ssh_key="${2:-}"; shift 2 ;;
+    --known-hosts) known_hosts="${2:-}"; shift 2 ;;
+    --remote-path) remote_path="${2:-}"; shift 2 ;;
+    --port) port="${2:-}"; shift 2 ;;
+    --help|-h) usage; exit 0 ;;
+    *) die "unknown argument: $1" ;;
+  esac
+done
+
+[[ -n "$archive" && -n "$host" && -n "$user" && -n "$ssh_key" && -n "$known_hosts" && -n "$remote_path" ]] || die "archive, host, user, ssh key, known hosts and remote path are required"
+[[ "$archive" = /* && "$ssh_key" = /* && "$known_hosts" = /* ]] || die "archive, ssh key and known hosts must be absolute paths"
+[[ "$archive" == *.age ]] || die "refusing an archive that is not encrypted with age (.age)"
+[[ -f "$archive" && ! -L "$archive" ]] || die "archive must be a regular non-symlink file"
+[[ -f "$ssh_key" && ! -L "$ssh_key" ]] || die "ssh key must be a regular non-symlink file"
+[[ -f "$known_hosts" && ! -L "$known_hosts" ]] || die "known hosts must be a regular non-symlink file"
+[[ "$host" =~ ^u[0-9]+(-[A-Za-z0-9._-]+)?\.your-storagebox\.de$ ]] || die "host must be a Hetzner Storage Box hostname"
+[[ "$user" =~ ^u[0-9]+(-[A-Za-z0-9._-]+)?$ ]] || die "user must be a Storage Box user"
+[[ "$port" =~ ^[0-9]+$ ]] && ((port >= 1 && port <= 65535)) || die "port must be between 1 and 65535"
+[[ "$remote_path" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]] || die "remote path contains unsupported characters"
+case "/$remote_path/" in */../*|*//*) die "remote path must not contain traversal or empty components" ;; esac
+
+key_mode="$(stat -c '%a' "$ssh_key")"
+(( (8#$key_mode & 077) == 0 )) || die "ssh key must not be readable by group or others"
+
+archive="$(realpath "$archive")"
+ssh_key="$(realpath "$ssh_key")"
+known_hosts="$(realpath "$known_hosts")"
+remote_directory="$(dirname "$remote_path")"
+[[ "$remote_directory" != "." ]] || remote_directory=""
+
+for command_name in ssh scp sha256sum; do
+  command -v "$command_name" >/dev/null || die "required command is missing: $command_name"
+done
+
+ssh_options=(
+  -p "$port"
+  -i "$ssh_key"
+  -o BatchMode=yes
+  -o IdentitiesOnly=yes
+  -o StrictHostKeyChecking=yes
+  -o "UserKnownHostsFile=$known_hosts"
+)
+scp_options=(
+  -P "$port"
+  -i "$ssh_key"
+  -o BatchMode=yes
+  -o IdentitiesOnly=yes
+  -o StrictHostKeyChecking=yes
+  -o "UserKnownHostsFile=$known_hosts"
+)
+remote="$user@$host"
+
+if ssh "${ssh_options[@]}" "$remote" "stat '$remote_path'" >/dev/null 2>&1; then
+  die "remote target already exists: $remote_path"
+fi
+
+if [[ -n "$remote_directory" ]]; then
+  ssh "${ssh_options[@]}" "$remote" "mkdir -p '$remote_directory'"
+fi
+
+scp "${scp_options[@]}" "$archive" "$remote:$remote_path"
+
+local_checksum="$(sha256sum "$archive" | awk '{print $1}')"
+remote_checksum="$(ssh "${ssh_options[@]}" "$remote" "sha256sum '$remote_path'" | awk '{print $1}')"
+[[ "$remote_checksum" == "$local_checksum" ]] || die "remote checksum does not match local archive"
+
+printf 'Offsite upload verified: %s:%s (sha256 %s)\n' "$host" "$remote_path" "$local_checksum"

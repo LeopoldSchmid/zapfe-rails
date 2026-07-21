@@ -37,7 +37,7 @@ class Offers::PdfRenderer
       pdf.text "Vielen Dank für Ihr Interesse an Zapfe. Für die besprochenen Leistungen bieten wir Ihnen an:", leading: 4
       pdf.move_down 16
 
-      rows = [[ "Beschreibung", "Menge", "Einheit", "Netto", "Gesamt" ]] + @snapshot.fetch("line_items").map do |line_item|
+      rows = [ [ "Beschreibung", "Menge", "Einheit", "Netto", "Gesamt" ] ] + @snapshot.fetch("line_items").map do |line_item|
         [
           line_item.fetch("description"),
           line_item.fetch("quantity"),

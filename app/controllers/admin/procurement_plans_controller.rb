@@ -38,8 +38,7 @@ class Admin::ProcurementPlansController < Admin::BaseController
 
   def add_attachments
     attachments = Array(params.require(:procurement_plan).fetch(:attachments, [])).reject(&:blank?)
-    allowed_types = %w[application/pdf image/jpeg image/png image/webp]
-    unless attachments.all? { |attachment| attachment.size <= 25.megabytes && attachment.content_type.in?(allowed_types) }
+    unless attachments.all? { |attachment| AttachmentSafety.safe_upload?(attachment) }
       return redirect_to(procurement_admin_order_path(@order), alert: "Erlaubt sind PDF, JPEG, PNG und WebP bis 25 MB.")
     end
 

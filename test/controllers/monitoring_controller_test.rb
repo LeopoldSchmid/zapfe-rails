@@ -15,13 +15,13 @@ class MonitoringControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  test "returns unauthorized with wrong token" do
-    get "/monitoring/inquiry_flow", params: { token: "wrong" }
+  test "rejects query-string tokens even when their value is valid" do
+    get "/monitoring/inquiry_flow", params: { token: "test-monitoring-token" }
     assert_response :unauthorized
   end
 
-  test "returns ok with valid token" do
-    get "/monitoring/inquiry_flow", params: { token: "test-monitoring-token" }
+  test "returns ok with valid bearer token" do
+    get "/monitoring/inquiry_flow", headers: bearer_headers
 
     assert_response :success
     payload = JSON.parse(response.body)
@@ -36,7 +36,7 @@ class MonitoringControllerTest < ActionDispatch::IntegrationTest
     end
 
     begin
-      get "/monitoring/inquiry_flow", params: { token: "test-monitoring-token" }
+      get "/monitoring/inquiry_flow", headers: bearer_headers
     ensure
       InquiryMailer.singleton_class.send(:define_method, :customer_confirmation) do |*args, &block|
         original_method.call(*args, &block)
@@ -46,5 +46,23 @@ class MonitoringControllerTest < ActionDispatch::IntegrationTest
     assert_response :internal_server_error
     payload = JSON.parse(response.body)
     assert_equal({ "status" => "error" }, payload)
+  end
+
+  test "deep health verifies writable dependencies and cleans probes" do
+    assert_no_difference("OperationalProbe.count") do
+      post "/monitoring/deep", headers: bearer_headers
+    end
+
+    assert_response :success
+    payload = JSON.parse(response.body)
+    assert_equal "ok", payload.fetch("status")
+    assert_equal %w[cache database_write mail_render queue_database storage], payload.fetch("checks").keys.sort
+    assert payload.fetch("checks").values.all? { |check| check.fetch("status") == "ok" }
+  end
+
+  private
+
+  def bearer_headers
+    { "Authorization" => "Bearer test-monitoring-token" }
   end
 end

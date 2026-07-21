@@ -91,7 +91,7 @@ module ApplicationHelper
   def product_card_image(product, width:, height:, img_class: nil, loading: "lazy")
     if product.image.attached?
       image_tag(
-        product.image.variant(resize_to_limit: [width * 2, height * 2]),
+        product.image.variant(resize_to_limit: [ width * 2, height * 2 ]),
         class: img_class,
         loading: loading,
         width: width,

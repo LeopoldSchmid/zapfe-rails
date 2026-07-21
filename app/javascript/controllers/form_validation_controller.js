@@ -4,6 +4,8 @@ const FIELD_ERROR_CLASSES = ["border-red-400", "bg-red-50", "text-red-900", "pla
 const CHECKBOX_ERROR_CLASSES = ["ring-2", "ring-red-400", "ring-offset-2"]
 
 export default class extends Controller {
+  static targets = ["summary"]
+
   connect() {
     this.invalidHandler = this.handleInvalid.bind(this)
     this.inputHandler = this.handleInput.bind(this)
@@ -12,6 +14,7 @@ export default class extends Controller {
     this.element.addEventListener("invalid", this.invalidHandler, true)
     this.element.addEventListener("input", this.inputHandler, true)
     this.element.addEventListener("change", this.inputHandler, true)
+    if (this.hasSummaryTarget) this.summaryTarget.focus()
   }
 
   disconnect() {
@@ -60,6 +63,7 @@ export default class extends Controller {
   }
 
   markInvalid(field) {
+    field.setAttribute("aria-invalid", "true")
     if (field instanceof HTMLInputElement && field.type === "checkbox") {
       field.classList.add(...CHECKBOX_ERROR_CLASSES)
       return
@@ -69,6 +73,7 @@ export default class extends Controller {
   }
 
   clearInvalid(field) {
+    field.removeAttribute("aria-invalid")
     if (field instanceof HTMLInputElement && field.type === "checkbox") {
       field.classList.remove(...CHECKBOX_ERROR_CLASSES)
       return

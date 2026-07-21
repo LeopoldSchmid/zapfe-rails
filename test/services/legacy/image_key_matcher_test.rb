@@ -8,7 +8,7 @@ class Legacy::ImageKeyMatcherTest < ActiveSupport::TestCase
 
   test "matches object name to product" do
     product = Product.new(brand: "Rothaus", name: "Pils")
-    matcher = Legacy::ImageKeyMatcher.new([product])
+    matcher = Legacy::ImageKeyMatcher.new([ product ])
 
     found = matcher.find_product("17_rothaus_pils.webp")
     assert_equal product, found

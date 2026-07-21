@@ -16,7 +16,7 @@ class ProductVariant < ApplicationRecord
   end
 
   def display_label
-    "#{[product.brand, product.name].compact_blank.join(' ')} · #{measurement_label}"
+    "#{[ product.brand, product.name ].compact_blank.join(' ')} · #{measurement_label}"
   end
 
   def formatted_size

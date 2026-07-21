@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::HelpCenterControllerTest < ActionDispatch::IntegrationTest
   setup do
     admin = admin_users(:one)
-    post admin_login_url, params: { email: admin.email, password: "password123" }
+    sign_in_admin(admin)
   end
 
   test "shows contextual help on an admin page" do

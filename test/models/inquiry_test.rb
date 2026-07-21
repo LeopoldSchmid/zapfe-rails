@@ -6,6 +6,21 @@ class InquiryTest < ActiveSupport::TestCase
     assert_not inquiry.valid?
   end
 
+  test "does not require a telephone number and records the notice version" do
+    inquiry = Inquiry.new(
+      source: "contact",
+      first_name: "Erika",
+      last_name: "Musterfrau",
+      email: "erika@example.com",
+      phone: nil,
+      privacy_accepted: true
+    )
+
+    assert inquiry.valid?
+    assert_equal Inquiry::PRIVACY_NOTICE_VERSION, inquiry.privacy_notice_version
+    assert inquiry.privacy_notice_acknowledged_at.present?
+  end
+
   test "derives structured calculator fields from pricing snapshot" do
     inquiry = Inquiry.new(
       source: "calculator",

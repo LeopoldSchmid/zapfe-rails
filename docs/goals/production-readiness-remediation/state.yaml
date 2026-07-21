@@ -1,0 +1,1080 @@
+# GoalBuddy v2 state.yaml
+# Board truth lives here. goal.md is the editable charter; notes/ holds long receipts only.
+
+version: 2
+
+goal:
+  title: "Produktionsreife-Remediation"
+  slug: "production-readiness-remediation"
+  kind: existing_plan
+  tranche: "Kontinuierliche vollständige Remediation aller 60 Findings bis zum belegten erneuten Produktionsfreigabeentscheid"
+  status: active
+  oracle:
+    signal: "60-ID-Remediation-Matrix ohne offene kritische/hohe Findings, grüne risikobasierte Release-Gates und bestandener finaler Go/No-Go-Review"
+    cadence: "nach jedem Worker-Paket, an Risikogrenzen und beim finalen Audit"
+    final_proof: "Receipt-basierte 60-ID-Abdeckung, grüne Security-/Rails-/Browser-/Restore-Gates und full_outcome_complete: true"
+  intake:
+    original_request: "Alle Findings aus dem Architektur- und Produktionsreife-Review korrigieren."
+    interpreted_outcome: "Die geprüfte Webapp wird durch belegte technische, betriebliche und organisatorische Korrekturen produktionsfreigabefähig; keine der 60 Finding-IDs bleibt stillschweigend offen."
+    input_shape: existing_plan
+    audience: "Betreiber und Entwicklungsteam"
+    authority: requested
+    proof_type: test
+    completion_proof: "Jedes Finding ist belegt abgeschlossen und der erneute Produktionsfreigabecheck besteht mit grünen relevanten Gates."
+    likely_misfire: "Kosmetische Codeänderungen als Vollremediation ausgeben, externe Pflichten erfinden oder kritische Betriebs-/Security-Risiken trotz grüner Unit-Tests offenlassen."
+    blind_spots_considered:
+      - "Providerzugänge, reale Backupziele, Verträge und Produktionsinfrastruktur sind nicht vollständig lokal prüfbar."
+      - "Betreiber-, Umsatz-, Mitarbeiter-, Kundenmix- und Vertragsschlussdaten beeinflussen deutsche Rechtspflichten."
+      - "Löschung, Aufbewahrung, Backups und Rechnungsarchivierung müssen als zusammenhängender Lebenszyklus umgesetzt werden."
+      - "Abhängigkeits-, Auth-, Daten- und Rechnungsänderungen brauchen Negativ-, Failure-, Migrations- und Rollbacktests."
+      - "Technische Umsetzung ersetzt keine anwaltliche oder steuerliche Freigabe."
+    existing_plan_facts:
+      - "Evidenzbasis ist docs/architecture-review-2026-07-16.md mit 60 eindeutigen Finding-IDs."
+      - "Welle 0 priorisiert SEC-001, OPS-001 und OPS-002."
+      - "Wellen 1 bis 3 ordnen Auth, Privacy/Legal, Reliability, Quality, Accessibility, Performance und PWA."
+      - "Arbeit erfolgt auf architecture-review; die temporäre Review-Quest bleibt nicht-produktiv."
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+  slice_policy:
+    max_consecutive_tiny_tasks: 2
+    prefer_vertical_slices: true
+    judge_picks_largest_safe_slice: true
+    worker_completes_whole_slice: true
+
+agents:
+  scout: bundled_not_installed
+  worker: bundled_not_installed
+  judge: bundled_not_installed
+
+visual_board:
+  selected: none
+  local:
+    status: not_requested
+    url: null
+    command: "node /home/leo/.codex/plugins/cache/goalbuddy/goalbuddy/0.4.0/skills/goal-prep/surfaces/local-goal-board/scripts/local-goal-board.mjs --goal docs/goals/production-readiness-remediation"
+
+active_task: T019
+
+tasks:
+  - id: T001
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: xhigh
+    objective: "Den vorhandenen 60-Finding-Plan gegen den aktuellen Branch validieren und eine exakte Remediation-Matrix samt Abhängigkeiten, lokalen/externalen Grenzen und sicheren Worker-Slices freigeben."
+    inputs:
+      - "docs/architecture-review-2026-07-16.md"
+      - "docs/goals/production-readiness-architecture-review/state.yaml"
+      - "aktueller Branch, Diff und vorhandene Verifikationsbefehle"
+    constraints:
+      - "Read-only; keine Produktdateien ändern."
+      - "Jede der 60 Finding-IDs exakt abbilden."
+      - "Nicht mehr aktuelle oder bereits behobene Findings nur mit erneutem Beleg zurückweisen."
+      - "Externe Betreiber-/Provider-/Rechtsabhängigkeiten von lokal implementierbaren Maßnahmen trennen."
+    expected_output:
+      - "60-ID-Remediation-Matrix mit Status, Abhängigkeit und Verifikation"
+      - "Kalibrierte Reihenfolge und größte sichere Worker-Slices"
+      - "Exakte allowed_files, verify und stop_if für T002"
+      - "Liste benötigter Betreiberfakten, Credentials und externer Freigaben"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      rationale: "Alle 60 Findings bleiben auf dem aktuellen Branch offen; der jüngste Commit ergänzt nur die Review-Quest. Die Matrix ordnet jede ID einem kohärenten Paket und einem konkreten Abschlussnachweis zu. T002 ist als größtes sofort sicheres Paket freigegeben; echte Offsite-, Betreiber-, Provider-, Rechts- und Steuernachweise bleiben explizite spätere Abhängigkeiten."
+      harness: codex
+      note: notes/T001-remediation-matrix.md
+      worker_package:
+        objective: "Welle 0 lokal vollständig umsetzen: sämtliche aktuellen Runtime-Advisories patchen, das destruktive Produktionsskript technisch fail-closed sperren und ein konsistentes, verschlüsselbares Backup-/Restore-Verfahren mit sicherem isoliertem Restore-Test und Runbook schaffen."
+        allowed_files:
+          - Gemfile
+          - Gemfile.lock
+          - bin/brakeman
+          - script/replace_prod_storage_from_staging
+          - script/backup_storage
+          - script/restore_storage
+          - test/scripts/production_storage_safety_test.rb
+          - documentation/backup_restore.md
+          - documentation/testing.md
+          - .github/workflows/ci.yml
+        verify:
+          - "bin/bundler-audit check"
+          - "bundle exec brakeman --no-pager"
+          - "bin/rails test test/scripts/production_storage_safety_test.rb"
+          - "bin/rails test"
+          - "isolierter Backup-/Restore-Test mit Wegwerfverzeichnissen, Checksummen und beschädigtem Archiv als Negativfall"
+          - "git diff --check"
+        stop_if:
+          - "Ein Test oder Skript berührt reale, nicht eindeutig temporäre Daten."
+          - "Die verfügbaren gepatchten Gemversionen sind unter Ruby 3.4/Rails 8.1 nicht auflösbar oder verlangen eine fachliche Produktänderung."
+          - "Verschlüsselung oder Offsite-Upload würde ohne gewähltes Tool/Ziel nur Scheinsicherheit erzeugen; dann lokal exportierbares verschlüsselbares Artefakt liefern und den echten Offsite-Schritt offen halten."
+      evidence:
+        - docs/architecture-review-2026-07-16.md
+        - docs/goals/production-readiness-remediation/notes/T001-remediation-matrix.md
+        - Gemfile.lock
+        - script/replace_prod_storage_from_staging
+        - config/deploy.yml
+      missing_evidence:
+        - "echter Offsite-Backup-/Restore-Nachweis"
+        - "Betreiber-/Provider-/Rechts-/Steuerfakten"
+
+  - id: T002
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: xhigh
+    objective: "Welle 0 lokal vollständig umsetzen: sämtliche aktuellen Runtime-Advisories patchen, das destruktive Produktionsskript technisch fail-closed sperren und ein konsistentes, verschlüsselbares Backup-/Restore-Verfahren mit sicherem isoliertem Restore-Test und Runbook schaffen."
+    allowed_files:
+      - "Gemfile"
+      - "Gemfile.lock"
+      - "bin/brakeman"
+      - "script/replace_prod_storage_from_staging"
+      - "script/backup_storage"
+      - "script/restore_storage"
+      - "test/scripts/production_storage_safety_test.rb"
+      - "documentation/backup_restore.md"
+      - "documentation/testing.md"
+      - ".github/workflows/ci.yml"
+    verify:
+      - "bin/bundler-audit check"
+      - "bundle exec brakeman --no-pager"
+      - "bin/rails test test/scripts/production_storage_safety_test.rb"
+      - "bin/rails test"
+      - "isolierter Backup-/Restore-Test mit Wegwerfverzeichnissen, Checksummen und beschädigtem Archiv als Negativfall"
+      - "git diff --check"
+    stop_if:
+      - "Ein destruktiver Test würde reale oder nicht eindeutig temporäre Daten berühren."
+      - "Die verfügbaren gepatchten Gemversionen sind unter Ruby 3.4/Rails 8.1 nicht auflösbar oder verlangen eine fachliche Produktänderung."
+      - "Verschlüsselung oder Offsite-Upload würde ohne gewähltes Tool/Ziel nur Scheinsicherheit erzeugen; dann lokal exportierbares verschlüsselbares Artefakt liefern und den echten Offsite-Schritt offen halten."
+    receipt:
+      result: done
+      changed_files:
+        - Gemfile.lock
+        - bin/brakeman
+        - script/replace_prod_storage_from_staging
+        - script/backup_storage
+        - script/restore_storage
+        - test/scripts/production_storage_safety_test.rb
+        - documentation/backup_restore.md
+        - documentation/testing.md
+      commands:
+        - cmd: "bundle update rails action_text-trix rack rack-session puma loofah nokogiri addressable bcrypt concurrent-ruby crass erb json msgpack net-imap sqlite3 websocket-driver"
+          status: pass
+        - cmd: "bin/bundler-audit check"
+          status: pass
+        - cmd: "bundle exec brakeman --no-pager"
+          status: pass
+        - cmd: "bash -n script/backup_storage script/restore_storage script/replace_prod_storage_from_staging"
+          status: pass
+        - cmd: "bin/rails test test/scripts/production_storage_safety_test.rb"
+          status: pass
+        - cmd: "bin/rails test"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "SEC-001 ist mit einem vollständig grünen aktuellen Bundler-Audit geschlossen. OPS-002 ist fail-closed gesperrt. Sichere Backup-/Restore-Skripte erstellen SQLite-Online-Snapshots, prüfen Integrität und SHA-256, unterstützen age-Verschlüsselung und verweigern bestehende Ziele; vier Safety-Szenarien und die vollständige Rails-Suite sind grün. Der echte verschlüsselte Offsite-Restore bleibt als Betreiberbeleg für OPS-001 offen."
+      remaining_blockers:
+        - "OPS-001 benötigt weiterhin Offsite-Ziel, Key-Owner, RPO/RTO, Alarmierung und einen echten isolierten Restore aktueller Produktionsdaten."
+
+  - id: T003
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: xhigh
+    objective: "Admin-Security und Access Control vollständig härten: Rollen/Policies, Passwortstandard, MFA/Recovery, Sessionrotation/-widerruf, Reset-Limits und Security-Auditspur."
+    allowed_files:
+      - "Gemfile"
+      - "Gemfile.lock"
+      - "app/controllers/application_controller.rb"
+      - "app/controllers/inquiries_controller.rb"
+      - "app/controllers/admin"
+      - "app/models/admin_user.rb"
+      - "app/models"
+      - "app/services"
+      - "app/views/admin"
+      - "app/views/layouts"
+      - "app/javascript/controllers"
+      - "config"
+      - "db/seeds.rb"
+      - "db/migrate"
+      - "db/schema.rb"
+      - "test"
+      - "tests"
+      - "documentation"
+    verify:
+      - "bin/rails test"
+      - "risikobasierte Auth-/Autorisierungs-Negativtests"
+      - "Playwright Admin-Auth-/Session-Smokes"
+      - "bin/brakeman --no-pager"
+    stop_if:
+      - "Rollenmatrix oder gewünschte MFA-Methode ist fachlich nicht ableitbar."
+      - "Bestehende Admins würden ohne sicheren Migrations-/Recovery-Pfad ausgesperrt."
+    receipt:
+      result: done
+      changed_files:
+        - Gemfile
+        - Gemfile.lock
+        - app/controllers/application_controller.rb
+        - app/controllers/admin
+        - app/controllers/inquiries_controller.rb
+        - app/models/admin_user.rb
+        - app/models
+        - app/services
+        - app/views/admin
+        - app/views/layouts
+        - config
+        - db/migrate
+        - db/schema.rb
+        - test
+      commands:
+        - cmd: "bin/rails test"
+          status: pass
+          result: "200 runs, 892 assertions, 0 failures, 0 errors"
+        - cmd: "bin/rails test test/controllers/admin/sessions_controller_test.rb test/controllers/admin/authorization_test.rb test/controllers/admin/admin_users_controller_test.rb test/controllers/admin/passwords_controller_test.rb test/models/admin_user_test.rb test/models/admin_security_event_test.rb test/controllers/inquiries_controller_test.rb"
+          status: pass
+          result: "34 runs, 143 assertions, 0 failures, 0 errors"
+        - cmd: "bin/rails test test/system/admin_mfa_login_test.rb test/system/admin_mobile_navigation_test.rb test/system/admin_rich_text_notes_test.rb"
+          status: pass
+          result: "3 runs, 13 assertions, 0 failures, 0 errors"
+        - cmd: "bin/brakeman --no-pager"
+          status: pass
+          result: "0 security warnings"
+        - cmd: "bin/bundler-audit check"
+          status: pass
+          result: "No vulnerabilities found"
+        - cmd: "RUBOCOP_CACHE_ROOT=/tmp/rubocop-cache bundle exec rubocop <T003 risk files>"
+          status: pass
+          result: "11 files inspected, no offenses"
+      harness: codex
+      summary: "Owner/Admin/Member-RBAC ist fail-closed umgesetzt. Adminzugang verlangt 14-stellige nicht triviale Passwörter und TOTP-MFA mit verschlüsseltem Secret, Replay-Schutz und einmaligen Recovery-Codes. Sessionrotation, Idle-/Maximaldauer, Widerruf bei Security-Änderungen, Reset-/Login-Limits und eine append-only Security-Auditspur sind implementiert. Bestehende Konten werden beim nächsten Login sicher durch MFA-Enrolment geführt. CSP, Host-Allowlist und Permissions-Policy wurden gehärtet. Strong-parameter-Warnungen wurden ohne Ignore-Liste beseitigt. Die vollständige Rails-Suite, gezielte Negativtests, echte Browser-Smokes, Bundler Audit und Brakeman sind grün."
+      remaining_blockers: []
+
+  - id: T004
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: xhigh
+    objective: "Privacy-by-Design, Datensparsamkeit, Uploadschutz, Retention/Löschung und Betroffenenrechte als zusammenhängenden Datenlebenszyklus implementieren."
+    allowed_files:
+      - "app"
+      - "config"
+      - "db/migrate"
+      - "lib/tasks"
+      - "test"
+      - "tests"
+      - "documentation"
+    verify:
+      - "bin/rails test"
+      - "Playwright Privacy-/LocalStorage-/Formular-Smokes"
+      - "Attachment-Negativtests"
+      - "synthetischer Export-/Lösch-/Legal-Hold-/Backup-Nachlauf-Test"
+    stop_if:
+      - "Aufbewahrungsfristen oder Legal-Hold-Regeln benötigen eine Betreiber-/Steuerentscheidung."
+      - "Löschung würde reale Daten oder unverifizierte Backups berühren."
+    receipt:
+      result: done
+      changed_files:
+        - app
+        - config
+        - db/migrate
+        - lib/tasks
+        - test
+        - tests
+        - documentation
+      commands:
+        - cmd: "bin/rails test"
+          status: pass
+          result: "212 runs, 929 assertions, 0 failures, 0 errors"
+        - cmd: "bin/rails test test/services/attachment_safety_test.rb test/services/privacy/subject_data_test.rb test/controllers/admin/inquiries_controller_test.rb test/controllers/admin/orders_controller_test.rb test/controllers/admin/procurement_plans_controller_test.rb test/models/admin_user_test.rb test/jobs/due_task_push_notifications_job_test.rb test/controllers/inquiries_controller_test.rb test/models/inquiry_test.rb"
+          status: pass
+          result: "50 runs, 230 assertions, 0 failures, 0 errors"
+        - cmd: "npx playwright test tests/smoke.spec.ts --project=chromium --workers=1 --reporter=list"
+          status: pass
+          result: "3 passed; legacy PII removal and non-persistence browser-verified"
+        - cmd: "bin/brakeman --no-pager"
+          status: pass
+          result: "0 security warnings"
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "Kontakt-PII wird nicht mehr in LocalStorage persistiert und vorhandener Legacy-Speicher wird beim Rechneraufruf gelöscht. Telefonnummern sind optional, das wirkungslose Company-Feld ist entfernt und die Datenschutzhinweis-Kenntnisnahme wird serverseitig versioniert. Push-Payloads sind generisch; Offboarding entfernt Push-Abonnements. Uploads für Kunden-/Auftrags-/Beschaffungsdokumente werden anhand Größe, Allowlist und tatsächlicher Dateisignatur geprüft. Ein transaktionaler Betroffenenexport-/Löschservice sperrt bei Legal Hold oder Rechnungsbezug und schreibt pseudonyme append-only Tombstones für den Backup-Nachlauf. Datenschutzhinweis, Verarbeitungsinventar, Providerregister, Rechte-/Lösch- und Breach-Runbooks bilden die realen Datenflüsse ab."
+      remaining_blockers:
+        - "PRIV-001: juristische Schlussprüfung der Art.-13-Information und freigegebene exakte Fristen fehlen."
+        - "PRIV-002/006/007: Betreiber muss Fristmatrix, Verantwortliche, Vier-Augen-Löschprozess, VVT/TOM/DPIA-Entscheid und Incident-Übung freigeben; ohne Fristen bleibt automatischer produktiver Purge bewusst deaktiviert."
+        - "PRIV-005: AVV/DPA, Subprozessoren, Regionen, SCC/TIA und Retention für Hetzner, Resend, Umami, Mail und Push sind extern zu belegen."
+        - "PRIV-008: Umami-Version, Live-Netzwerkverhalten, IP-/UA-Verarbeitung, Events, Retention, Zugriffe und §25/Art.-6-Basis müssen am Produktionssystem geprüft werden."
+
+  - id: T005
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: xhigh
+    objective: "Rechnungs- und Dokumentenintegrität korrigieren: Mischsteuersätze, atomare Nummern/Finalisierung, Storno/Korrektur, strukturierte E-Rechnung und prüfbarer Archivpfad."
+    allowed_files:
+      - "app/models"
+      - "app/services/invoices"
+      - "app/views/admin/invoices"
+      - "app/controllers/admin/invoices_controller.rb"
+      - "app/mailers/invoice_mailer.rb"
+      - "app/views/invoice_mailer"
+      - "config/routes.rb"
+      - "db/migrate"
+      - "test/services/invoices"
+      - "test/models"
+      - "test/controllers/admin/invoices_controller_test.rb"
+      - "documentation"
+    verify:
+      - "bin/rails test test/services/invoices test/models test/controllers/admin/invoices_controller_test.rb"
+      - "Mischsteuer-PDF-Golden-/Texttest"
+      - "Concurrency-, Failure- und Idempotenztests"
+      - "XRechnung/ZUGFeRD-Schemavalidierung entsprechend freigegebenem Format"
+    stop_if:
+      - "Steuerliche Pflichtangaben, E-Rechnungsformat oder Korrekturprozess sind fachlich nicht freigegeben."
+      - "Eine Migration gefährdet bestehende Rechnungsnummern oder unveränderbare Dokumente."
+    receipt:
+      result: done
+      changed_files:
+        - app/models
+        - app/services/invoices
+        - app/views/admin/invoices
+        - app/controllers/admin/invoices_controller.rb
+        - app/mailers/invoice_mailer.rb
+        - app/views/invoice_mailer
+        - config/routes.rb
+        - db/migrate
+        - test/services/invoices
+        - test/models
+        - test/controllers/admin/invoices_controller_test.rb
+        - documentation
+      commands:
+        - cmd: "bin/rails test test/services/invoices test/models/invoice_sequence_test.rb test/controllers/admin/invoices_controller_test.rb"
+          status: pass
+          result: "19 runs, 84 assertions, 0 failures, 0 errors"
+        - cmd: "bin/rails test"
+          status: pass
+          result: "224 runs, 984 assertions, 0 failures, 0 errors"
+        - cmd: "KoSIT Validator 1.6.2 with XRechnung 3.0.2 configuration 2026-01-31 against synthetic mixed-tax UBL Invoice"
+          status: pass
+          result: "Schema Y, Schematron Y, ACCEPTABLE"
+        - cmd: "KoSIT Validator 1.6.2 with XRechnung 3.0.2 configuration 2026-01-31 against synthetic UBL CreditNote"
+          status: pass
+          result: "Schema Y, Schematron Y, ACCEPTABLE"
+        - cmd: "RUBOCOP_CACHE_ROOT=/tmp/rubocop-cache bundle exec rubocop <T005 files>"
+          status: pass
+          result: "19 files inspected, no offenses"
+        - cmd: "bin/brakeman --no-pager"
+          status: pass
+          result: "0 security warnings"
+      harness: codex
+      summary: "LEG-004 ist technisch geschlossen: Mischsteuern werden je Satz mit Basis und Betrag in UI, Snapshot, PDF und XRechnung ausgewiesen und per PDF-Texttest belegt. LEG-005/ARCH-005 sind lokal gehärtet: transaktionale jahrgangsbezogene Sequenz mit Legacy-Bootstrap und Concurrency-Test, idempotente Finalisierung, Renderer-Rollback, vor Commit hochgeladene PDF/XML-Artefakte, SHA-256-Prüfung bei Download/Versand sowie unveränderliche referenzierte Stornorechnungen statt Inhaltsmutation. LEG-006 ist technisch mit UBL-XRechnung 3.0 und CreditNote Typ 381 umgesetzt; beide synthetischen Dokumente wurden durch den offiziellen KoSIT-Validator vollständig akzeptiert."
+      remaining_blockers:
+        - "Steuerberatung/Betreiber müssen Nummernkreis, Mischsteuer-/Rabattlogik, Storno-/Berichtigungsprozess und gesetzliche Pflichtangaben mit realen Belegen freigeben."
+        - "Kundenmix, Vorjahresumsatz, Übergangsregelung, B2B/B2C/B2G-Entscheid sowie echte Buyer References/Leitweg-IDs sind Betreiberfakten."
+        - "Empfangs-, Prüf- und unveränderbarer GoBD-Archivprozess für ein- und ausgehende E-Rechnungen ist extern zu wählen und zu belegen; lokale Prüfsummen allein ersetzen kein Archiv."
+
+  - id: T006
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Zuverlässigkeit und Betrieb härten: Mail-Outbox, Jobfehler/Replay, Health-Matrix, Monitoring, Incident-Prozesse, sichere Migrationen, SQLite-Wartung und Deploy-Supply-Chain."
+    allowed_files:
+      - "app/jobs"
+      - "app/mailers"
+      - "app/models"
+      - "app/services"
+      - "app/controllers/monitoring_controller.rb"
+      - "config"
+      - "db/migrate"
+      - "Dockerfile"
+      - "bin/docker-entrypoint"
+      - ".github/workflows"
+      - "documentation"
+      - "test"
+    verify:
+      - "bin/rails test"
+      - "Mail-/Job-Failure-, Retry-, Replay- und Reconciliation-Tests"
+      - "Health-/Header-/Log-Redaction-Smokes"
+      - "Container-/Dependency-/SBOM-Scan"
+    stop_if:
+      - "Produktionsalarme, Provider-Webhooks oder Registry-Signierung benötigen externe Credentials."
+      - "Eine Deploymentänderung erfordert einen echten Produktionsdeploy."
+    receipt:
+      result: done
+      changed_files:
+        - app/jobs
+        - app/mailers
+        - app/models
+        - app/services
+        - app/controllers/monitoring_controller.rb
+        - bin/docker-entrypoint
+        - config
+        - Dockerfile
+        - .github/workflows
+        - documentation
+        - test
+      commands:
+        - cmd: "bin/rails test"
+          status: pass
+          result: "233 runs, 1042 assertions, 0 failures, 0 errors"
+        - cmd: "bin/bundler-audit check"
+          status: pass
+          result: "No vulnerabilities found"
+        - cmd: "bin/brakeman --no-pager"
+          status: pass
+          result: "0 security warnings"
+        - cmd: "RUBOCOP_CACHE_ROOT=/tmp/rubocop-cache bundle exec rubocop <T006 risk files>"
+          status: pass
+          result: "12 files inspected, no offenses"
+        - cmd: "docker build --pull=false --tag zapfe-rails:architecture-review ."
+          status: pass
+          result: "production image built as non-root UID/GID 1000"
+        - cmd: "Trivy 0.69.3 read-only archive scan, OS HIGH/CRITICAL, ignore-unfixed"
+          status: pass
+          result: "Debian 13.6, 207 packages, 0 findings"
+        - cmd: "bundle exec kamal config; bundle exec kamal config -d staging"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "OPS-003/004 sind mit persistenter idempotenter Mail-/Push-Outbox, Retry, Fehlerzustand und Replay-Regeln geschlossen. OPS-005/006 erhalten authentisierte schreibende Deep-Health-Probes, datensparsame Fehlerdaten sowie Alarm-/Incident-Matrix. OPS-007 bis OPS-012 sind lokal durch explizite Migrationen, getrennte Web-/Job-Rollen, SQLite-Wartung, Ressourcenlimits, SLOs, dedizierten Deploy-User-Default, gepinntes und aktualisiertes Base-Image, blockierenden Trivy-Scan und CycloneDX-SBOM gehärtet. SEC-007 akzeptiert keine Query-Tokens mehr. Das zunächst gefundene verwundbare Thruster-Go-Binary wurde vollständig aus dem Runtime-Image entfernt."
+      remaining_blockers:
+        - "Echte Monitoring-/Paging- und Provider-Bounce-Webhooks benötigen Anbieterwahl, Credentials, Rufbereitschaft und einen produktiven Alarmtest."
+        - "Der dedizierte Host-Benutzer, organisationsgebundene SSH-Key, Firewall/Patching und Registry-Signatur/Provenance benötigen externe Infrastruktur- und Trust-Konfiguration."
+        - "Der genaue Einmal-Migrationsbefehl und Rollback müssen vor Go-live in Staging mit der realen Kamal-/Host-Konfiguration bewiesen werden."
+        - "SLO- und Kapazitätsannahmen benötigen noch den repräsentativen Lasttest aus T008 sowie Produktionsmesswerte."
+
+  - id: T007
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Architektur- und Quality-Findings beheben: reproduzierbares Schema, atomare Auftragserstellung, explizite Statusübergänge, sinnvolle Verantwortungsgrenzen und vollständige Failure-/Concurrency-Testabdeckung."
+    allowed_files:
+      - "Gemfile"
+      - "Gemfile.lock"
+      - "app"
+      - "config"
+      - "db/migrate"
+      - "db/schema.rb"
+      - "test"
+      - "tests"
+      - ".github/workflows/ci.yml"
+      - "documentation"
+    verify:
+      - "bin/rails test"
+      - "leeres Test-DB-Prepare plus Schema-Vergleich"
+      - "Rollback-/Concurrency-/Contract-Tests"
+      - "bin/rubocop"
+    stop_if:
+      - "Legacy-Tabellen enthalten möglicherweise reale, noch benötigte Produktionsdaten."
+      - "Ein Statusübergang verlangt eine nicht dokumentierte Fachentscheidung."
+    receipt:
+      result: done
+      changed_files:
+        - Gemfile
+        - Gemfile.lock
+        - app
+        - config
+        - db/migrate
+        - db/schema.rb
+        - test
+        - .github/workflows/ci.yml
+        - documentation
+      commands:
+        - cmd: "COVERAGE=1 bin/rails test"
+          status: pass
+          result: "236 runs, 1049 assertions; line 88.15%, branch 63.46%"
+        - cmd: "RAILS_ENV=test DATABASE_URL=sqlite3:/tmp/zapfe-schema-rebuild.sqlite3 bin/rails db:drop db:create db:migrate db:abort_if_pending_migrations"
+          status: pass
+        - cmd: "RUBOCOP_CACHE_ROOT=/tmp/rubocop-cache bin/rubocop"
+          status: pass
+          result: "317 files inspected, no offenses"
+        - cmd: "bin/bundler-audit check"
+          status: pass
+          result: "No vulnerabilities found"
+        - cmd: "bin/brakeman --no-pager"
+          status: pass
+          result: "0 security warnings"
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "ARCH-001 ist ohne Datenverlust geschlossen: eine idempotente Rekonstruktionsmigration bildet die vier historischen Konfigurator-Tabellen auf frischen Datenbanken ab und CI baut ein leeres Schema vollständig neu. ARCH-002 ist durch einen transaktionalen Create-Use-Case samt Rollbacktest geschlossen. ARCH-003/004 erhalten zentrale Transition-Policies für die kritischen Geschäftsaggregate sowie eine extrahierte Auftragserstellung. QUAL-001/002/004 sind mit vollständig grünem RuboCop-/Security-/Rails-Gate, Failure-/Concurrency-Suite, archiviertem Line-/Branch-Coverage-Trend, bereinigter Scaffold-View und aktualisierter Testwahrheit geschlossen. QUAL-003 wird zusammen mit Browser, axe, PWA und Performance in T008 abgeschlossen."
+      remaining_blockers:
+        - "Branch-Protection und verpflichtende GitHub-Checks müssen mit Repository-Adminrechten extern aktiviert werden."
+
+  - id: T008
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Accessibility, PWA und Performance korrigieren: Navigation/Fokus/Fehler/Video, axe-Smokes, Service-Worker-Scope/Update-UX, Pagination/Query-Budgets und Runtime-Assets."
+    allowed_files:
+      - "package.json"
+      - "package-lock.json"
+      - "playwright.config.ts"
+      - ".dockerignore"
+      - ".gitignore"
+      - ".github/workflows/ci.yml"
+      - "app/views"
+      - "app/javascript"
+      - "app/assets"
+      - "app/controllers/admin"
+      - "app/models"
+      - "config"
+      - "test/system"
+      - "test"
+      - "tests"
+      - "documentation"
+      - "db/seeds.rb"
+    verify:
+      - "bin/rails test"
+      - "Playwright Desktop-/Mobile-/Keyboard-/PWA-Smokes"
+      - "axe WCAG-2.2-AA-Smokes"
+      - "Query-count- und realistische Volumentests"
+    stop_if:
+      - "BFSG-Scope oder erforderliche Barrierefreiheitserklärung braucht Betreiber-/Rechtsfreigabe."
+      - "Eine Assetentfernung betrifft nicht reproduzierbare Originalquellen."
+    receipt:
+      result: done
+      changed_files:
+        - app/controllers/admin
+        - app/javascript
+        - app/views
+        - tests
+        - playwright.config.ts
+        - .github/workflows/ci.yml
+        - .dockerignore
+        - documentation
+        - db/seeds.rb
+      commands:
+        - cmd: "bin/rails test"
+          status: pass
+          result: "238 runs, 1061 assertions"
+        - cmd: "bin/rails test:system"
+          status: pass
+          result: "14 runs, 69 assertions"
+        - cmd: "npx playwright test --project=chromium --workers=1 --reporter=list"
+          status: pass
+          result: "11 passed, including public/admin axe WCAG 2.2 AA, keyboard, reduced-motion and PWA update checks"
+        - cmd: "docker build --pull=false --tag zapfe-rails:t008 ."
+          status: pass
+          result: "4.21 MB build context; optimized WebP assets only during production compilation"
+        - cmd: "docker run --rm --entrypoint /bin/bash zapfe-rails:t008 ..."
+          status: pass
+          result: "original JPG/PNG and duplicate videos absent; required 720p videos present"
+        - cmd: "SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bin/rails assets:precompile"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "QUAL-003, PERF-001/002, A11Y-002 bis A11Y-005 und PWA-002 sind lokal geschlossen: CI erzwingt Playwright/axe, Listen sind paginiert, der Ressourcenkalender hat ein Query-Budget, große Quellen bleiben erhalten aber außerhalb des Runtime-Images, Menüs/Fokus/Fehler/Video/Reduced-Motion sind zugänglich und Service-Worker-Updates erfordern eine explizite Entscheidung. A11Y-001 hat einen grünen automatisierten WCAG-2.2-AA-Baseline-Nachweis; BFSG-Scope, manuelle Screenreader-/Zoom-Prüfung und gegebenenfalls Erklärung bleiben als externe Freigabe in T009." 
+      remaining_blockers:
+        - "BFSG-Anwendbarkeit und Pflicht/Inhalt einer Barrierefreiheitserklärung benötigen Betreiber- und Rechtsfreigabe."
+        - "Automatisierte axe-Prüfung ersetzt keine manuelle Screenreader-, Zoom-, Reflow- und Fachalternativen-Prüfung."
+
+  - id: T009
+    type: pm
+    assignee: PM
+    status: done
+    reasoning_hint: xhigh
+    objective: "Alle Betreiber-, Provider-, Datenschutz-, Steuer- und Rechtsabhängigkeiten mit konkreten Vorlagen, benötigten Fakten, Nachweisen und exakten Freigabefragen schließen."
+    inputs:
+      - "Receipts T001-T008"
+      - "offene Finding-IDs in der Remediation-Matrix"
+      - "amtliche aktuelle Primärquellen"
+    constraints:
+      - "Keine Betreiberfakten, Vertragsinhalte oder Rechtsfreigaben erfinden."
+      - "Webrecherche für zeitkritische Rechts-/Providerangaben nur aus Primärquellen."
+      - "Externe Aktionen, Vertragsabschlüsse oder Produktionsänderungen nur mit entsprechender Autorität."
+    expected_output:
+      - "Vollständiges Operator Action Pack"
+      - "Ausgefüllte oder klar blockierte AVV/TIA/VVT/TOM/Retention/Incident/Legal-Matrix"
+      - "Exakte erforderliche Antworten oder Freigaben"
+      - "Aktualisierte Remediation-Matrix"
+    receipt:
+      result: done
+      decision: "operator_action_pack_complete_external_evidence_pending"
+      full_outcome_complete: false
+      changed_files:
+        - documentation/production_readiness_operator_pack.md
+      commands:
+        - cmd: "Amtliche Primärquellenprüfung DDG, VSBG, BFSG/BFSGV, BGB, PAngV, AO und UStG am 17.07.2026"
+          status: pass
+        - cmd: "Abgleich mit Privacy-, Processor-, Lifecycle-, Breach-, Backup-, Operations-, Deployment- und E-Rechnungs-Runbooks"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "Das vollständige Betreiberpaket benennt pro Legal-, Privacy-, Provider-, Steuer-, Accessibility- und Operations-Gate die exakten Fakten, Vertragsbelege, Entscheidungen, Testprotokolle und Unterschriften. Es enthält eine AVV/TIA-Tabelle, Fristmatrix, Betriebs-/Restore-Nachweise, manuelle Accessibility-Matrix und ein explizites NO-GO bei leeren Feldern. Damit ist die lokal mögliche Vorarbeit abgeschlossen, ohne Betreiberfakten oder Freigaben zu erfinden."
+      remaining_blockers:
+        - "Register-, Steuer-, Beschäftigten-, Umsatz-/Bilanz-, B2C-/Vertragsschluss- und VSBG-Fakten des Betreibers"
+        - "AVV/DPA, Subprozessor-, Regionen-, SCC/TIA-, Retention- und Live-Konfigurationsbelege aller aktiven Provider"
+        - "Rechtsfreigaben für Impressum/MStV, VSBG, BFSG, Fernabsatz, PAngV und Art.-13-Hinweise"
+        - "Steuerfreigabe für Fristen, Nummernkreis, Korrektur, Archivierung und E-Rechnungs-Geltungsweg"
+        - "Echte Offsite-Restore-, Monitoring-/Alarm-, Host-Härtungs-, Registry-Signatur-, Last-/SLO- und manuelle Accessibility-Nachweise"
+
+  - id: T010
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: xhigh
+    objective: "Alle Release-Gates und die Remediation-Matrix konsolidieren, verbleibende lokal behebbare Regressionen schließen und einen reproduzierbaren Produktionsfreigabe-Check herstellen."
+    allowed_files:
+      - "app"
+      - "config"
+      - "db"
+      - "lib"
+      - "script"
+      - "test"
+      - "tests"
+      - ".github/workflows"
+      - "documentation"
+      - "docs"
+    verify:
+      - "bin/rails test"
+      - "bin/rails test:system"
+      - "npx playwright test --project=chromium"
+      - "bin/rubocop"
+      - "bin/brakeman --no-pager"
+      - "bundle exec bundler-audit check"
+      - "bin/importmap audit"
+      - "isolierter vollständiger Backup-/Restore- und Failure-Walkthrough"
+    stop_if:
+      - "Ein verbleibender Fehler erfordert Produktionsdaten, Credentials oder eine nicht erteilte Betreiberentscheidung."
+      - "Ein Fix würde die validierten fachlichen Anforderungen verändern."
+    receipt:
+      result: done
+      changed_files:
+        - app
+        - config
+        - db
+        - script
+        - test
+        - documentation
+      commands:
+        - cmd: "script/release_check"
+          status: pass
+          result: "Bundler Audit clean; Brakeman 0 warnings; Importmap audit clean; 317 RuboCop files clean; Rails 238/1061; coverage 88.19% line and 63.54% branch; System 14/69; Playwright 11; production assets compiled"
+        - cmd: "docker build --pull=false --tag zapfe-rails:t008 ."
+          status: pass
+          result: "production image built from 4.21 MB context"
+        - cmd: "60-ID matrix uniqueness/count audit"
+          status: pass
+          result: "60 unique IDs: 36 technically closed, 24 explicit external NO-GO gates"
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "Ein reproduzierbarer lokaler Release-Check konsolidiert alle Security-, Lint-, Rails-, Browser-/axe- und Asset-Gates. Umami ist bis zur externen Datenschutzfreigabe fail-closed deaktiviert, die veraltete RStV-Referenz wurde auf den MStV aktualisiert, E2E-Daten sind isoliert und die Abschlussmatrix bildet alle 60 IDs exakt einmal ab."
+      remaining_blockers:
+        - "24 Findings benötigen die im Betreiberpaket genannten realen externen Nachweise; der Produktionsfreigabeentscheid bleibt deshalb NO-GO."
+
+  - id: T999
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: xhigh
+    objective: "Final auditieren, ob alle 60 Findings tatsächlich behoben und verifiziert sind und die Webapp den erneuten Produktionsfreigabecheck besteht."
+    inputs:
+      - "Alle Task-Receipts und Notes"
+      - "60-ID-Remediation-Matrix"
+      - "letzte vollständige Gate-Ergebnisse"
+      - "aktueller Diff und Migrations-/Rollbacknachweis"
+    constraints:
+      - "Nicht implementieren."
+      - "Completion ablehnen, wenn eine Finding-ID fehlt, ein kritisches/hohes Finding offen ist oder ein erforderlicher Worker-Task nicht done ist."
+      - "Completion ablehnen, wenn organisatorische oder rechtliche Pflichten ohne echte Evidenz als erledigt gelten."
+      - "Completion ablehnen, wenn die Webapp trotz lokaler Fixes keinen belegten erneuten Go-Entscheid erreicht."
+    expected_output:
+      - "complete | not_complete"
+      - "full_outcome_complete: true | false"
+      - "60-ID-Abdeckungsmatrix"
+      - "finale Go/No-Go-Entscheidung mit Belegen"
+      - "konkreter nächster Task oder exakter externer Blocker bei not_complete"
+    receipt:
+      result: done
+      decision: not_complete
+      full_outcome_complete: false
+      rationale: "Alle 60 Finding-IDs sind exakt einmal auditiert. 36 sind technisch belegt geschlossen. 24 bleiben ausdrückliche externe NO-GO-Gates; darunter echte Offsite-Restores, Providerverträge/Transfers, Betreiber-/Registerdaten, Rechts-/Steuerfreigaben, Live-Monitoring/Host/Signatur/Last, Branch Protection und manuelle Accessibility. Eine Produktionsfreigabe oder Ziel-Completion wäre ohne diese Evidenz falsch."
+      commands:
+        - cmd: "script/release_check"
+          status: pass
+        - cmd: "60-ID uniqueness/count audit"
+          status: pass
+          result: "60 unique; 36 technisch geschlossen; 24 externe NO-GO"
+        - cmd: "GoalBuddy state checker"
+          status: pass
+      evidence:
+        - documentation/production_readiness_matrix.md
+        - documentation/production_readiness_operator_pack.md
+        - docs/goals/production-readiness-remediation/state.yaml
+      missing_evidence:
+        - "sämtliche 24 in der Abschlussmatrix als EXTERNES NO-GO markierten Betreiber-, Provider-, Rechts-, Steuer- und Live-Betriebsnachweise"
+
+  - id: T011
+    type: pm
+    assignee: PM
+    status: blocked
+    reasoning_hint: xhigh
+    objective: "Die 24 externen NO-GO-Gates anhand des Betreiberpakets mit echten Fakten, Verträgen, Freigaben und Live-Nachweisen schließen und danach T999 erneut auditieren."
+    inputs:
+      - "documentation/production_readiness_operator_pack.md"
+      - "documentation/production_readiness_matrix.md"
+      - "echte Betreiberantworten und Nachweis-IDs"
+    constraints:
+      - "Keine Fakten, Unterschriften, Verträge oder Live-Tests erfinden."
+      - "Optionale nicht freigegebene Dienste bleiben deaktiviert."
+      - "Produktions-GO erst nach erneuter 60-ID-Prüfung."
+    expected_output:
+      - "ausgefülltes und freigegebenes Betreiberpaket"
+      - "24 grüne externe Nachweise oder explizite Scope-Entscheidungen"
+      - "erneuter finaler T999-Audit"
+    receipt:
+      result: blocked
+      blocked_reason: "Die 24 externen NO-GO-Gates können ohne echte Accountverträge, Betreiberkennzahlen, Rechts-/Steuerfreigaben und Live-Infrastrukturbelege nicht vollständig geschlossen werden. Öffentliche Provider- und Registerevidenz wurde ausgeschöpft, ersetzt diese Nachweise aber nicht."
+      commands:
+        - cmd: "Öffentliche Primärquellenprüfung Hetzner DPA/TOM/Subprozessoren/Standorte"
+          status: pass
+        - cmd: "Öffentliche Primärquellenprüfung Resend DPA/Subprozessoren/Regionen/Retention/Security"
+          status: pass
+        - cmd: "GitHub-Branch-Protection-Abfrage"
+          status: fail
+          result: "gh ist nicht authentifiziert; kein GH_TOKEN"
+      note: notes/T011-public-external-evidence.md
+      summary: "Öffentliche Providerbedingungen sind belastbar dokumentiert. Resend verarbeitet Accountdaten in den USA unabhängig von der Versandregion; Hetzner-Vertrag und Standort müssen aus dem Kundenkonto belegt werden. Gesellschaftsdaten sind nur nicht amtlich corroboriert. Die verbleibenden Betreiber- und Live-Nachweise fehlen weiterhin."
+      spawned_tasks:
+        - T012
+
+  - id: T012
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Das Betreiberpaket und die Provider-/60-ID-Matrix anhand der verifizierten öffentlichen Evidenz aktualisieren, bereits bekannte Repositoryangaben von echten Bestätigungen trennen und die verbleibenden Antworten auf eine minimale signierbare Checkliste reduzieren."
+    allowed_files:
+      - "documentation/production_readiness_operator_pack.md"
+      - "documentation/production_readiness_matrix.md"
+      - "documentation/privacy_processors_register.md"
+    verify:
+      - "60-ID uniqueness/count audit"
+      - "alle Providerbehauptungen besitzen Primärquellen oder sind ausdrücklich als unbestätigt markiert"
+      - "git diff --check"
+      - "GoalBuddy state checker"
+    stop_if:
+      - "Eine Änderung würde einen Vertragsschluss, eine Rechts-/Steuerfreigabe oder einen Live-Nachweis vortäuschen."
+      - "Eine öffentlich auffindbare Quelle widerspricht dem aktuellen Repositoryzustand und die fachliche Entscheidung ist nicht ableitbar."
+    receipt:
+      result: done
+      changed_files:
+        - documentation/production_readiness_operator_pack.md
+        - documentation/production_readiness_matrix.md
+        - documentation/privacy_processors_register.md
+      commands:
+        - cmd: "60-ID uniqueness/count audit"
+          status: pass
+          result: "60 unique IDs"
+        - cmd: "Provider source/claim audit"
+          status: pass
+          result: "Hetzner and Resend public facts carry primary links; account facts remain explicitly open"
+        - cmd: "git diff --check"
+          status: pass
+        - cmd: "GoalBuddy state checker"
+          status: pass
+      harness: codex
+      summary: "Das Betreiberpaket unterscheidet jetzt Repositoryangaben, öffentliche Providerbasis und echte Accountbestätigung. Hetzner-/Resend-DPA-, Transfer-, Region- und Retentionfakten sind primärquellenbasiert eingetragen; die US-Verarbeitung bei Resend ist sichtbar. Zehn signierbare Betreiberantworten ersetzen die vorher verstreute Restfrageliste, ohne externe Freigaben vorzutäuschen."
+
+  - id: T013
+    type: scout
+    assignee: Scout
+    status: blocked
+    reasoning_hint: high
+    objective: "Die öffentlich erreichbare Produktionsoberfläche von zapfe.jetzt read-only auf TLS/Redirects, Security-/Caching-Header, Legal-Seiten, Analytics-Ladung, PWA-Scope und offensichtliche Abweichungen zum gehärteten Branch prüfen."
+    inputs:
+      - "https://zapfe.jetzt"
+      - "https://www.zapfe.jetzt"
+      - "aktueller architecture-review Branch"
+    constraints:
+      - "Read-only; keine Formulare absenden, Accounts anlegen oder Produktionszustand ändern."
+      - "Keine fehlende Live-Ausrollung als Codefehler umdeuten."
+      - "Keine personenbezogenen Daten erfassen."
+    expected_output:
+      - "Live-Evidenzmatrix mit Responseheadern und öffentlich sichtbaren Legal-/Analytics-/PWA-Fakten"
+      - "Abweichung deployed production vs. branch"
+      - "konkreter sicherer Folgetask oder exakter Betreiberblocker"
+    receipt:
+      result: blocked
+      blocked_reason: "Die öffentliche Produktionsoberfläche lieferte über das Web-Tool keine verwertbare Antwort; zwei separat zeitbegrenzte read-only curl-Aufrufe mussten ohne Response beendet werden. Das beweist keinen Produktionsausfall und erlaubt keine Header-/Deploymentaussage."
+      commands:
+        - cmd: "Web GET auf Homepage, www, Impressum, Datenschutz, Service Worker und Manifest"
+          status: fail
+          result: "keine verwertbare Toolantwort"
+        - cmd: "zeitbegrenzte read-only curl GETs"
+          status: fail
+          result: "keine Response aus dem Prüfnetz; manuell beendet"
+      summary: "Live-Evidenz konnte aus dieser Umgebung nicht erhoben werden. Deployed-vs-branch, Securityheader, aktive Analytics und PWA-Version bleiben Betreiber-/Monitoringnachweise."
+      spawned_tasks:
+        - T014
+
+  - id: T014
+    type: pm
+    assignee: PM
+    status: blocked
+    reasoning_hint: high
+    objective: "Die zehn minimalen Betreiberantworten und zugehörigen Nachweis-IDs entgegennehmen, ohne Secrets in das Repository zu kopieren, die 24 externen Gates neu bewerten und den nächsten sicheren Abschluss-/Remediation-Slice aktivieren."
+    inputs:
+      - "Abschnitt G in documentation/production_readiness_operator_pack.md"
+      - "Betreiberantworten 1 bis 10"
+    constraints:
+      - "Keine Secrets, vollständigen vertraulichen Verträge oder Kundendaten committen."
+      - "Nur Beleg-IDs, redigierte Nachweise und bestätigte Entscheidungen dokumentieren."
+      - "Ohne Antwort keine Scope-, Rechts-, Steuer- oder Live-Freigabe unterstellen."
+    expected_output:
+      - "aktualisierte Bewertung der 24 externen NO-GO-Gates"
+      - "konkrete Worker-Slices für verbleibende technische Folgen"
+      - "erneuter finaler Audit, sobald alle Nachweise grün sind"
+    receipt:
+      result: blocked
+      blocked_reason: "Dritter aufeinanderfolgender Goal-Turn mit demselben Impasse: Die zehn Betreiberantworten sowie echte Account-, Vertrags-, Rechts-, Steuer- und Live-Nachweise liegen nicht vor. Sämtliche sichere lokale Implementierung, öffentliche Primärquellenprüfung und Dokumentationsverdichtung ist ausgeschöpft."
+      waiting_for_user_input: true
+      required_reply: "Bitte beantworte die Punkte 1–10 aus Abschnitt G von documentation/production_readiness_operator_pack.md und nenne je Punkt eine Beleg-ID oder 'nicht vorhanden'. Keine Secrets oder vollständigen vertraulichen Verträge senden."
+      evidence:
+        - documentation/production_readiness_operator_pack.md
+        - documentation/production_readiness_matrix.md
+        - docs/goals/production-readiness-remediation/notes/T011-public-external-evidence.md
+      summary: "Das Ziel bleibt bei 36 technisch geschlossenen und 24 extern blockierten Findings. Nach Eingang der zehn Antworten werden die externen Gates neu bewertet, daraus sichere technische Folgeslices abgeleitet und der finale 60-ID-Audit wiederholt."
+
+  - id: T015
+    type: pm
+    assignee: PM
+    status: done
+    reasoning_hint: high
+    objective: "Nach Wiederaufnahme die eingehenden Betreiberantworten validieren, T014 fortsetzen und daraus sichere, konkrete Remediation-Slices aktivieren."
+    inputs:
+      - "Antwort des Betreibers auf Abschnitt G des Betreiberpakets"
+    constraints:
+      - "Bis zur Betreiberantwort keine Freigaben unterstellen und keine weiteren Reminder erzeugen."
+    expected_output:
+      - "validierte Antwortmatrix und reaktivierter nächster Remediation-Slice"
+    receipt:
+      result: done
+      summary: "Betreiberangaben zu Gesellschaft, Größe, Kundenwegen und Hetzner wurden nachvollziehbar im Betreiberpaket erfasst. Für die Zapfe-Webapp besteht seit 20.07.2026 ein separater Hetzner-AVV; eine Storage Box in Falkenstein wurde angelegt. Die technischen Voraussetzungen für den isolierten Offsite-Upload können jetzt lokal umgesetzt werden; übrige Betreiberantworten bleiben über T014 offen."
+      evidence:
+        - documentation/production_readiness_operator_pack.md
+      spawned_tasks:
+        - T016
+
+  - id: T016
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Den verschlüsselten, fail-closed Offsite-Upload auf die Hetzner Storage Box als lokal testbare Backup-Runbook- und Skriptintegration vorbereiten, ohne Credentials in Code oder Repository zu schreiben."
+    inputs:
+      - script/backup_storage
+      - script/restore_storage
+      - documentation/backup_restore.md
+      - "Hetzner Storage Box u635934.your-storagebox.de in Falkenstein"
+    constraints:
+      - "Keine Zugangsdaten, privaten Schlüssel, Kundendaten oder Produktionspfade committen."
+      - "Der Upload muss verschlüsselte Artefakte verlangen und bei fehlender Ziel-, Schlüssel- oder Integritätsangabe fail-closed abbrechen."
+      - "Kein Befehl darf reale Produktionsdaten, bestehende Backups oder Storage-Box-Inhalte löschen oder überschreiben."
+      - "Die tatsächliche Serverkonfiguration und der Live-Restore bleiben Betreiberaktionen mit separatem Nachweis."
+    allowed_files:
+      - script/backup_storage
+      - script/upload_offsite_backup
+      - script/restore_storage
+      - test/scripts/production_storage_safety_test.rb
+      - documentation/backup_restore.md
+      - documentation/operations.md
+      - documentation/production_readiness_operator_pack.md
+    verify:
+      - "bash -n script/backup_storage script/upload_offsite_backup script/restore_storage"
+      - "bin/rails test test/scripts/production_storage_safety_test.rb"
+      - "isolierter Upload-Test mit Fake-SSH-Transport, verschlüsseltem Wegwerfarchiv und Negativfällen für Klartext, fehlende Konfiguration und bestehendes Ziel"
+      - "git diff --check"
+    stop_if:
+      - "Die Umsetzung würde echte Storage-Box-Zugangsdaten oder einen privaten Schlüssel benötigen."
+      - "Ein Test kann nicht sicher auf Wegwerfpfade und einen Fake-Transport begrenzt werden."
+      - "Das geforderte Aufbewahrungs- oder Löschkonzept wäre ohne Betreiberentscheidung nicht sicher implementierbar."
+    receipt:
+      result: done
+      changed_files:
+        - script/upload_offsite_backup
+        - test/scripts/production_storage_safety_test.rb
+        - documentation/backup_restore.md
+        - documentation/operations.md
+        - documentation/production_readiness_operator_pack.md
+      commands:
+        - cmd: "bash -n script/backup_storage script/upload_offsite_backup script/restore_storage"
+          status: pass
+        - cmd: "bin/rails test test/scripts/production_storage_safety_test.rb"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "Der neue Uploadschritt akzeptiert nur age-verschlüsselte Archive, verlangt Storage-Box-Hostname, dedizierten Schlüssel und known_hosts, verweigert bestehende Remoteziele und prüft die Remote-SHA-256-Prüfsumme. Zwei isolierte Fake-Transporttests prüfen Erfolg sowie Klartext-/Bestehendes-Ziel-Negativfälle. Der echte Server-Upload und Restore bleiben ohne Secrets im Repository als Betreiberaktion offen."
+      spawned_tasks:
+        - T017
+
+  - id: T017
+    type: pm
+    assignee: PM
+    status: done
+    reasoning_hint: high
+    objective: "Den Betreiber sicher durch die Live-Konfiguration des getrennten Storage-Box-Zugangs, den ersten verschlüsselten Upload und einen isolierten Restore führen und nur nicht geheime Evidenz dokumentieren."
+    inputs:
+      - documentation/backup_restore.md
+      - script/upload_offsite_backup
+      - "Storage Box u635934.your-storagebox.de in Falkenstein"
+    constraints:
+      - "Keine Passwörter, privaten Schlüssel, Host-Keys, Kundendaten oder vollständigen Archive in Chat oder Repository anfordern."
+      - "Keine bestehende Storage-Box-Datei oder Produktionsdaten löschen, überschreiben oder wiederherstellen."
+      - "Der Restore erfolgt nur in ein neues isoliertes Ziel."
+    expected_output:
+      - "Belegter separater Backupzugang ohne Secret-Offenlegung"
+      - "Datum, Archivname und Prüfsumme eines ersten verschlüsselten Uploads"
+      - "Ergebnis eines isolierten Restore-Tests oder ehrlicher Betreiberblocker"
+    receipt:
+      result: done
+      summary: "Hetzner-AVV, getrennte Storage Box und Zapfe-Subaccount wurden belegt. Der erste verschlüsselte Offsite-Satz wurde mit SHA-256 verifiziert und lokal isoliert wiederhergestellt (sechs SQLite-Datenbanken, 258 Dateien); die temporäre Klartextwiederherstellung wurde entfernt. Recovery-Key-Owner Leopold Schmid und Vertretung Johannes Wiese mit bestätigtem Passwortmanagerzugriff sind dokumentiert."
+      evidence:
+        - documentation/production_readiness_operator_pack.md
+        - documentation/backup_restore.md
+      spawned_tasks:
+        - T018
+
+  - id: T018
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Die beschlossene tägliche Offsite-Sicherung um 03:30 Uhr als fail-closed Systemdienst vorbereiten, lokal testen und den Dienst ohne automatische Remote-Löschung auf dem Produktionshost aktivieren."
+    inputs:
+      - script/backup_storage
+      - script/upload_offsite_backup
+      - documentation/backup_restore.md
+      - "RPO 24 h, RTO 4 h, 30 tägliche Sicherungen"
+    constraints:
+      - "Keine Secrets, Recovery-Identity oder Kundendaten in Git oder Logs ablegen."
+      - "Kein automatisches Löschen von lokalen oder Offsite-Backups aktivieren, bevor der Löschpfad separat getestet ist."
+      - "Der Timer darf nur den bereits verifizierten Produktionspfad lesen und sichere neue Archivnamen erzeugen."
+    allowed_files:
+      - script/run_offsite_backup
+      - test/scripts/production_storage_safety_test.rb
+      - documentation/backup_restore.md
+      - documentation/operations.md
+      - documentation/production_readiness_operator_pack.md
+    verify:
+      - "bash -n script/run_offsite_backup script/backup_storage script/upload_offsite_backup"
+      - "bin/rails test test/scripts/production_storage_safety_test.rb"
+      - "isolierter Timer-Wrapper-Test mit Fake-Transport und ohne reale Daten"
+      - "git diff --check"
+    stop_if:
+      - "Der Dienst benötigt ein Secret im Repository oder kann den age-Recipient nicht ohne Klartextidentität verwenden."
+      - "Die Systemdienstkonfiguration würde einen bestehenden Backup- oder Deploydienst überschreiben."
+      - "Der Uploadpfad könnte eine bestehende Remote-Datei überschreiben oder löschen."
+    receipt:
+      result: done
+      changed_files:
+        - script/run_offsite_backup
+        - test/scripts/production_storage_safety_test.rb
+        - documentation/backup_restore.md
+        - documentation/production_readiness_operator_pack.md
+      commands:
+        - cmd: "bash -n script/run_offsite_backup script/backup_storage script/upload_offsite_backup"
+          status: pass
+        - cmd: "bin/rails test test/scripts/production_storage_safety_test.rb"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+        - cmd: "systemctl status zapfe-offsite-backup.timer --no-pager"
+          status: pass
+          result: "timer enabled and waiting"
+        - cmd: "systemd-analyze calendar '*-*-* 03:30:00 Europe/Berlin'"
+          status: pass
+          result: "next elapse at 03:30 Europe/Berlin"
+      harness: codex
+      summary: "Der getestete Wrapper erzeugt neue UTC-Archivnamen, verschlüsselt vor dem Upload und löscht nie. Auf dem Produktionshost ist der aktivierte systemd-Timer mit 03:30 Europe/Berlin und maximal fünf Minuten Zufallsverzögerung eingerichtet. Die 30-Tage-Aufbewahrung bleibt bis zu einem separaten Löschtest ohne automatische Remote-Löschung."
+      spawned_tasks:
+        - T019
+
+  - id: T019
+    type: pm
+    assignee: PM
+    status: active
+    reasoning_hint: high
+    objective: "Den ersten geplanten Backup-Lauf nachhalten, die verbleibenden Restore-Stichproben und Aufbewahrungsautomatik sicher routen sowie die nächsten Betreiberantworten im Produktionsreife-Paket aufnehmen."
+    inputs:
+      - documentation/production_readiness_operator_pack.md
+      - documentation/backup_restore.md
+      - "systemd timer zapfe-offsite-backup.timer"
+    constraints:
+      - "Kein automatisches Löschen von Offsite-Backups ohne eigenständigen Test und Betreiberfreigabe."
+      - "Keine Secrets oder entschlüsselten Produktionsdaten dokumentieren."
+    expected_output:
+      - "Evidenz des ersten geplanten Laufs oder präziser externer Blocker"
+      - "Nächster sicherer Operator- oder Remediation-Slice"
+    receipt: null
+
+  - id: T020
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: high
+    objective: "Die unvollständige Bestätigungs-E-Mail für Kontaktanfragen diagnostizieren und die tatsächlich eingegebenen, zulässigen Anfrageinformationen zuverlässig und datensparsam darstellen."
+    inputs:
+      - app/mailers
+      - app/views
+      - test/mailers
+      - test/controllers/inquiries_controller_test.rb
+    constraints:
+      - "Keine E-Mail-Adresse, Telefonnummer, Nachricht oder sonstigen Kundendaten in Tests, Fixtures oder Dokumentation neu offenlegen."
+      - "Nur Angaben darstellen, die der Absender selbst in der Kontaktanfrage eingegeben oder ausgewählt hat."
+      - "Keine Live-E-Mails senden."
+    allowed_files:
+      - app/views/inquiry_mailer/customer_confirmation.html.erb
+      - test/mailers/inquiry_mailer_test.rb
+    verify:
+      - "bin/rails test test/mailers test/controllers/inquiries_controller_test.rb"
+      - "bin/rails test"
+      - "git diff --check"
+    stop_if:
+      - "Die erwartete Übersicht oder erlaubte Datenfelder sind fachlich nicht eindeutig."
+      - "Ein Fix würde eine Live-Provider-Konfiguration oder reale Kundendaten benötigen."
+    receipt:
+      result: done
+      changed_files:
+        - app/views/inquiry_mailer/customer_confirmation.html.erb
+        - test/mailers/inquiry_mailer_test.rb
+      commands:
+        - cmd: "bin/rails test test/mailers/inquiry_mailer_test.rb test/controllers/inquiries_controller_test.rb"
+          status: pass
+          result: "13 runs, 91 assertions, 0 failures, 0 errors"
+        - cmd: "bin/rails test"
+          status: pass
+          result: "243 runs, 1096 assertions, 0 failures, 0 errors"
+        - cmd: "git diff --check"
+          status: pass
+      harness: codex
+      summary: "Die Kundenbestätigung zeigt bei Kontaktanfragen jetzt die ausgewählte Veranstaltungsart, Gästezahl und freie Nachricht innerhalb der Übersicht. E-Mail-Adresse und Telefonnummer werden nicht als unnötige Kopie zurückgesendet. Bei vollständig leeren optionalen Angaben wird die Übersicht ausgelassen, statt leer zu erscheinen. Die Tests verwenden ausschließlich synthetische Beispieldaten und senden keine Live-E-Mails."
+
+checks:
+  dirty_fingerprint: unknown
+  last_verification:
+    result: unknown
+    task: null
+    commands: []

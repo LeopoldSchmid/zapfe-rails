@@ -5,7 +5,6 @@
   </div>
   <%= link_to "Neuer Auftrag", new_admin_order_path, class: "admin-cta" %>
 </div>
-
 <div class="space-y-3">
   <% @orders.each do |order| %>
     <article class="rounded-xl border border-slate-200 bg-white p-4">
@@ -33,3 +32,4 @@
     </article>
   <% end %>
 </div>
+<%= render "admin/shared/pagination" %>

@@ -56,7 +56,7 @@ class Admin::TasksController < Admin::BaseController
       PushNotificationJob.perform_later(
         subscription,
         title: "Neue Aufgabe",
-        body: "#{task.order.customer_name}: #{task.title}",
+        body: "Details nach sicherer Anmeldung öffnen.",
         path: execution_admin_order_path(task.order, anchor: "task-#{task.id}"),
         tag: "task-#{task.id}"
       )

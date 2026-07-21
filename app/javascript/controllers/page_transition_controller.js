@@ -20,6 +20,7 @@ export default class extends Controller {
   }
 
   beforeRender(event) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     const current = document.getElementById("page-content")
     const next = event.detail.newBody?.querySelector("#page-content")
     if (!current || !next) return

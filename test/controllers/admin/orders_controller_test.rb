@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::OrdersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = admin_users(:one)
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
   end
 
   test "creates a manual order with the required fields" do
@@ -69,12 +69,12 @@ class Admin::OrdersControllerTest < ActionDispatch::IntegrationTest
 
   test "downloads an attachment through the protected order route" do
     order = orders(:from_inquiry)
-    order.attachments.attach(io: StringIO.new("Beispiel-PDF"), filename: "auftrag.pdf", content_type: "application/pdf")
+    order.attachments.attach(io: StringIO.new("%PDF-1.4\n%%EOF\n"), filename: "auftrag.pdf", content_type: "application/pdf")
 
     get attachment_admin_order_url(order, order.attachments.last)
 
     assert_response :success
-    assert_equal "Beispiel-PDF", response.body
+    assert_equal "%PDF-1.4\n%%EOF\n", response.body
     assert_equal "application/pdf", response.media_type
   end
 

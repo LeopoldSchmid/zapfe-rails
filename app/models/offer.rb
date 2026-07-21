@@ -1,5 +1,13 @@
 class Offer < ApplicationRecord
+  include TransitionPolicy
+
   STATUSES = %w[draft finalized sent accepted rejected expired].freeze
+  allows_status_transitions(
+    "draft" => %w[finalized],
+    "finalized" => %w[sent accepted rejected expired],
+    "sent" => %w[accepted rejected expired],
+    "accepted" => [], "rejected" => [], "expired" => []
+  )
   DISCOUNT_TYPES = OfferLineItem::DISCOUNT_TYPES
 
   belongs_to :order

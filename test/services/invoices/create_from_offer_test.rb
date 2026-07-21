@@ -5,7 +5,7 @@ class Invoices::CreateFromOfferTest < ActiveSupport::TestCase
     @admin = admin_users(:one)
     @offer = Offer.create!(order: orders(:from_inquiry), version: 1, status: "draft", valid_until: Date.current + 14.days, recipient_name: "Verein Freiburg", recipient_email: "rechnung@verein.example", recipient_address: "Musterstraße 1\n79100 Freiburg")
     @offer.line_items.create!(description: "Miete Zapfe", quantity: 1, unit: "Tag", net_unit_price: 100, tax_rate: 19, discount_type: "none")
-    @offer.update!(status: "accepted")
+    @offer.update_column(:status, "accepted")
   end
 
   test "creates a mutable invoice draft from an accepted offer" do

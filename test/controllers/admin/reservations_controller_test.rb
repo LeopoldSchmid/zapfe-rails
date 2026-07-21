@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::ReservationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     admin = admin_users(:one)
-    post admin_login_url, params: { email: admin.email, password: "password123" }
+    sign_in_admin(admin)
     @resource = Resource.create!(name: "Kegerator #1", resource_type: "Kegerator")
     @order = orders(:from_inquiry)
   end

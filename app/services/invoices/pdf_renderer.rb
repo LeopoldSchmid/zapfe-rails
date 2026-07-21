@@ -7,12 +7,6 @@ class Invoices::PdfRenderer
     @snapshot = invoice.document_snapshot_data
   end
 
-  def attach!
-    @invoice.document.attach(io: StringIO.new(render), filename: "#{@invoice.invoice_number}.pdf", content_type: "application/pdf")
-  end
-
-  private
-
   def render
     Prawn::Document.new(page_size: "A4", margin: 45) do |pdf|
       issuer = @snapshot.fetch("issuer")
@@ -23,30 +17,33 @@ class Invoices::PdfRenderer
       pdf.text issuer.fetch("company_name"), size: 9
       pdf.text issuer.fetch("company_address").to_s, size: 9
       pdf.move_down 32
-      pdf.text "RECHNUNG", size: 22, style: :bold, color: "102A43"
+      pdf.text document_title, size: 22, style: :bold, color: "102A43"
       pdf.move_down 12
       pdf.text recipient.fetch("name"), style: :bold
       pdf.text recipient.fetch("address").to_s
       pdf.move_down 18
       pdf.text "Rechnungsnummer: #{@invoice.invoice_number}"
+      pdf.text "Bezug auf Rechnung: #{@snapshot.fetch("correction_of")}" if @snapshot["correction_of"].present?
       pdf.text "Rechnungsdatum: #{I18n.l(Date.iso8601(@snapshot.fetch("issue_date")))}"
       pdf.text "Lieferdatum: #{format_date(@snapshot["delivery_on"])}"
       pdf.text "Zahlbar bis: #{format_date(@snapshot["due_on"])}"
       pdf.move_down 22
       pdf.text "Vielen Dank für Ihren Auftrag. Für die erbrachten Leistungen stellen wir Ihnen folgende Summe in Rechnung:", leading: 4
       pdf.move_down 16
-      rows = [[ "Beschreibung", "Menge", "Einheit", "Einzelpreis", "Gesamt" ]] + @snapshot.fetch("line_items").map { |item| [ item.fetch("description"), item.fetch("quantity"), item.fetch("unit"), money(item.fetch("net_unit_price")), money(item.fetch("net_total")) ] }
+      rows = [ [ "Beschreibung", "Menge", "Einheit", "Einzelpreis", "USt.", "Netto" ] ] + @snapshot.fetch("line_items").map { |item| [ item.fetch("description"), item.fetch("quantity"), item.fetch("unit"), money(item.fetch("net_unit_price")), "#{item.fetch("tax_rate")} %", money(item.fetch("net_total")) ] }
       pdf.table(rows, header: true, width: pdf.bounds.width, cell_style: { padding: 7, size: 9 }) do
         row(0).background_color = "EAF0F5"
         row(0).font_style = :bold
-        columns(1..4).align = :right
+        columns(1..5).align = :right
       end
       pdf.move_down 14
       totals = @snapshot.fetch("totals")
       pdf.bounding_box([ pdf.bounds.right - 205, pdf.cursor ], width: 205) do
         pdf.text "Teilsumme netto: #{money(totals.fetch("subtotal_net"))}", align: :right
         pdf.text "Rabatt: -#{money(totals.fetch("global_discount_amount"))}", align: :right if BigDecimal(totals.fetch("global_discount_amount")) > 0
-        pdf.text "Mehrwertsteuer#{tax_rate_label}: #{money(totals.fetch("tax"))}", align: :right
+        @snapshot.fetch("tax_breakdown").each do |tax|
+          pdf.text "USt. #{tax.fetch("rate")} % auf #{money(tax.fetch("taxable_basis"))}: #{money(tax.fetch("tax_amount"))}", align: :right
+        end
         pdf.move_down 5
         pdf.stroke_horizontal_rule
         pdf.move_down 5
@@ -63,8 +60,5 @@ class Invoices::PdfRenderer
 
   def money(value) = format("%.2f €", BigDecimal(value.to_s))
   def format_date(value) = value.present? ? I18n.l(Date.iso8601(value)) : "–"
-  def tax_rate_label
-    rates = @snapshot.fetch("line_items").map { |line_item| line_item.fetch("tax_rate") }.uniq
-    rates.one? ? " (#{rates.first} %)" : ""
-  end
+  def document_title = @snapshot.fetch("invoice_type") == "credit_note" ? "STORNORECHNUNG" : "RECHNUNG"
 end

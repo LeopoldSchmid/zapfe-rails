@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SSH_KEY="${SSH_KEY:-/home/leo/.ssh/apeServeBeer.pem}"
-HOST="${HOST:-root@157.180.19.232}"
-STAGING_VOLUME="${STAGING_VOLUME:-zapfe_rails_staging_storage}"
-PROD_VOLUME="${PROD_VOLUME:-zapfe_rails_storage}"
+cat >&2 <<'MESSAGE'
+BLOCKED: replacing production storage from staging is intentionally disabled.
 
-ssh -i "$SSH_KEY" "$HOST" <<EOF
-set -euo pipefail
+The former implementation deleted the production volume before validating the
+source, backup, copy, or rollback path. Use script/backup_storage to create and
+verify a snapshot, then restore it into a new empty volume with
+script/restore_storage. Cutover to that volume must be a separately reviewed
+operator action with a tested rollback.
+MESSAGE
 
-docker run --rm \
-   -v zapfe_rails_staging_storage:/from:ro \
-   -v zapfe_rails_storage:/to \
-   alpine sh -lc 'rm -rf /to/* /to/.[!.]* /to/..?* 2>/dev/null || true; cp -a /
- from/. /to/'
-EOF
+exit 64

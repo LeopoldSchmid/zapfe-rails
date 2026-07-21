@@ -17,14 +17,21 @@
     <%= f.telephone_field :phone, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
   </div>
 
+  <div>
+    <%= f.label :role, "Rolle", class: "mb-1 block text-sm font-medium" %>
+    <%= f.select :role, [[ "Member – operative Arbeit", "member" ], [ "Admin – zusätzlich Katalog und Einrichtung", "admin" ], [ "Owner – zusätzlich Konten und Systemeinstellungen", "owner" ]], {}, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    <p class="mt-1 text-xs text-slate-500">Nur Owner dürfen Konten und systemweite Einstellungen verändern.</p>
+  </div>
+
   <div class="grid gap-4 md:grid-cols-2">
     <div>
       <%= f.label :password, "Passwort#{@admin_user.persisted? ? ' (leer lassen zum Beibehalten)' : ''}", class: "mb-1 block text-sm font-medium" %>
-      <%= f.password_field :password, required: @admin_user.new_record?, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+      <%= f.password_field :password, required: @admin_user.new_record?, minlength: AdminUser::PASSWORD_MINIMUM_LENGTH, autocomplete: "new-password", class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+      <p class="mt-1 text-xs text-slate-500">Mindestens <%= AdminUser::PASSWORD_MINIMUM_LENGTH %> Zeichen; keine häufigen oder personenbezogenen Passwörter.</p>
     </div>
     <div>
       <%= f.label :password_confirmation, "Passwort wiederholen", class: "mb-1 block text-sm font-medium" %>
-      <%= f.password_field :password_confirmation, required: @admin_user.new_record?, class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+      <%= f.password_field :password_confirmation, required: @admin_user.new_record?, minlength: AdminUser::PASSWORD_MINIMUM_LENGTH, autocomplete: "new-password", class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
     </div>
   </div>
 

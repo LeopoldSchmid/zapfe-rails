@@ -60,6 +60,9 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "zapfe.jetzt") }
 
+  app_host = ENV.fetch("APP_HOST", "zapfe.jetzt")
+  config.hosts = ENV.fetch("APP_HOSTS", "#{app_host},www.#{app_host}").split(",").map(&:strip).reject(&:blank?)
+
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # Allow asset precompile during image build without real mail credentials.
   resend_api_key = ENV["RESEND_API_KEY"]

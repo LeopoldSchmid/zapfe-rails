@@ -5,12 +5,13 @@
 <%= form_with url: admin_edit_password_path(token: params[:token]), method: :patch, class: "space-y-4" do |f| %>
   <div>
     <%= f.label :password, "Neues Passwort", class: "mb-1 block text-sm font-medium" %>
-    <%= f.password_field :password, required: true, autocomplete: "new-password", class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    <%= f.password_field :password, required: true, minlength: AdminUser::PASSWORD_MINIMUM_LENGTH, autocomplete: "new-password", class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    <p class="mt-1 text-xs text-slate-500">Mindestens <%= AdminUser::PASSWORD_MINIMUM_LENGTH %> Zeichen und kein häufiges Passwort.</p>
   </div>
 
   <div>
     <%= f.label :password_confirmation, "Passwort bestätigen", class: "mb-1 block text-sm font-medium" %>
-    <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
+    <%= f.password_field :password_confirmation, required: true, minlength: AdminUser::PASSWORD_MINIMUM_LENGTH, autocomplete: "new-password", class: "w-full rounded-md border border-slate-300 px-3 py-2" %>
   </div>
 
   <%= f.submit "Passwort speichern", class: "admin-cta w-full" %>

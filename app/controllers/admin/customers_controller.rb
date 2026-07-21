@@ -2,7 +2,7 @@ class Admin::CustomersController < Admin::BaseController
   before_action :set_customer, only: %i[edit update contact_options]
 
   def index
-    @customers = Customer.includes(:contacts).order(:name)
+    @customers = paginate(Customer.includes(:contacts, :orders).order(:name))
   end
 
   def new

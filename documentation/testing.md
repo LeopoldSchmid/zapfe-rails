@@ -1,6 +1,6 @@
 # Testing
 
-Stand: 2026-02-27
+Stand: 2026-07-16
 
 ## Ziel
 - Tests sollen lokal reproduzierbar laufen.
@@ -12,6 +12,8 @@ Stand: 2026-02-27
 - `bin/rails test`
   - Gesamte Rails-Test-Suite.
   - Umfasst aktuell Model-, Controller-, Mailer- und Systemtests.
+- `COVERAGE=1 bin/rails test`
+  - Erzeugt den in CI archivierten Line-/Branch-Coverage-Trend unter `coverage/`.
 - `bin/rails test test/system`
   - Rails-Systemtests.
   - Laufen browserbasiert ueber `capybara-playwright-driver`.
@@ -29,13 +31,20 @@ bin/rails db:prepare
 
 Hinweise:
 - `npx playwright install chromium` wird pro Rechner/Umgebung benoetigt, damit der Browser lokal verfuegbar ist.
-- Die eigenstaendigen Playwright-Tests verwenden `RAILS_ENV=test`.
+- Die eigenstaendigen Playwright-Tests verwenden `RAILS_ENV=test` und eine
+  separate Datenbank unter `storage/playwright.sqlite3`; sie verändern die
+  Minitest-Datenbank nicht.
 - Auf Arch- oder anderen nicht offiziell unterstuetzten Linux-Systemen kann Playwrights Host-Pruefung trotz funktionierendem Chromium fehlschlagen.
 - In diesem Projekt laufen die E2E-Skripte deshalb mit `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1` und explizit mit dem `chromium`-Projekt.
 
 ## Haefige Test-Kommandos
 ```bash
 bin/rails test
+COVERAGE=1 bin/rails test
+bin/bundler-audit check
+bin/brakeman --no-pager
+bin/rubocop
+bin/rails test test/scripts/production_storage_safety_test.rb
 bin/rails test test/system
 bin/rails test test/system/calculator_toggle_test.rb
 npm run test:e2e
@@ -43,6 +52,17 @@ npm run test:e2e:local
 PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 npx playwright test tests/smoke.spec.ts --project=chromium
 npm run test:e2e:headed
 ```
+
+Der Storage-Safety-Test arbeitet ausschließlich in temporären Verzeichnissen.
+Er belegt SQLite-Online-Backup, Dateisnapshot, Prüfsummen, Restore in ein leeres
+Ziel, Ablehnung beschädigter Archive und die technische Sperre des ehemaligen
+Staging-zu-Produktion-Skripts. Der reale verschlüsselte Offsite-Restore bleibt
+ein separater Betreiber-Nachweis; siehe `documentation/backup_restore.md`.
+
+Die verbindliche Release-Wahrheit ist `.github/workflows/ci.yml`: Ruby-/Importmap-
+Security-Scans, RuboCop, Rails-Tests mit Coverage-Artefakt, Systemtests, ein kompletter
+Migrationsaufbau sowie Produktionsimage-, Trivy- und SBOM-Gate. Lokale Einzeltests
+ersetzen diese PR-Checks nicht.
 
 ## Wie das Setup aktuell funktioniert
 
@@ -65,8 +85,8 @@ Das ersetzt bewusst das fruehere Selenium/Chromedriver-Setup, weil es lokal anfa
 - `playwright.config.ts` startet bei Bedarf selbst:
 
 ```bash
-RAILS_ENV=test bin/rails db:prepare
-RAILS_ENV=test bin/rails server -b 127.0.0.1 -p 3200
+DATABASE_URL=sqlite3:storage/playwright.sqlite3 RAILS_ENV=test bin/rails db:prepare
+DATABASE_URL=sqlite3:storage/playwright.sqlite3 RAILS_ENV=test bin/rails server -b 127.0.0.1 -p 3200
 ```
 
 - `PLAYWRIGHT_SKIP_WEBSERVER=1` kann genutzt werden, wenn der Testserver bereits separat laeuft.

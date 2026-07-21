@@ -25,14 +25,9 @@ end %>
       <%= f.email_field :email, required: true, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
     </div>
     <div>
-      <%= f.label :phone, "Telefon *", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
-      <%= f.telephone_field :phone, required: true, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
+      <%= f.label :phone, "Telefon (optional)", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
+      <%= f.telephone_field :phone, class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
     </div>
-  </div>
-
-  <div>
-    <%= f.label :company, "Firma", class: "mb-1 block text-sm font-semibold text-[var(--color-zapfe-navy)]" %>
-    <%= f.text_field :company, required: false, placeholder: "Name des Unternehmens (optional)", class: "w-full rounded-md border border-slate-300 bg-white px-3 py-2" %>
   </div>
 
   <div>
@@ -42,7 +37,7 @@ end %>
 
   <label class="flex items-start gap-2 text-xs text-slate-600">
     <%= f.check_box :privacy_accepted, required: true, class: "mt-0.5" %>
-    <span>Mit dem Absenden erklärst du dich mit unserer <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> einverstanden.</span>
+    <span>Ich habe die <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> zur Kenntnis genommen.</span>
   </label>
 
   <%= f.submit submit_label, class: "btn-primary mt-2 w-full" %>

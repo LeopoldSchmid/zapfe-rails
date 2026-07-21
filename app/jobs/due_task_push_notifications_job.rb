@@ -8,15 +8,14 @@ class DueTaskPushNotificationsJob < ApplicationJob
       next if task.last_push_reminded_on == Date.current
 
       task.assigned_admin_user.push_subscriptions.find_each do |subscription|
-        PushNotificationJob.perform_later(
-          subscription,
-          title: "Aufgabe fällig",
-          body: "#{task.order.customer_name}: #{task.title}",
-          path: Rails.application.routes.url_helpers.execution_admin_order_path(task.order, anchor: "task-#{task.id}"),
-          tag: "task-#{task.id}-#{Date.current}"
+        delivery = PushNotificationDelivery.find_or_create_by!(
+          task: task,
+          push_subscription: subscription,
+          kind: "due_reminder",
+          notification_on: Date.current
         )
+        PushNotificationJob.perform_later(delivery) unless delivery.status.in?(%w[delivering delivered])
       end
-      task.update_column(:last_push_reminded_on, Date.current)
     end
   end
 end

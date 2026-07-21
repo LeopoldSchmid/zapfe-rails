@@ -12,11 +12,14 @@ class Invoices::SendMail
       raise NotSendable, "Nur finalisierte Rechnungen können versendet werden." unless @invoice.status == "finalized"
       raise NotSendable, "Für den Versand fehlt die Empfänger-E-Mail-Adresse." if @invoice.recipient_email.blank?
       raise NotSendable, "Für den Versand fehlt das Rechnungs-PDF." unless @invoice.document.attached?
+      Invoices::DocumentIntegrity.verify!(@invoice, kind: :pdf)
+      Invoices::DocumentIntegrity.verify!(@invoice, kind: :xml)
 
-      @invoice.update!(status: "sent", sent_at: Time.current)
-      InvoiceMailer.invoice(@invoice).deliver_later
-      @invoice.activities.create!(admin_user: @admin_user, event_type: "sent", message: "Rechnung #{@invoice.invoice_number} an #{@invoice.recipient_email} versendet")
-      @invoice
+      delivery = CustomerDocuments::EnqueueDelivery.new(deliverable: @invoice, admin_user: @admin_user).call
+      @invoice.activities.create!(admin_user: @admin_user, event_type: "delivery_queued", message: "Rechnung #{@invoice.invoice_number} für Versand an #{@invoice.recipient_email} eingereiht")
+      delivery
     end
+  rescue Invoices::DocumentIntegrity::IntegrityError => error
+    raise NotSendable, error.message
   end
 end

@@ -1,5 +1,5 @@
 class Admin::InvoicesController < Admin::BaseController
-  before_action :set_invoice, only: %i[show update finalize send_mail mark_paid document]
+  before_action :set_invoice, only: %i[show update finalize send_mail cancel mark_paid document e_invoice]
 
   def index
     @order = Order.includes(invoices: :offer).find(params[:order_id])
@@ -35,7 +35,7 @@ class Admin::InvoicesController < Admin::BaseController
 
   def send_mail
     Invoices::SendMail.new(invoice: @invoice, admin_user: current_admin_user).call
-    redirect_to admin_invoice_path(@invoice), notice: "Rechnung wurde versendet."
+    redirect_to admin_invoice_path(@invoice), notice: "Rechnung wurde für den Versand eingereiht."
   rescue Invoices::SendMail::NotSendable => error
     redirect_to admin_invoice_path(@invoice), alert: error.message
   end
@@ -46,10 +46,29 @@ class Admin::InvoicesController < Admin::BaseController
     redirect_to admin_invoice_path(@invoice), notice: "Zahlungseingang erfasst."
   end
 
+  def cancel
+    credit_note = Invoices::Cancel.new(invoice: @invoice, admin_user: current_admin_user, reason: params[:reason]).call
+    redirect_to admin_invoice_path(credit_note), notice: "Stornorechnung #{credit_note.invoice_number} wurde finalisiert."
+  rescue Invoices::Cancel::NotCancellable => error
+    redirect_to admin_invoice_path(@invoice), alert: error.message
+  end
+
   def document
     return redirect_to(admin_invoice_path(@invoice), alert: "Für diesen Entwurf gibt es noch kein PDF.") unless @invoice.document.attached?
 
+    Invoices::DocumentIntegrity.verify!(@invoice, kind: :pdf)
     send_data @invoice.document.download, filename: @invoice.document.filename.to_s, type: "application/pdf", disposition: "attachment"
+  rescue Invoices::DocumentIntegrity::IntegrityError => error
+    redirect_to admin_invoice_path(@invoice), alert: error.message
+  end
+
+  def e_invoice
+    return redirect_to(admin_invoice_path(@invoice), alert: "Für diesen Entwurf gibt es noch keine E-Rechnung.") unless @invoice.e_invoice.attached?
+
+    Invoices::DocumentIntegrity.verify!(@invoice, kind: :xml)
+    send_data @invoice.e_invoice.download, filename: @invoice.e_invoice.filename.to_s, type: "application/xml", disposition: "attachment"
+  rescue Invoices::DocumentIntegrity::IntegrityError => error
+    redirect_to admin_invoice_path(@invoice), alert: error.message
   end
 
   private

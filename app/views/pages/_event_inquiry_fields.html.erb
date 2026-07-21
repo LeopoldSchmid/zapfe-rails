@@ -10,8 +10,8 @@
     <%= f.text_field :last_name, required: true, autocomplete: "family-name", class: "w-full rounded-xl border border-slate-300 bg-[rgba(225,234,250,0.85)] px-4 py-3 text-[var(--color-zapfe-navy)]" %>
   </div>
   <div>
-    <%= f.label :phone, "Telefon *", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
-    <%= f.telephone_field :phone, required: true, autocomplete: "tel", class: "w-full rounded-xl border border-slate-300 bg-[rgba(225,234,250,0.85)] px-4 py-3 text-[var(--color-zapfe-navy)]" %>
+    <%= f.label :phone, "Telefon (optional)", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
+    <%= f.telephone_field :phone, autocomplete: "tel", class: "w-full rounded-xl border border-slate-300 bg-[rgba(225,234,250,0.85)] px-4 py-3 text-[var(--color-zapfe-navy)]" %>
   </div>
   <div>
     <%= f.label :guests, "Gästezahl", class: "mb-1 block text-sm font-semibold uppercase tracking-[0.16em] text-slate-500" %>
@@ -47,7 +47,7 @@
 
 <label class="flex items-start gap-2 text-sm text-slate-600">
   <%= f.check_box :privacy_accepted, required: true, class: "mt-0.5" %>
-  <span>Mit dem Absenden erklärst du dich mit unserer <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> einverstanden.</span>
+  <span>Ich habe die <%= link_to "Datenschutzerklärung", datenschutz_path, class: "font-semibold underline" %> zur Kenntnis genommen.</span>
 </label>
 
 <%= f.submit submit_label, class: "btn-primary mt-2 w-full" %>

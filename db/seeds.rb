@@ -127,15 +127,17 @@ admin_accounts = [
   [ "Johannes Wiese", ENV["JOHANNES_ADMIN_EMAIL"], ENV["JOHANNES_ADMIN_PASSWORD"] ]
 ]
 
-admin_accounts.each do |name, email, password|
-  next if email.blank? || password.blank?
+unless Rails.env.test?
+  admin_accounts.each do |name, email, password|
+    next if email.blank? || password.blank?
 
-  admin = AdminUser.find_or_initialize_by(email: email)
-  admin.name = name
-  admin.active = true
-  admin.password = password
-  admin.password_confirmation = password
-  admin.save!
+    admin = AdminUser.find_or_initialize_by(email: email)
+    admin.name = name
+    admin.active = true
+    admin.password = password
+    admin.password_confirmation = password
+    admin.save!
+  end
 end
 
 help_articles = {

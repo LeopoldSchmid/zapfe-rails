@@ -26,11 +26,19 @@ class MonitoringController < ApplicationController
     render json: { status: "error" }, status: :internal_server_error
   end
 
+  def deep
+    return head :unauthorized unless monitoring_token_valid?
+
+    result = Operations::DeepHealthCheck.new.call
+    render json: result, status: result[:status] == "ok" ? :ok : :service_unavailable
+  end
+
   private
 
   def monitoring_token_valid?
     expected = ENV["MONITORING_TOKEN"].to_s
-    provided = params[:token].to_s
+    authorization = request.authorization.to_s
+    provided = authorization.start_with?("Bearer ") ? authorization.delete_prefix("Bearer ") : request.headers["X-Monitoring-Token"].to_s
     return false if expected.blank? || provided.blank?
 
     ActiveSupport::SecurityUtils.secure_compare(provided, expected)

@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::CustomersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = admin_users(:one)
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
   end
 
   test "creates a customer with a primary contact" do
@@ -16,5 +16,15 @@ class Admin::CustomersControllerTest < ActionDispatch::IntegrationTest
     get contact_options_admin_customer_url(customer)
     assert_response :success
     assert_equal "Eva Event", JSON.parse(response.body).first.fetch("label")
+  end
+
+  test "paginates growing customer lists" do
+    51.times { |index| Customer.create!(name: format("Pagination %02d", index)) }
+
+    get admin_customers_url
+
+    assert_response :success
+    assert_select ".admin-panel", maximum: 50
+    assert_select "a[rel=next]", "Nächste Seite →"
   end
 end

@@ -1,6 +1,7 @@
 class InquiriesController < ApplicationController
   MINIMUM_SUBMISSION_TIME = 3.seconds
   MAXIMUM_SUBMISSION_AGE = 2.days
+  RAW_INQUIRY_KEYS = %i[source email website submitted_at_token].freeze
 
   before_action :reject_spam_submission, only: :create
   before_action :enforce_rate_limits, only: :create
@@ -68,7 +69,7 @@ class InquiriesController < ApplicationController
   end
 
   def raw_inquiry_params
-    params.fetch(:inquiry, ActionController::Parameters.new).permit!.to_h.symbolize_keys
+    params.fetch(:inquiry, ActionController::Parameters.new).permit(*RAW_INQUIRY_KEYS).to_h.symbolize_keys
   end
 
   def inquiry_params

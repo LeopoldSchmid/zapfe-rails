@@ -4,6 +4,7 @@ class Admin::OrdersController < Admin::BaseController
   def index
     @orders = Order.includes(:responsible_admin_user, :inquiry, :customer, :contact).order(event_date: :asc)
     @orders = params[:archived] == "1" ? @orders.where.not(archived_at: nil) : @orders.where(archived_at: nil)
+    @orders = paginate(@orders)
   end
 
   def show
@@ -32,20 +33,17 @@ class Admin::OrdersController < Admin::BaseController
   end
 
   def create
-    @order = Order.new(order_params)
     @admin_users = AdminUser.active.order(:name)
     @order_templates = OrderTemplate.active.order(:name)
-    prepare_customer_contacts
     template = @order_templates.find_by(id: params[:order_template_id])
-    Orders::ApplyTemplate.new(order: @order, template: template).apply_defaults! if template
-    @order.responsible_admin_user ||= current_admin_user
-
-    if @order.save
-      Orders::ApplyTemplate.new(order: @order, template: template).materialize! if template
-      redirect_to admin_order_path(@order), notice: "Auftrag erstellt."
-    else
-      render :new, status: :unprocessable_entity
-    end
+    attributes = order_params.to_h.symbolize_keys
+    attributes[:responsible_admin_user] = current_admin_user if attributes[:responsible_admin_user_id].blank?
+    @order = Orders::Create.new(attributes: attributes, template: template).call
+    redirect_to admin_order_path(@order), notice: "Auftrag erstellt."
+  rescue ActiveRecord::RecordInvalid => error
+    @order = error.record.is_a?(Order) ? error.record : Order.new(attributes)
+    prepare_customer_contacts
+    render :new, status: :unprocessable_entity
   end
 
   def update
@@ -123,8 +121,7 @@ class Admin::OrdersController < Admin::BaseController
   end
 
   def attachments_valid?(attachments)
-    allowed_types = %w[application/pdf image/jpeg image/png image/webp]
-    attachments.all? { |attachment| attachment.size <= 25.megabytes && attachment.content_type.in?(allowed_types) }
+    attachments.all? { |attachment| AttachmentSafety.safe_upload?(attachment) }
   end
 
   def record_changes

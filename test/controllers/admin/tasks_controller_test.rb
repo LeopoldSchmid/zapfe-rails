@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::TasksControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = admin_users(:one)
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
     @order = orders(:from_inquiry)
   end
 

@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::InquiriesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin = admin_users(:one)
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
   end
 
   test "lists unassigned inquiries and permits a conscious assignment" do
@@ -78,18 +78,18 @@ class Admin::InquiriesControllerTest < ActionDispatch::IntegrationTest
 
   test "downloads an attachment through the protected inquiry route" do
     inquiry = inquiries(:two)
-    inquiry.attachments.attach(io: StringIO.new("Beispiel-PDF"), filename: "angebot.pdf", content_type: "application/pdf")
+    inquiry.attachments.attach(io: StringIO.new("%PDF-1.4\n%%EOF\n"), filename: "angebot.pdf", content_type: "application/pdf")
 
     get attachment_admin_inquiry_url(inquiry, inquiry.attachments.last)
 
     assert_response :success
-    assert_equal "Beispiel-PDF", response.body
+    assert_equal "%PDF-1.4\n%%EOF\n", response.body
     assert_equal "application/pdf", response.media_type
   end
 
   test "requires an admin login to download an inquiry attachment" do
     inquiry = inquiries(:two)
-    inquiry.attachments.attach(io: StringIO.new("Beispiel-PDF"), filename: "angebot.pdf", content_type: "application/pdf")
+    inquiry.attachments.attach(io: StringIO.new("%PDF-1.4\n%%EOF\n"), filename: "angebot.pdf", content_type: "application/pdf")
     delete admin_logout_url
 
     get attachment_admin_inquiry_url(inquiry, inquiry.attachments.last)

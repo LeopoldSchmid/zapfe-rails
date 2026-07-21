@@ -2,7 +2,7 @@ require "test_helper"
 
 class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @admin = AdminUser.create!(email: "dash@example.com", password: "password123", password_confirmation: "password123")
+    @admin = AdminUser.create!(email: "dash@example.com", password: "correct-horse-battery-staple", password_confirmation: "correct-horse-battery-staple")
   end
 
   test "requires login" do
@@ -11,7 +11,7 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "shows dashboard when logged in" do
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
     get admin_root_url
     assert_response :success
   end
@@ -20,7 +20,7 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     inquiry = inquiries(:two)
     inquiry.update!(status: "waiting_customer")
 
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
     get admin_root_url
 
     assert_select "section", text: /Wartet auf Rückmeldung/
@@ -31,7 +31,7 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     order = orders(:from_inquiry)
     task = Task.create!(order: order, assigned_admin_user: @admin, title: "Beschaffung bestellen", status: "open", due_on: Date.current + 1.day)
 
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
     get admin_root_url
 
     assert_select "section", text: /Offene Aufgaben und Fristen/
@@ -44,7 +44,7 @@ class Admin::DashboardControllerTest < ActionDispatch::IntegrationTest
     plan = order.procurement_plans.create!(status: "planned")
     Task.create!(order: order, procurement_plan: plan, assigned_admin_user: @admin, title: "Bestellung auslösen", status: "open", due_on: Date.current + 1.day)
 
-    post admin_login_url, params: { email: @admin.email, password: "password123" }
+    sign_in_admin(@admin)
     get admin_root_url
 
     assert_select "a[href='#{procurement_admin_order_path(order)}']", text: /Bestellung auslösen/

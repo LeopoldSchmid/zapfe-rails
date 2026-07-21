@@ -9,13 +9,15 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.5
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+ARG RUBY_IMAGE_DIGEST=sha256:80f389b6222196d76915f754158e0d92dc0c3d96f755bff7af1e360bb2f1a768
+FROM docker.io/library/ruby:$RUBY_VERSION-slim@$RUBY_IMAGE_DIGEST AS base
 
 # Rails app lives here
 WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
+    apt-get upgrade -y && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
@@ -60,6 +62,9 @@ RUN SECRET_KEY_BASE_DUMMY=1 RESEND_API_KEY=dummy ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+LABEL org.opencontainers.image.source="https://github.com/leopoldschmid/zapfe-rails" \
+      org.opencontainers.image.title="zapfe-rails"
+
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
@@ -69,9 +74,10 @@ USER 1000:1000
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
 
-# Entrypoint prepares the database.
+# Entrypoint refuses web boot when migrations are pending. Database changes are
+# applied by the explicit release procedure in documentation/deployment.md.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Kamal Proxy terminates TLS and forwards directly to Puma.
+EXPOSE 3000
+CMD ["./bin/rails", "server"]

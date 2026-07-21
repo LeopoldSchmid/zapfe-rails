@@ -13,6 +13,7 @@ class Admin::InquiriesController < Admin::BaseController
     @inquiries = @inquiries.where(assigned_admin_user_id: nil) if filters["unassigned"] == "1"
     @inquiries = @inquiries.where(next_step_due_on: ..Date.current) if filters["due"] == "overdue"
     @inquiries = @inquiries.where(next_step_due_on: Date.current..7.days.from_now.to_date) if filters["due"] == "next_7_days"
+    @inquiries = paginate(@inquiries)
     @admin_users = AdminUser.active.order(:name)
   end
 
@@ -98,7 +99,6 @@ class Admin::InquiriesController < Admin::BaseController
   end
 
   def attachments_valid?(attachments)
-    allowed_types = %w[application/pdf image/jpeg image/png image/webp]
-    attachments.all? { |attachment| attachment.size <= 25.megabytes && attachment.content_type.in?(allowed_types) }
+    attachments.all? { |attachment| AttachmentSafety.safe_upload?(attachment) }
   end
 end

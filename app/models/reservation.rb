@@ -1,5 +1,8 @@
 class Reservation < ApplicationRecord
+  include TransitionPolicy
+
   STATUSES = %w[requested reserved].freeze
+  allows_status_transitions("requested" => %w[reserved], "reserved" => %w[requested])
   belongs_to :resource
   belongs_to :order
   belongs_to :offer, optional: true
@@ -44,5 +47,4 @@ class Reservation < ApplicationRecord
 
     errors.add(:offer, "muss zum selben Auftrag gehören")
   end
-
 end

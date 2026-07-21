@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const playwrightPort = process.env.PLAYWRIGHT_PORT || "3200";
 const baseURL = `http://127.0.0.1:${playwrightPort}`;
+const playwrightDatabase = "sqlite3:storage/playwright.sqlite3";
 
 export default defineConfig({
   testDir: "./tests",
@@ -37,7 +38,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_SKIP_WEBSERVER
     ? undefined
     : {
-        command: `RAILS_ENV=test bin/rails db:prepare && RAILS_ENV=test bin/rails server -b 127.0.0.1 -p ${playwrightPort}`,
+        command: `DATABASE_URL=${playwrightDatabase} RAILS_ENV=test bin/rails db:prepare && DATABASE_URL=${playwrightDatabase} RAILS_ENV=test bin/rails runner 'user = AdminUser.find_or_initialize_by(email: "e2e-admin@example.com"); user.assign_attributes(name: "E2E Admin", password: "correct-horse-battery-staple", role: "owner", active: true, mfa_secret_ciphertext: nil, mfa_enabled_at: nil, mfa_last_used_at: nil, mfa_recovery_code_digests: []); user.save!' && DATABASE_URL=${playwrightDatabase} RAILS_ENV=test bin/rails server -b 127.0.0.1 -p ${playwrightPort}`,
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 45 * 1000

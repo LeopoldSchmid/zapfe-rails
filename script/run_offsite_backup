@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+umask 077
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  script/run_offsite_backup --source ABSOLUTE_DIR --archive-dir ABSOLUTE_DIR \
+    --age-recipient RECIPIENT --storage-host HOST --storage-user USER \
+    --ssh-key ABSOLUTE_PRIVATE_KEY --known-hosts ABSOLUTE_KNOWN_HOSTS \
+    --remote-prefix RELATIVE_PATH
+
+Creates a new encrypted archive and uploads it without deleting any backup.
+USAGE
+}
+
+die() {
+  printf 'run_offsite_backup: %s\n' "$*" >&2
+  exit 64
+}
+
+source_dir=""
+archive_dir=""
+age_recipient=""
+storage_host=""
+storage_user=""
+ssh_key=""
+known_hosts=""
+remote_prefix=""
+
+while (($#)); do
+  case "$1" in
+    --source) source_dir="${2:-}"; shift 2 ;;
+    --archive-dir) archive_dir="${2:-}"; shift 2 ;;
+    --age-recipient) age_recipient="${2:-}"; shift 2 ;;
+    --storage-host) storage_host="${2:-}"; shift 2 ;;
+    --storage-user) storage_user="${2:-}"; shift 2 ;;
+    --ssh-key) ssh_key="${2:-}"; shift 2 ;;
+    --known-hosts) known_hosts="${2:-}"; shift 2 ;;
+    --remote-prefix) remote_prefix="${2:-}"; shift 2 ;;
+    --help|-h) usage; exit 0 ;;
+    *) die "unknown argument: $1" ;;
+  esac
+done
+
+[[ -n "$source_dir" && -n "$archive_dir" && -n "$age_recipient" && -n "$storage_host" && -n "$storage_user" && -n "$ssh_key" && -n "$known_hosts" && -n "$remote_prefix" ]] || die "all arguments are required"
+[[ "$source_dir" = /* && "$archive_dir" = /* && "$ssh_key" = /* && "$known_hosts" = /* ]] || die "source, archive directory, ssh key and known hosts must be absolute paths"
+[[ -d "$source_dir" && ! -L "$source_dir" ]] || die "source must be a non-symlink directory"
+[[ "$remote_prefix" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]] || die "remote prefix contains unsupported characters"
+case "/$remote_prefix/" in */../*|*//*) die "remote prefix must not contain traversal or empty components" ;; esac
+
+script_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
+backup_script="${ZAPFE_BACKUP_SCRIPT:-$script_dir/backup_storage}"
+upload_script="${ZAPFE_UPLOAD_SCRIPT:-$script_dir/upload_offsite_backup}"
+[[ -x "$backup_script" && -x "$upload_script" ]] || die "backup and upload scripts must be executable"
+
+mkdir -p "$archive_dir"
+timestamp="$(date -u +%Y-%m-%dT%H%M%SZ)"
+date_prefix="${timestamp%%T*}"
+archive="$archive_dir/zapfe-storage-$timestamp.tar.gz.age"
+remote_path="$remote_prefix/$date_prefix/$(basename "$archive")"
+
+"$backup_script" --source "$source_dir" --output "$archive" --age-recipient "$age_recipient"
+"$upload_script" --archive "$archive" --host "$storage_host" --user "$storage_user" --ssh-key "$ssh_key" --known-hosts "$known_hosts" --remote-path "$remote_path"
+
+printf 'Offsite backup complete: %s -> %s:%s\n' "$archive" "$storage_host" "$remote_path"

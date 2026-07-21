@@ -1,5 +1,15 @@
 class Order < ApplicationRecord
+  include TransitionPolicy
+
   STATUSES = %w[preparing offered confirmed in_progress completed cancelled].freeze
+  allows_status_transitions(
+    "preparing" => %w[offered confirmed cancelled],
+    "offered" => %w[preparing confirmed cancelled],
+    "confirmed" => %w[in_progress cancelled],
+    "in_progress" => %w[confirmed completed cancelled],
+    "completed" => [],
+    "cancelled" => []
+  )
 
   belongs_to :inquiry, optional: true
   belongs_to :customer, optional: true
@@ -58,8 +68,7 @@ class Order < ApplicationRecord
 
   def attachments_are_safe
     attachments.each do |attachment|
-      errors.add(:attachments, "dürfen höchstens 25 MB groß sein") if attachment.byte_size > 25.megabytes
-      errors.add(:attachments, "müssen PDF- oder Bilddateien sein") unless attachment.content_type.in?(%w[application/pdf image/jpeg image/png image/webp])
+      AttachmentSafety.validate(self, attachment)
     end
   end
 end

@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+umask 077
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  script/backup_storage --source ABSOLUTE_DIR --output ABSOLUTE_FILE \
+    (--age-recipient RECIPIENT | --allow-plaintext)
+
+Creates a self-verifying snapshot of a Rails storage directory. Every SQLite
+database is copied with SQLite's online backup command and checked with
+PRAGMA integrity_check. Non-database files are copied into the same snapshot.
+
+Plaintext output is refused unless --allow-plaintext is explicit. For offsite
+storage, use --age-recipient and keep the age identity outside the application
+host. The script never uploads or deletes data.
+USAGE
+}
+
+die() {
+  printf 'backup_storage: %s\n' "$*" >&2
+  exit 64
+}
+
+source_dir=""
+output_file=""
+age_recipient=""
+allow_plaintext=false
+
+while (($#)); do
+  case "$1" in
+    --source) source_dir="${2:-}"; shift 2 ;;
+    --output) output_file="${2:-}"; shift 2 ;;
+    --age-recipient) age_recipient="${2:-}"; shift 2 ;;
+    --allow-plaintext) allow_plaintext=true; shift ;;
+    --help|-h) usage; exit 0 ;;
+    *) die "unknown argument: $1" ;;
+  esac
+done
+
+[[ -n "$source_dir" ]] || die "--source is required"
+[[ -n "$output_file" ]] || die "--output is required"
+[[ "$source_dir" = /* ]] || die "--source must be an absolute path"
+[[ "$output_file" = /* ]] || die "--output must be an absolute path"
+[[ -d "$source_dir" ]] || die "source directory does not exist: $source_dir"
+[[ ! -L "$source_dir" ]] || die "source directory must not be a symlink"
+
+source_dir="$(realpath "$source_dir")"
+output_parent="$(realpath -m "$(dirname "$output_file")")"
+output_file="$output_parent/$(basename "$output_file")"
+
+[[ "$source_dir" != "/" ]] || die "refusing to back up the filesystem root"
+case "$output_file" in
+  "$source_dir"/*) die "output must not be inside the source directory" ;;
+esac
+[[ ! -e "$output_file" ]] || die "output already exists: $output_file"
+mkdir -p "$output_parent"
+
+if [[ -n "$age_recipient" ]]; then
+  command -v age >/dev/null || die "age is required for --age-recipient"
+  $allow_plaintext && die "choose either --age-recipient or --allow-plaintext"
+else
+  $allow_plaintext || die "refusing plaintext backup without --allow-plaintext"
+fi
+
+for command_name in sqlite3 tar sha256sum find sort xargs; do
+  command -v "$command_name" >/dev/null || die "required command is missing: $command_name"
+done
+
+work_dir="$(mktemp -d "${TMPDIR:-/tmp}/zapfe-backup.XXXXXX")"
+trap 'rm -rf "$work_dir"' EXIT
+snapshot_dir="$work_dir/snapshot"
+payload_dir="$snapshot_dir/payload"
+mkdir -p "$payload_dir"
+
+# Copy files first, excluding live SQLite files and their transient journals.
+tar -C "$source_dir" \
+  --exclude='*.sqlite3' --exclude='*.sqlite3-wal' --exclude='*.sqlite3-shm' \
+  -cf - . | tar -C "$payload_dir" -xf -
+
+database_count=0
+while IFS= read -r -d '' database; do
+  relative_path="${database#"$source_dir"/}"
+  case "$relative_path" in
+    *\"*|*\'*) die "unsupported quote character in database path: $relative_path" ;;
+  esac
+
+  destination="$payload_dir/$relative_path"
+  mkdir -p "$(dirname "$destination")"
+  sqlite3 "$database" ".timeout 10000" ".backup \"$destination\""
+  integrity="$(sqlite3 "$destination" 'PRAGMA integrity_check;')"
+  [[ "$integrity" == "ok" ]] || die "integrity check failed for $relative_path: $integrity"
+  database_count=$((database_count + 1))
+done < <(find "$source_dir" -type f -name '*.sqlite3' -print0)
+
+((database_count > 0)) || die "no SQLite databases found below $source_dir"
+
+cat > "$snapshot_dir/FORMAT" <<EOF
+zapfe-storage-backup-v1
+created_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+sqlite_databases=$database_count
+EOF
+
+(
+  cd "$payload_dir"
+  find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum
+) > "$snapshot_dir/manifest.sha256"
+
+archive="$work_dir/zapfe-storage.tar.gz"
+tar -C "$snapshot_dir" -czf "$archive" FORMAT manifest.sha256 payload
+
+if [[ -n "$age_recipient" ]]; then
+  age --encrypt --recipient "$age_recipient" --output "$output_file" "$archive"
+else
+  cp "$archive" "$output_file"
+fi
+
+chmod 600 "$output_file"
+printf 'Backup created: %s (%d SQLite databases)\n' "$output_file" "$database_count"
+printf 'Verification command: script/restore_storage --archive %q --target /absolute/empty/restore/path' "$output_file"
+[[ -n "$age_recipient" ]] && printf ' --identity /path/to/age-identity'
+printf '\n'

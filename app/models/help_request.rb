@@ -13,8 +13,6 @@ class HelpRequest < ApplicationRecord
 
   def acceptable_screenshot
     return unless screenshot.attached?
-    return if screenshot.content_type.in?(%w[image/png image/jpeg image/webp])
-
-    errors.add(:screenshot, "muss ein PNG-, JPG- oder WebP-Bild sein")
+    AttachmentSafety.validate(self, screenshot, allowed_types: AttachmentSafety::IMAGE_TYPES, max_bytes: 10.megabytes)
   end
 end

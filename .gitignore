@@ -41,6 +41,7 @@
 
 /playwright-report/
 /test-results/
+/coverage/
 
 # Local Kamal deploy variables
 /.kamal/deploy.env

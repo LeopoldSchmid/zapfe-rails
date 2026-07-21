@@ -16,11 +16,11 @@
           ["Kontakt", contact_path]
         ] %>
         <% desktop_links.each do |label, path| %>
-          <%= link_to label, path, class: nav_link_classes(path) %>
+          <%= link_to label, path, class: nav_link_classes(path), aria: { current: ("page" if current_page?(path)) } %>
         <% end %>
       </nav>
 
-      <button class="site-header-icon-button text-[var(--color-zapfe-navy)] md:hidden" data-action="mobile-menu#toggle" aria-label="Menü öffnen">
+      <button type="button" class="site-header-icon-button text-[var(--color-zapfe-navy)] md:hidden" data-mobile-menu-target="toggle" data-action="mobile-menu#toggle" aria-label="Menü öffnen" aria-controls="public-mobile-navigation" aria-expanded="false">
         <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <path d="M4 7h16M4 12h16M4 17h16" />
         </svg>
@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="site-header-panel fixed inset-0 top-14 z-[80] hidden px-8 py-10 md:hidden" data-mobile-menu-target="panel">
+  <div id="public-mobile-navigation" class="site-header-panel fixed inset-0 top-14 z-[80] hidden px-8 py-10 md:hidden" data-mobile-menu-target="panel">
     <div class="mb-10 flex justify-end">
       <button class="site-header-icon-button text-[var(--color-zapfe-navy)]" data-action="mobile-menu#close" aria-label="Menü schließen">
         <svg viewBox="0 0 24 24" class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -46,7 +46,7 @@
         ["Kontakt", contact_path, "M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5zm0 .5 8 5 8-5"]
       ] %>
       <% mobile_links.each do |label, path, icon_path| %>
-        <%= link_to path, data: { action: "mobile-menu#close" }, class: nav_link_classes(path, base_classes: "flex items-center gap-3 text-3xl font-semibold") do %>
+        <%= link_to path, data: { action: "mobile-menu#close" }, class: nav_link_classes(path, base_classes: "flex items-center gap-3 text-3xl font-semibold"), aria: { current: ("page" if current_page?(path)) } do %>
           <svg viewBox="0 0 24 24" class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="<%= icon_path %>" />
           </svg>

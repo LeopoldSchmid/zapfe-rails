@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::SystemSettingsControllerTest < ActionDispatch::IntegrationTest
   setup do
     admin = admin_users(:one)
-    post admin_login_url, params: { email: admin.email, password: "password123" }
+    sign_in_admin(admin)
   end
 
   test "updates tax and internal hourly cost defaults" do

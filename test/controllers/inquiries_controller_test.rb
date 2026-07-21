@@ -33,6 +33,27 @@ class InquiriesControllerTest < ActionDispatch::IntegrationTest
     assert_match "Vielen Dank", response.body
   end
 
+  test "accepts a minimized contact inquiry without telephone or discarded company field" do
+    assert_difference("Inquiry.count", 1) do
+      post inquiries_url, params: {
+        inquiry: inquiry_params(
+          source: "contact",
+          first_name: "Minima",
+          last_name: "Daten",
+          email: "minima@example.com",
+          phone: "",
+          company: "must-not-be-stored",
+          privacy_accepted: "1"
+        )
+      }
+    end
+
+    inquiry = Inquiry.order(:created_at).last
+    assert_nil inquiry.phone
+    assert_equal Inquiry::PRIVACY_NOTICE_VERSION, inquiry.privacy_notice_version
+    assert inquiry.privacy_notice_acknowledged_at.present?
+  end
+
   test "creates calculator inquiry with pricing fields and enqueues both emails" do
     assert_difference("Inquiry.count", 1) do
       assert_enqueued_emails 2 do

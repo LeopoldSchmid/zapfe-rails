@@ -41,15 +41,16 @@
   </head>
 
   <body class="bg-slate-50 text-slate-900" data-controller="page-transition">
+    <a href="#page-content" class="fixed left-4 top-[-5rem] z-[100] rounded-lg bg-white px-4 py-3 font-semibold text-slate-900 shadow focus:top-4">Zum Inhalt springen</a>
     <div id="site-header">
       <%= render "shared/navbar" %>
     </div>
 
-    <main id="page-content" class="<%= main_container_classes %>">
+    <main id="page-content" tabindex="-1" class="<%= main_container_classes %>">
       <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <% flash.each do |type, message| %>
           <% tone = type.to_s == "alert" ? "bg-red-100 text-red-800" : "bg-emerald-100 text-emerald-800" %>
-          <div class="mt-4 rounded-lg px-4 py-3 text-sm <%= tone %>"><%= message %></div>
+          <div class="mt-4 rounded-lg px-4 py-3 text-sm <%= tone %>" role="<%= type.to_s == "alert" ? "alert" : "status" %>" aria-live="<%= type.to_s == "alert" ? "assertive" : "polite" %>"><%= message %></div>
         <% end %>
       </div>
       <%= yield %>

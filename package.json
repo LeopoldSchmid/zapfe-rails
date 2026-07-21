@@ -1,6 +1,7 @@
 {
   "private": true,
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@playwright/test": "^1.50.1",
     "@types/node": "^22.13.8"
   },

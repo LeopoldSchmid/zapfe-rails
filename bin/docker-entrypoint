@@ -1,8 +1,9 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
+# Web boots must never mutate the database. Migrations are an explicit release
+# step so an incompatible or failed migration cannot be hidden in a restart.
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+  ./bin/rails db:abort_if_pending_migrations
 fi
 
 exec "${@}"

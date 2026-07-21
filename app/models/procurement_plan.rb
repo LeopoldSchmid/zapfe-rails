@@ -1,5 +1,13 @@
 class ProcurementPlan < ApplicationRecord
+  include TransitionPolicy
+
   STATUSES = %w[planned requested confirmed done].freeze
+  allows_status_transitions(
+    "planned" => %w[requested confirmed],
+    "requested" => %w[planned confirmed],
+    "confirmed" => %w[requested done],
+    "done" => %w[confirmed]
+  )
 
   belongs_to :order
   belongs_to :offer, optional: true
@@ -26,8 +34,7 @@ class ProcurementPlan < ApplicationRecord
 
   def attachments_are_safe
     attachments.each do |attachment|
-      errors.add(:attachments, "dürfen höchstens 25 MB groß sein") if attachment.byte_size > 25.megabytes
-      errors.add(:attachments, "müssen PDF- oder Bilddateien sein") unless attachment.content_type.in?(%w[application/pdf image/jpeg image/png image/webp])
+      AttachmentSafety.validate(self, attachment)
     end
   end
 end

@@ -1,6 +1,6 @@
 Hallo <%= @invoice.recipient_name %>,
 
-anbei erhalten Sie die Rechnung <%= @invoice.invoice_number %> zu Ihrem Auftrag bei Zapfe.
+anbei erhalten Sie die <%= @invoice.invoice_type == "credit_note" ? "Stornorechnung" : "Rechnung" %> <%= @invoice.invoice_number %> zu Ihrem Auftrag bei Zapfe als PDF und als strukturierte XRechnung.
 
 Freundliche Grüße
 Ihr Zapfe-Team
