@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+
+die() { printf 'prune_offsite_backups: %s\n' "$*" >&2; exit 64; }
+usage() { echo 'Usage: script/prune_offsite_backups --host HOST --user USER --ssh-key ABSOLUTE_KEY --known-hosts ABSOLUTE_KNOWN_HOSTS --remote-prefix PATH --keep-days DAYS [--apply]'; }
+
+host="" user="" ssh_key="" known_hosts="" remote_prefix="" keep_days="" apply=false
+while (($#)); do
+  case "$1" in
+    --host) host="${2:-}"; shift 2 ;; --user) user="${2:-}"; shift 2 ;;
+    --ssh-key) ssh_key="${2:-}"; shift 2 ;; --known-hosts) known_hosts="${2:-}"; shift 2 ;;
+    --remote-prefix) remote_prefix="${2:-}"; shift 2 ;; --keep-days) keep_days="${2:-}"; shift 2 ;;
+    --apply) apply=true; shift ;; --help|-h) usage; exit 0 ;; *) die "unknown argument: $1" ;;
+  esac
+done
+[[ -n "$host" && -n "$user" && -n "$ssh_key" && -n "$known_hosts" && -n "$remote_prefix" && -n "$keep_days" ]] || die 'all arguments are required'
+[[ "$ssh_key" = /* && "$known_hosts" = /* ]] || die 'ssh key and known hosts must be absolute paths'
+[[ "$host" =~ ^u[0-9]+(-[A-Za-z0-9._-]+)?\.your-storagebox\.de$ ]] || die 'host must be a Hetzner Storage Box hostname'
+[[ "$user" =~ ^u[0-9]+(-[A-Za-z0-9._-]+)?$ ]] || die 'user must be a Storage Box user'
+[[ "$remote_prefix" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]] || die 'remote prefix contains unsupported characters'
+case "/$remote_prefix/" in */../*|*//*) die 'remote prefix must not contain traversal or empty components' ;; esac
+[[ "$keep_days" =~ ^[0-9]+$ ]] && ((keep_days >= 1 && keep_days <= 366)) || die 'keep days must be between 1 and 366'
+[[ -f "$ssh_key" && ! -L "$ssh_key" && -f "$known_hosts" && ! -L "$known_hosts" ]] || die 'ssh key and known hosts must be regular files'
+key_mode="$(stat -c '%a' "$ssh_key")"; (( (8#$key_mode & 077) == 0 )) || die 'ssh key must not be readable by group or others'
+command -v ssh >/dev/null && command -v date >/dev/null || die 'ssh and date are required'
+
+today="${PRUNE_TODAY_UTC:-$(date -u +%F)}"
+[[ "$today" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$(date -u -d "$today" +%F 2>/dev/null)" == "$today" ]] || die 'PRUNE_TODAY_UTC must be a valid UTC date'
+cutoff="$(date -u -d "$today - $((keep_days - 1)) days" +%F)"
+opts=(-p 23 -i "$ssh_key" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$known_hosts")
+remote="$user@$host"
+days="$(ssh "${opts[@]}" "$remote" "ls -1 '$remote_prefix'")"
+
+while IFS= read -r day; do
+  [[ -n "$day" ]] || continue
+  [[ "$day" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { printf 'Skipping non-date directory: %s\n' "$day"; continue; }
+  [[ "$(date -u -d "$day" +%F 2>/dev/null)" == "$day" ]] || { printf 'Skipping invalid date directory: %s\n' "$day"; continue; }
+  [[ "$day" < "$cutoff" ]] || continue
+  directory="$remote_prefix/$day"
+  files="$(ssh "${opts[@]}" "$remote" "ls -1 '$directory'")"
+  [[ -n "$files" ]] || die "refusing empty backup directory: $directory"
+  while IFS= read -r file; do
+    [[ "$file" == *.tar.gz.age ]] || die "refusing $directory because it contains non-backup file: $file"
+    [[ "$(ssh "${opts[@]}" "$remote" "stat -c %F '$directory/$file'")" == regular* ]] || die "refusing non-regular backup entry: $directory/$file"
+  done <<< "$files"
+  if "$apply"; then
+    while IFS= read -r file; do ssh "${opts[@]}" "$remote" "rm '$directory/$file'"; done <<< "$files"
+    ssh "${opts[@]}" "$remote" "rmdir '$directory'"
+    printf 'Deleted expired backup directory: %s\n' "$directory"
+  else
+    printf 'Would delete expired backup directory: %s\n' "$directory"
+  fi
+done <<< "$days"
+printf 'Retention check complete: keeping daily directories from %s through %s.\n' "$cutoff" "$today"

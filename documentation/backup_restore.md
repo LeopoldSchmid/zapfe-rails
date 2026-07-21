@@ -76,9 +76,15 @@ Owner und der erfolgreiche echte Restore bleiben Betreiberfreigaben.
 Der beschlossene Startwert ist täglich 03:30 Uhr `Europe/Berlin`, RPO 24 Stunden und RTO vier
 Stunden. `script/run_offsite_backup` erstellt dafür einen eindeutigen
 UTC-Zeitstempel und ruft erst `backup_storage`, dann `upload_offsite_backup`
-auf. Bis der getrennt zu testende Löschpfad vorliegt, werden keine alten Sätze
-automatisch gelöscht; die beschlossene Aufbewahrung von 30 täglichen Sätzen ist
-deshalb als Zielwert, nicht als bereits aktive Löschautomatik zu behandeln.
+auf. Der getrennte Löschpfad wurde am 21.07.2026 auf einem temporären
+Storage-Box-Pfad erfolgreich getestet und ist als eigener Systemd-Timer täglich
+um 03:50 Uhr `Europe/Berlin` aktiv. Er hält 30 UTC-Tagesordner vor und löscht
+nur verifizierte verschlüsselte Archivdateien aus abgelaufenen Tagesordnern.
+
+`script/prune_offsite_backups` prüft die 30-tägige Aufbewahrung zunächst nur
+als Vorschau. Mit `--apply` entfernt es ausschließlich geprüfte, ganze
+UTC-Tagesordner mit verschlüsselten `.tar.gz.age`-Archiven; bei unbekannten
+Dateien, Symlinks oder Unterordnern bricht es ab.
 
 Auf dem Produktionshost ist der Systemd-Timer `zapfe-offsite-backup.timer`
 aktiviert. Er läuft täglich um 03:30 Uhr `Europe/Berlin` mit bis zu fünf Minuten
