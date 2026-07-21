@@ -40,7 +40,7 @@ Mitarbeiterdaten, Dokumente sowie Push-Endpunkte.
 | PWA/Push | Admin-PWA, bewusst kein Cache für authentifiziertes HTML, Web Push | `app/views/pwa/service_worker.js.erb:1-49`, `app/javascript/controllers/push_controller.js:1-82` |
 | Analytics | optionales Umami-Script im öffentlichen Layout | `app/views/layouts/application.html.erb:38`, `app/helpers/application_helper.rb:272-290`, `config/deploy.yml:27-35` |
 | Deployment | Docker/Kamal auf Hetzner-IP, TLS über Proxy, persistentes Storage-Volume | `Dockerfile:1-77`, `config/deploy.yml:1-54` |
-| Monitoring | Rails-Healthcheck und token-geschützter Inquiry/Mailer-Synthetic-Check | `config/routes.rb:17,108`, `app/controllers/monitoring_controller.rb:1-38`, `documentation/monitoring.md` |
+| Monitoring | Rails-Healthcheck und token-geschützter Inquiry/Mailer-Synthetic-Check | `config/routes.rb:17,108`, `app/controllers/monitoring_controller.rb:1-38`, `documentation/archive/monitoring.md` |
 
 ## Zentrale Datenflüsse
 
@@ -165,4 +165,3 @@ Resend-Verträge/Regionen, AV-Verträge, tatsächliche Nutzerprozesse,
 Verzeichnis der Verarbeitungstätigkeiten, TOMs, Incident-Prozess und die
 Richtigkeit der Betreiberangaben. Diese Punkte werden als offene Betreiberfragen
 behandelt und nicht stillschweigend als erfüllt angenommen.
-

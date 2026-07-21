@@ -151,7 +151,7 @@
 - Auswirkung: Token kann in Proxy-/Uptime-/Browser-Logs, Exporten, Verlauf oder
   Referer-Daten landen; ein Besitzer kann den internen Synthetic-Check auslösen.
 - Evidenz: `/monitoring/inquiry_flow?token=...`
-  (`documentation/monitoring.md:29-42`,
+  (`documentation/archive/monitoring.md:29-42`,
   `app/controllers/monitoring_controller.rb:31-36`). Secure Compare und
   Blank-Secret-Fail-Closed sind positiv.
 - Empfehlung: Token in `Authorization: Bearer` oder einem dedizierten Header
@@ -272,4 +272,3 @@ eigentliche Scan musste über `bundle exec brakeman` ausgeführt werden. Das ist
 fail-closed, aber der lokale/CI-Gate ist aktuell rot und liefert ohne Umgehung
 keine Analyse. Nach dem Dependency-Update muss der normale `bin/brakeman`-Pfad
 wieder vollständig grün laufen.
-

@@ -1,0 +1,313 @@
+version: 2
+
+goal:
+  title: "Zapfe! Website-Relaunch vollständig umsetzen"
+  slug: "website-relaunch"
+  kind: existing_plan
+  tranche: "Kontinuierliche vollständige lokale Umsetzung der verbindlichen Website-Strategie bis zum finalen Browser- und Testnachweis."
+  status: active
+  oracle:
+    signal: "Responsiver Browser-Walkthrough aller kanonischen Seiten und Kernflows auf 390, 768 und 1440 Pixeln in Chromium plus WebKit-Kernflow, vollständiger Tastatur-Walkthrough, keine kritischen oder schwerwiegenden Accessibility-Befunde, konkrete Briefings für alle verbleibenden Bildplatzhalter und grüne Rails-, System-, Playwright-, Lint-, Security- und Asset-Gates."
+    cadence: "Nach jedem zusammenhängenden Implementierungspaket und beim finalen Audit."
+    final_proof: "Receipt-basiertes Mapping aller Anforderungen aus documentation/website_strategy_2026-07-21.md auf implementierte Seiten/Tests; finaler Chromium-/WebKit-Walkthrough ohne Layoutbruch oder Konsolenfehler; keine kritischen oder schwerwiegenden axe-Befunde; Tastaturprüfung; Screenshotprüfung; Platzhalterinventar mit konkretem Bildbriefing; exakte Verifikationsbefehle grün; full_outcome_complete: true."
+  intake:
+    original_request: "Ein Goal formulieren und anschließend vollständig umsetzen, das die besprochene grundlegende Neukonzeption der Zapfe!-Website realisiert."
+    interpreted_outcome: "Eine vollständig neu strukturierte, eigenständige, responsive und lokal produktionsreife Zapfe!-Website mit Standortfokus, starkem Eventbereich und funktionierenden Anfrage-, Getränke- und Preisorientierungsflows."
+    input_shape: existing_plan
+    audience: "Betreiber regelmäßiger Ausschankorte und Veranstalter"
+    authority: requested
+    proof_type: demo
+    completion_proof: "Alle Strategieanforderungen sind implementiert und durch responsive Browser-Walkthroughs sowie grüne automatisierte Qualitätsgates belegt."
+    likely_misfire: "Nur die Startseite optisch erneuern oder generische Marketingkarten bauen, ohne Informationsarchitektur, Leistungsgrenzen, Preise, Formulare, SEO, Accessibility und bestehende Datenflows vollständig zu integrieren."
+    blind_spots_considered:
+      - "Referenz-, Logo-, Zitat- und Fotofreigaben fehlen teilweise."
+      - "Finale Kegerator- und Teamfotos fehlen möglicherweise."
+      - "Boltbar-/Merchant-of-Record- und Revenue-Share-Verträge sind nicht final geklärt."
+      - "Getränkedaten werden zugleich öffentlich und im Backoffice verwendet."
+      - "Bestehende URLs, Canonicals und Sitemap dürfen keinen SEO-Bruch erzeugen."
+      - "Der Dirty Worktree enthält bereits Nutzer- und Hardening-Änderungen."
+      - "Produktion darf nicht ohne separate Freigabe deployed werden."
+      - "Fehlende reale Bilder dürfen als bewusst gestaltete Platzhalter verbleiben, benötigen aber ein konkretes Bildbriefing."
+    existing_plan_facts:
+      - "documentation/website_strategy_2026-07-21.md ist verbindlich."
+      - "Voice, Content Guide und Design Language bleiben verbindlich."
+      - "Feste Standorte werden strategisch priorisiert; Veranstaltungen bleiben ein vollständiger Angebotsweg."
+      - "Kegerator, Ape und individuelle Einbauten sind Formfaktoren desselben Systems."
+      - "Host- und Bezahl-Modus werden je Bedarf erklärt."
+      - "Standortmodell: Pilot, Miete oder Kauf; täglicher Betrieb beim Betreiber; Zapfe! plant, installiert, weist ein und supportet technisch."
+      - "Eventgrundpreis 300 EUR inklusive Mehrwertsteuer und inklusive Lieferung, Aufbau, Einweisung, Abbau und Reinigung in Freiburg und Umgebung."
+      - "Revenue-Share wird ohne Prozentzahl genannt."
+      - "Getränkesuche bleibt; Getränkepreise werden inklusive Mehrwertsteuer ausgewiesen."
+      - "Logo und Kernfarben bleiben; übriges Frontend und UX dürfen grundlegend neu gestaltet werden."
+      - "Jeder verbleibende Bildplatzhalter dokumentiert Motiv, Aussage, Bildaufbau, Format, Zuschnitt, Freigabe und vorgesehenen Dateipfad."
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+  slice_policy:
+    max_consecutive_tiny_tasks: 2
+    prefer_vertical_slices: true
+    judge_picks_largest_safe_slice: true
+    worker_completes_whole_slice: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+visual_board:
+  selected: none
+  local:
+    status: not_requested
+    url: null
+    command: "node /home/leo/.codex/plugins/cache/goalbuddy/goalbuddy/0.4.1/skills/goal-prep/surfaces/local-goal-board/scripts/local-goal-board.mjs --goal docs/goals/website-relaunch"
+
+active_task: T001
+
+tasks:
+  - id: T001
+    type: pm
+    assignee: PM
+    status: active
+    reasoning_hint: high
+    objective: "Die verbindliche Website-Strategie gegen aktuellen Code, Inhalte, Assets, Datenflüsse und Routen validieren und daraus eine genaue Umsetzungsmatrix ohne neue Grundsatzdiskussion erstellen."
+    inputs:
+      - "AGENTS.md"
+      - "documentation/README.md"
+      - "documentation/website_strategy_2026-07-21.md"
+      - "documentation/voice_and_tone.md"
+      - "documentation/frontend_content_guide_2026-02-27.md"
+      - "documentation/design_language_2026-03-17.md"
+      - "Öffentliche Routes, Views, Helpers, Stimulus-Controller, Styles, Modelle, Tests und Assets"
+    constraints:
+      - "Read-only; nur Goal-Dateien dürfen für Receipt und Boardstatus geändert werden."
+      - "frontend-design-Skill vor der Designanalyse vollständig lesen."
+      - "Keine archivierte Dokumentation als aktuelle Vorgabe verwenden."
+      - "Keine Subagents starten."
+      - "Vorhandene Entscheidungen bewahren; nur echte Widersprüche oder Sicherheitsrisiken eskalieren."
+    expected_output:
+      - "Anforderungs-zu-Datei-Matrix"
+      - "Routen- und Redirect-Plan"
+      - "Bestandsaufnahme verwendbarer und fehlender Assets"
+      - "Formular-, Preis-, SEO- und Analytics-Änderungsmatrix"
+      - "Verifikationsbaseline und festgestellte Vorabfehler"
+      - "Exakte ausführbare Abschlussbefehle einschließlich Chromium- und WebKit-Smoke; danach Eintrag unter checks.required_verification"
+      - "Bestätigung oder sichere Anpassung der folgenden PM-Pakete"
+    receipt: null
+
+  - id: T002
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: high
+    objective: "Das neue öffentliche Fundament vollständig umsetzen: kanonische Routen und Redirects, Navigation, Footer, Metadatenbasis, gemeinsame responsive Designsystem-Erweiterungen und wiederverwendbare Inhaltsbausteine."
+    inputs:
+      - "T001 receipt"
+      - "Verbindliche Website-Dokumente"
+    constraints:
+      - "Bestehende Legal-, Admin- und Backoffice-Routen nicht brechen."
+      - "Keine externe Frontend-Laufzeitabhängigkeit ohne zwingenden nachgewiesenen Bedarf."
+      - "Bestehende Marke bewahren und zugleich eine eigenständige hochwertige visuelle Richtung umsetzen."
+      - "Keine Subagents starten."
+    expected_output:
+      - "Funktionierender öffentlicher Seitenshell"
+      - "Kurze strategiekonforme Hauptnavigation"
+      - "SEO-sichere Route-/Redirect-Grundlage"
+      - "Responsive, barrierearme gemeinsame Komponenten"
+      - "Gezielte Tests für Navigation, Routen und Metadaten"
+    receipt: null
+
+  - id: T003
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: high
+    objective: "Die Startseite und den vollständigen Standort-Flow einschließlich eigener Standortseite, Formfaktoren, Pilot-/Miet-/Kauflogik, Betriebsverantwortung, Supportgrenzen und kurzem Standortformular implementieren."
+    inputs:
+      - "T001-T002 receipts"
+      - "Website-Strategie: Startseite und Für Standorte"
+    constraints:
+      - "Feste Standorte visuell und inhaltlich priorisieren."
+      - "Ape und Kegerator als Formfaktoren desselben Systems darstellen."
+      - "Keine festen Standortpreise oder Servicegarantien erfinden."
+      - "Inquiry-Daten nur minimal und datenschutzgerecht erweitern."
+      - "Keine Subagents starten."
+    expected_output:
+      - "Neue vollständige Startseite"
+      - "Neue vollständige Standortseite"
+      - "Funktionierendes kurzes Standortformular mit Mail-/Admin-Nachvollziehbarkeit"
+      - "Responsive und Request-/Browser-Tests des Flows"
+    receipt: null
+
+  - id: T004
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: high
+    objective: "Den vollständigen Veranstaltungs-Flow einschließlich Veranstaltungsseite, Leistungsumfang, 300-EUR-Preisorientierung, Gastgeber-/Bezahl-Modus und Eventanfrage neu umsetzen."
+    inputs:
+      - "T001-T003 receipts"
+      - "Website-Strategie: Für Veranstaltungen"
+    constraints:
+      - "Alle öffentlichen Preise inklusive gesetzlicher Mehrwertsteuer kennzeichnen."
+      - "300 EUR gelten für Freiburg und Umgebung; weitere Entfernungen auf Anfrage."
+      - "Keine Revenue-Share-Prozentzahl veröffentlichen."
+      - "Bestehende Eventanfragedaten und Mail-/Admin-Nachvollziehbarkeit nicht verlieren."
+      - "Keine Subagents starten."
+    expected_output:
+      - "Neue vollständige Veranstaltungsseite"
+      - "Funktionierende Eventanfrage"
+      - "Korrekte Preis-, Leistungs- und Revenue-Share-Kommunikation"
+      - "Request- und responsive Browsertests des Eventflows"
+    receipt: null
+
+  - id: T005
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: high
+    objective: "Die vorhandene Getränkesuche und den Event-Preisrechner als eigenen kritischen Flow korrekt in die neue Website integrieren, inklusive 300-EUR-Grundpreis, vollständiger Mehrwertsteuerkennzeichnung und Regressionsschutz für gemeinsame Backoffice-Daten."
+    inputs:
+      - "T001-T004 receipts"
+      - "Website-Strategie: Getränke und Event-Preisrechner"
+    constraints:
+      - "Getränke- und Backoffice-Datenbasis bewahren."
+      - "Alle öffentlich angezeigten Miet- und Getränkepreise inklusive gesetzlicher Mehrwertsteuer kennzeichnen."
+      - "Keine Revenue-Share-Prozentzahl veröffentlichen."
+      - "Bestehende Anfrage- und Kalkulationsdaten nicht verlieren."
+      - "Keine Subagents starten."
+    expected_output:
+      - "Erhaltene und neu eingeordnete Getränkesuche"
+      - "Vereinfachter, klar eingebundener Preisrechner"
+      - "Korrekte Preis-, VAT- und Ergebnisdarstellung"
+      - "Einfacher Übergang vom Rechner zur Eventanfrage"
+      - "Preis-, Daten-, Request- und Browser-Regressionstests"
+    receipt: null
+
+  - id: T006
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: high
+    objective: "Die ergänzenden Vertrauens- und Erklärseiten vollständig umsetzen: So funktioniert Zapfe!, Im Einsatz, Teamdarstellung und Kontaktführung mit sicheren anonymisierten Inhalten, bewussten Bildplatzhaltern und konkreten Bildbriefings."
+    inputs:
+      - "T001-T005 receipts"
+      - "Website-Strategie: So funktioniert, Im Einsatz, Team und Vertrauen"
+    constraints:
+      - "Keine nicht freigegebenen Namen, Logos, Zitate oder identifizierbaren Gästefotos."
+      - "Keine Boltbar-/Stripe-/Merchant-of-Record-Spekulation in Marketingtexten."
+      - "Team ohne künstliche Einzelzuständigkeiten darstellen."
+      - "Zentraler Kontakt über info@zapfe.jetzt."
+      - "Platzhalter bewusst gestalten und für jeden ein vollständiges Bildbriefing dokumentieren."
+      - "Keine Subagents starten."
+    expected_output:
+      - "Vollständige Funktionsseite"
+      - "Vollständige Einsatzseite mit austauschbarer Proof-Struktur"
+      - "Strategiekonforme Team- und Kontaktblöcke"
+      - "Platzhalterinventar mit konkreten Bildbriefings"
+      - "Navigation, Sitemap, interne Links sowie Request- und Browsertests"
+    receipt: null
+
+  - id: T007
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: xhigh
+    objective: "Den gesamten Relaunch visuell und technisch auf Produktionsniveau härten: responsive Feinschliff, Accessibility, Motion, Performance, Assets, SEO, strukturierte Daten, Umami-Ereignisse und robuste Fehlerzustände."
+    inputs:
+      - "T001-T006 receipts"
+      - "Alle neuen öffentlichen Seiten und Flows"
+    constraints:
+      - "Keine wichtigen Informationen nur über Animation, Video oder Hover vermitteln."
+      - "prefers-reduced-motion respektieren."
+      - "Tracking datenschutzarm und ohne direkte PII."
+      - "Keine nicht freigegebenen externen Assets einbauen."
+      - "Automatisierte axe-Prüfungen dürfen keine kritischen oder schwerwiegenden Befunde enthalten."
+      - "Navigation, CTAs und Formulare vollständig per Tastatur prüfen."
+      - "Chromium auf 390, 768 und 1440 Pixeln sowie einen WebKit-Kernflow prüfen."
+      - "Keine Subagents starten."
+    expected_output:
+      - "Polierte Darstellungen auf 390, 768 und 1440 Pixeln"
+      - "Chromium-Screenshots aller kanonischen Seiten und WebKit-Kernflow"
+      - "Keine kritischen oder schwerwiegenden axe-Befunde oder Tastaturblocker"
+      - "Optimierte lokale Assets und stabile Ladezustände"
+      - "Korrekte Canonicals, OpenGraph-Daten, strukturierte Daten, Redirects und Sitemap"
+      - "Umami-Ereignisse für die vereinbarten Kernwege"
+    receipt: null
+
+  - id: T008
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: xhigh
+    objective: "Einen vollständigen Completion Sweep gegen Strategie und Oracle durchführen, alle lokal sicher behebbaren Lücken unmittelbar schließen und sämtliche Qualitätsgates erneut ausführen."
+    inputs:
+      - "Alle vorherigen Receipts"
+      - "Aktueller Diff"
+      - "Website-Strategie und verpflichtende Guides"
+    constraints:
+      - "Nicht bei ersten grünen Tests stoppen; jede Strategieforderung explizit nachweisen."
+      - "Keine Produktion deployen."
+      - "Externe Freigabegates separat und präzise dokumentieren."
+      - "Platzhalter sind zulässig, aber kein Platzhalter ohne vollständiges Bildbriefing."
+      - "Keine Subagents starten."
+    expected_output:
+      - "Anforderungs-Mapping mit erfüllt/nicht erfüllt"
+      - "Browser-Walkthrough auf allen Zielbreiten und WebKit-Kernflow"
+      - "Accessibility-, Tastatur-, Konsolen-, Formular-, SEO- und Performanceprüfung"
+      - "Grüne vollständige relevante Test- und Build-Gates"
+      - "Finales Platzhalterinventar mit Motiv, Aussage, Bildaufbau, Format, Zuschnitt, Freigabe und Dateipfad"
+      - "Liste ausschließlich externer beziehungsweise nicht autorisierter Restpunkte"
+    receipt: null
+
+  - id: T999
+    type: pm
+    assignee: PM
+    status: queued
+    reasoning_hint: xhigh
+    objective: "Final entscheiden, ob der vollständige lokale Website-Relaunch das ursprüngliche Nutzerziel und den Goal-Oracle erfüllt."
+    inputs:
+      - "Alle Task-Receipts"
+      - "Finaler Test- und Browsernachweis"
+      - "Aktueller Diff und Strategie-Mapping"
+    constraints:
+      - "Completion ablehnen, solange erforderliche lokale Arbeit queued, active oder sicher behebbar ist."
+      - "Completion ablehnen, wenn nur Planung, Teilseiten oder schwache visuelle Stichproben vorliegen."
+      - "Produktionsdeployment und externe Freigaben nicht fälschlich als lokale Implementierungslücke behandeln."
+      - "Keine Subagents starten."
+    expected_output:
+      - "complete oder not_complete"
+      - "full_outcome_complete: true oder false"
+      - "Mapping des finalen Nachweises zum ursprünglichen Outcome"
+      - "Verbleibende externe Freigaben, falls vorhanden"
+    receipt: null
+
+checks:
+  dirty_fingerprint: unknown
+  required_verification:
+    status: "T001 muss Ausführbarkeit und Baseline prüfen und diese Liste bei Bedarf präzisieren, ohne Qualitätsumfang zu reduzieren."
+    commands:
+      - "git diff --check"
+      - "bin/rails test"
+      - "bin/rails test test/system"
+      - "bin/rubocop"
+      - "bin/brakeman --no-pager"
+      - "SECRET_KEY_BASE_DUMMY=1 bin/rails assets:precompile"
+      - "npx playwright test --project=chromium"
+      - "npx playwright test --project=webkit"
+  last_verification:
+    result: unknown
+    task: null
+    commands: []
