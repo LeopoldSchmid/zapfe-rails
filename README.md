@@ -30,9 +30,12 @@ npx playwright test
 ```
 
 ## Admin Login
-Der erste Admin wird per Seed erzeugt:
+Die drei internen Konten werden per Seed erzeugt. Passwörter nur über die Umgebung setzen:
 ```bash
-ADMIN_EMAIL=ape2tap.blackforest@gmail.com ADMIN_PASSWORD=change-me-now bin/rails db:seed
+LEOPOLD_ADMIN_PASSWORD='...' \
+DENNIS_ADMIN_PASSWORD='...' \
+JOHANNES_ADMIN_PASSWORD='...' \
+bin/rails db:seed
 ```
 
 Dann Login unter:

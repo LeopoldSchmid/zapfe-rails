@@ -27,14 +27,6 @@ class AdminUserTest < ActiveSupport::TestCase
     assert_match(/leicht zu erraten/, user.errors[:password].to_sentence)
   end
 
-  test "does not expose the encrypted MFA secret at rest" do
-    user = AdminUser.create!(name: "MFA", email: "mfa@example.com", password: ADMIN_TEST_PASSWORD, password_confirmation: ADMIN_TEST_PASSWORD)
-    user.enable_mfa!(secret: ADMIN_TEST_MFA_SECRET, recovery_codes: AdminSecurity::RecoveryCodes.generate)
-
-    assert_not_includes user.mfa_secret_ciphertext, ADMIN_TEST_MFA_SECRET
-    assert_equal ADMIN_TEST_MFA_SECRET, user.mfa_secret
-  end
-
   test "keeps at least one active owner" do
     owner = AdminUser.create!(name: "Owner", email: "owner@example.com", password: ADMIN_TEST_PASSWORD, password_confirmation: ADMIN_TEST_PASSWORD, role: :owner)
     AdminUser.where.not(id: owner.id).update_all(active: false)

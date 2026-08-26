@@ -1,9 +1,0 @@
-<p class="proof-kicker">MFA aktiviert</p>
-<h1 class="mb-2 mt-2 text-2xl font-semibold text-slate-900">Wiederherstellungscodes sichern</h1>
-<p class="mb-5 text-sm text-slate-600">Jeder Code kann genau einmal verwendet werden. Speichere sie jetzt außerhalb dieses Geräts in einem Passwortmanager. Danach werden sie nicht erneut angezeigt.</p>
-
-<ul class="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-4 font-mono text-sm" aria-label="Wiederherstellungscodes">
-  <% @recovery_codes.each do |code| %><li><%= code %></li><% end %>
-</ul>
-
-<%= link_to "Codes sind sicher gespeichert", admin_root_path, class: "admin-cta mt-6 block w-full text-center" %>

@@ -1,21 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { createHmac } from "node:crypto";
 
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"];
-
-function totp(base32: string): string {
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  const bits = base32.replace(/=+$/, "").toUpperCase().split("")
-    .map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
-  const secret = Buffer.from((bits.match(/.{8}/g) || []).map((byte) => parseInt(byte, 2)));
-  const counter = Buffer.alloc(8);
-  counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 1000 / 30)));
-  const digest = createHmac("sha1", secret).update(counter).digest();
-  const offset = digest[digest.length - 1] & 0xf;
-  const code = (digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000;
-  return code.toString().padStart(6, "0");
-}
 
 async function expectNoWcagViolations(page: Page) {
   const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
@@ -28,11 +14,6 @@ async function signIn(page: Page) {
   await page.getByLabel("Passwort").fill("correct-horse-battery-staple");
   await page.getByRole("button", { name: /Anmelden/i }).click();
 
-  if (await page.getByRole("heading", { name: "MFA einrichten" }).isVisible()) {
-    const secret = (await page.locator("code").first().textContent())!.trim();
-    await page.getByLabel(/Sechsstelliger Code/i).fill(totp(secret));
-    await page.getByRole("button", { name: /MFA aktivieren/i }).click();
-  }
   await page.goto("/admin");
   await expect(page.getByRole("heading").first()).toBeVisible();
 }

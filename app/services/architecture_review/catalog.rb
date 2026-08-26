@@ -18,7 +18,7 @@ module ArchitectureReview
     TITLES = {
       "SEC-001" => "Verwundbare Runtime-Abhängigkeiten",
       "SEC-002" => "Admin ohne Rollen und Grenzen",
-      "SEC-003" => "Zu schwache Passwörter, keine MFA",
+      "SEC-003" => "Passwort-only-Adminzugang als bewusstes Risiko",
       "SEC-004" => "Alte Sessions bleiben gültig",
       "SEC-005" => "Passwort-Reset ohne Cooldown",
       "SEC-006" => "Uploads ohne zentrale Schutzpolicy",

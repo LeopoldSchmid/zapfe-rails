@@ -1,7 +1,10 @@
 # Produktionsreife: 60-Finding-Abschlussmatrix
 
-Stand: 17. Juli 2026. `TECHNISCH GESCHLOSSEN` bedeutet: lokal implementiert und
-durch den angegebenen Gate belegt. `EXTERNES NO-GO` bedeutet: alle sichere
+Stand: 24. August 2026. `TECHNISCH GESCHLOSSEN` bedeutet: lokal implementiert
+und durch den angegebenen Gate belegt. `BETRIEBLICHE AUSNAHME` bedeutet: Das
+Risiko ist bewusst akzeptiert, befristet dokumentiert und mit Gegenmaßnahmen
+versehen; es ist nicht als technische Gleichwertigkeit zu MFA oder VPN zu
+werten. `EXTERNES NO-GO` bedeutet: alle sichere
 lokale Vorarbeit ist vorhanden, aber ein realer Betreiber-, Provider-, Rechts-,
 Steuer- oder Infrastrukturnachweis fehlt. Ein externes NO-GO ist nicht erledigt
 und darf für eine Produktionsfreigabe nicht als grün gewertet werden.
@@ -12,7 +15,7 @@ und darf für eine Produktionsfreigabe nicht als grün gewertet werden.
 | --- | --- | --- |
 | SEC-001 | TECHNISCH GESCHLOSSEN | Bundler Audit ohne bekannte Advisories |
 | SEC-002 | TECHNISCH GESCHLOSSEN | Rollen-/Policy-Negativtests |
-| SEC-003 | TECHNISCH GESCHLOSSEN | Passwortstandard, TOTP-MFA, Recovery-Tests |
+| SEC-003 | BETRIEBLICHE AUSNAHME | Passwort-only für `/admin`; 16-Zeichen-Standard, persönliche Konten, Rate-Limits, Session-Widerruf und Review bis 24.11.2026; [Ausnahmeentscheidung](security_exception_admin_password_only_2026-08-24.md) |
 | SEC-004 | TECHNISCH GESCHLOSSEN | Sessionrotation und -widerruf getestet |
 | SEC-005 | TECHNISCH GESCHLOSSEN | Reset-Rate-Limits/Cooldowns getestet |
 | SEC-006 | TECHNISCH GESCHLOSSEN | zentrale Größen-, Typ- und Magic-Byte-Prüfung |
@@ -99,7 +102,8 @@ und darf für eine Produktionsfreigabe nicht als grün gewertet werden.
 ## Ergebnis
 
 - 60 von 60 Finding-IDs sind abgebildet.
-- 36 Findings sind technisch geschlossen.
+- 35 Findings sind technisch geschlossen.
+- 1 Finding ist als befristete betriebliche Ausnahme dokumentiert.
 - 24 Findings bleiben als externe NO-GO-Gates offen.
 - Es gibt kein stillschweigend als erledigt behandeltes Betreiber-, Vertrags-,
   Rechts-, Steuer- oder Infrastrukturrisiko.

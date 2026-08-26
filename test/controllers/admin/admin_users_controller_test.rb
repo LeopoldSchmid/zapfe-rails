@@ -27,19 +27,6 @@ class Admin::AdminUsersControllerTest < ActionDispatch::IntegrationTest
     assert_operator target.session_version, :>, previous_version
   end
 
-  test "owner can reset MFA and invalidate sessions" do
-    target = admin_users(:two)
-    target.enable_mfa!(secret: ADMIN_TEST_MFA_SECRET, recovery_codes: AdminSecurity::RecoveryCodes.generate)
-    previous_version = target.session_version
-
-    post reset_mfa_admin_admin_user_url(target)
-
-    assert_redirected_to admin_admin_users_url
-    assert_not target.reload.mfa_enabled?
-    assert_operator target.session_version, :>, previous_version
-    assert AdminSecurityEvent.exists?(event_type: "mfa_reset", target_admin_user: target)
-  end
-
   test "does not deactivate the final active account" do
     AdminUser.where.not(id: @admin.id).update_all(active: false)
 

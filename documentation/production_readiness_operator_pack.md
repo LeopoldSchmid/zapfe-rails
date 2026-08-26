@@ -121,7 +121,7 @@ Konformität sind mindestens zu protokollieren:
 
 - Tastatur-only bei 200 % und 400 % Zoom sowie Reflow bei 320 CSS-Pixeln;
 - NVDA/Firefox oder NVDA/Chrome unter Windows und VoiceOver/Safari auf iOS;
-- Formularfehler, Statusmeldungen, Dialog-/Menüfokus und MFA;
+- Formularfehler, Statusmeldungen, Dialog-/Menüfokus und Passwort-Login;
 - Aussagekraft aller Bildalternativen sowie Textalternative/Untertitel der
   Produktvideos;
 - Kontrast in Hover, Fokus, Fehler, Disabled und High-Contrast/Forced-Colors;

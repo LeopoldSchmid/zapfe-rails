@@ -24,10 +24,6 @@ Rails.application.routes.draw do
   namespace :admin do
     get "/login", to: "sessions#new"
     post "/login", to: "sessions#create"
-    get "/login/mfa", to: "sessions#mfa", as: :login_mfa
-    post "/login/mfa", to: "sessions#verify_mfa"
-    get "/login/mfa/setup", to: "sessions#setup_mfa", as: :login_mfa_setup
-    post "/login/mfa/setup", to: "sessions#enable_mfa"
     delete "/logout", to: "sessions#destroy"
     get "/password/reset", to: "passwords#new", as: :new_password
     post "/password/reset", to: "passwords#create", as: :password
@@ -39,9 +35,7 @@ Rails.application.routes.draw do
     resource :push_subscription, only: %i[create destroy] do
       post :test
     end
-    resources :admin_users, except: [ :show, :destroy ] do
-      post :reset_mfa, on: :member
-    end
+    resources :admin_users, except: [ :show, :destroy ]
     resources :help_articles, except: [ :show, :destroy ]
     resources :help_requests, only: [ :create, :update ]
     resource :system_settings, only: [ :edit, :update ]

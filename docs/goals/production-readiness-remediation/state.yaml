@@ -195,7 +195,7 @@ tasks:
     assignee: Worker
     status: done
     reasoning_hint: xhigh
-    objective: "Admin-Security und Access Control vollständig härten: Rollen/Policies, Passwortstandard, MFA/Recovery, Sessionrotation/-widerruf, Reset-Limits und Security-Auditspur."
+    objective: "Admin-Security und Access Control vollständig härten: Rollen/Policies, Passwortstandard, befristete Passwort-only-Ausnahme, Sessionrotation/-widerruf, Reset-Limits und Security-Auditspur."
     allowed_files:
       - "Gemfile"
       - "Gemfile.lock"
@@ -221,7 +221,7 @@ tasks:
       - "Playwright Admin-Auth-/Session-Smokes"
       - "bin/brakeman --no-pager"
     stop_if:
-      - "Rollenmatrix oder gewünschte MFA-Methode ist fachlich nicht ableitbar."
+      - "Rollenmatrix oder der gewünschte Umfang der Passwort-only-Ausnahme ist fachlich nicht ableitbar."
       - "Bestehende Admins würden ohne sicheren Migrations-/Recovery-Pfad ausgesperrt."
     receipt:
       result: done
@@ -247,7 +247,7 @@ tasks:
         - cmd: "bin/rails test test/controllers/admin/sessions_controller_test.rb test/controllers/admin/authorization_test.rb test/controllers/admin/admin_users_controller_test.rb test/controllers/admin/passwords_controller_test.rb test/models/admin_user_test.rb test/models/admin_security_event_test.rb test/controllers/inquiries_controller_test.rb"
           status: pass
           result: "34 runs, 143 assertions, 0 failures, 0 errors"
-        - cmd: "bin/rails test test/system/admin_mfa_login_test.rb test/system/admin_mobile_navigation_test.rb test/system/admin_rich_text_notes_test.rb"
+        - cmd: "bin/rails test test/system/admin_password_login_test.rb test/system/admin_mobile_navigation_test.rb test/system/admin_rich_text_notes_test.rb"
           status: pass
           result: "3 runs, 13 assertions, 0 failures, 0 errors"
         - cmd: "bin/brakeman --no-pager"
@@ -260,7 +260,7 @@ tasks:
           status: pass
           result: "11 files inspected, no offenses"
       harness: codex
-      summary: "Owner/Admin/Member-RBAC ist fail-closed umgesetzt. Adminzugang verlangt 14-stellige nicht triviale Passwörter und TOTP-MFA mit verschlüsseltem Secret, Replay-Schutz und einmaligen Recovery-Codes. Sessionrotation, Idle-/Maximaldauer, Widerruf bei Security-Änderungen, Reset-/Login-Limits und eine append-only Security-Auditspur sind implementiert. Bestehende Konten werden beim nächsten Login sicher durch MFA-Enrolment geführt. CSP, Host-Allowlist und Permissions-Policy wurden gehärtet. Strong-parameter-Warnungen wurden ohne Ignore-Liste beseitigt. Die vollständige Rails-Suite, gezielte Negativtests, echte Browser-Smokes, Bundler Audit und Brakeman sind grün."
+      summary: "Owner/Admin/Member-RBAC ist fail-closed umgesetzt. Der Adminzugang verlangt 16-stellige nicht triviale Passwörter; der Verzicht auf MFA und VPN ist als befristete betriebliche Ausnahme dokumentiert. Sessionrotation, Idle-/Maximaldauer, Widerruf bei Security-Änderungen, Reset-/Login-Limits und eine append-only Security-Auditspur sind implementiert. CSP, Host-Allowlist und Permissions-Policy wurden gehärtet. Strong-parameter-Warnungen wurden ohne Ignore-Liste beseitigt."
       remaining_blockers: []
 
   - id: T004
@@ -675,7 +675,7 @@ tasks:
           result: "production image built from 4.21 MB context"
         - cmd: "60-ID matrix uniqueness/count audit"
           status: pass
-          result: "60 unique IDs: 36 technically closed, 24 explicit external NO-GO gates"
+          result: "60 unique IDs: 35 technically closed, 1 documented operational exception, 24 explicit external NO-GO gates"
         - cmd: "git diff --check"
           status: pass
       harness: codex
@@ -709,13 +709,13 @@ tasks:
       result: done
       decision: not_complete
       full_outcome_complete: false
-      rationale: "Alle 60 Finding-IDs sind exakt einmal auditiert. 36 sind technisch belegt geschlossen. 24 bleiben ausdrückliche externe NO-GO-Gates; darunter echte Offsite-Restores, Providerverträge/Transfers, Betreiber-/Registerdaten, Rechts-/Steuerfreigaben, Live-Monitoring/Host/Signatur/Last, Branch Protection und manuelle Accessibility. Eine Produktionsfreigabe oder Ziel-Completion wäre ohne diese Evidenz falsch."
+      rationale: "Alle 60 Finding-IDs sind exakt einmal auditiert. 35 sind technisch belegt geschlossen, SEC-003 ist als befristete betriebliche Ausnahme dokumentiert. 24 bleiben ausdrückliche externe NO-GO-Gates; darunter echte Offsite-Restores, Providerverträge/Transfers, Betreiber-/Registerdaten, Rechts-/Steuerfreigaben, Live-Monitoring/Host/Signatur/Last, Branch Protection und manuelle Accessibility. Eine Produktionsfreigabe oder Ziel-Completion wäre ohne diese Evidenz falsch."
       commands:
         - cmd: "script/release_check"
           status: pass
         - cmd: "60-ID uniqueness/count audit"
           status: pass
-          result: "60 unique; 36 technisch geschlossen; 24 externe NO-GO"
+          result: "60 unique; 35 technisch geschlossen; 1 betriebliche Ausnahme; 24 externe NO-GO"
         - cmd: "GoalBuddy state checker"
           status: pass
       evidence:
@@ -855,7 +855,7 @@ tasks:
         - documentation/production_readiness_operator_pack.md
         - documentation/production_readiness_matrix.md
         - docs/goals/production-readiness-remediation/notes/T011-public-external-evidence.md
-      summary: "Das Ziel bleibt bei 36 technisch geschlossenen und 24 extern blockierten Findings. Nach Eingang der zehn Antworten werden die externen Gates neu bewertet, daraus sichere technische Folgeslices abgeleitet und der finale 60-ID-Audit wiederholt."
+      summary: "Das Ziel bleibt bei 35 technisch geschlossenen Findings, einer dokumentierten betrieblichen Ausnahme und 24 extern blockierten Findings. Nach Eingang der zehn Antworten werden die externen Gates neu bewertet, daraus sichere technische Folgeslices abgeleitet und der finale 60-ID-Audit wiederholt."
 
   - id: T015
     type: pm

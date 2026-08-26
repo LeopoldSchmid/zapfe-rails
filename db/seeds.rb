@@ -122,9 +122,9 @@ end
 
 
 admin_accounts = [
-  [ "Leopold Schmid", ENV["LEOPOLD_ADMIN_EMAIL"], ENV["LEOPOLD_ADMIN_PASSWORD"] ],
-  [ "Dennis Bühler", ENV["DENNIS_ADMIN_EMAIL"], ENV["DENNIS_ADMIN_PASSWORD"] ],
-  [ "Johannes Wiese", ENV["JOHANNES_ADMIN_EMAIL"], ENV["JOHANNES_ADMIN_PASSWORD"] ]
+  [ "Leopold Schmid", ENV.fetch("LEOPOLD_ADMIN_EMAIL", "leopold.schmid@zapfe.jetzt"), ENV["LEOPOLD_ADMIN_PASSWORD"] ],
+  [ "Dennis Bühler", ENV.fetch("DENNIS_ADMIN_EMAIL", "dennis.buehler@zapfe.jetzt"), ENV["DENNIS_ADMIN_PASSWORD"] ],
+  [ "Johannes Wiese", ENV.fetch("JOHANNES_ADMIN_EMAIL", "johannes.wiese@zapfe.jetzt"), ENV["JOHANNES_ADMIN_PASSWORD"] ]
 ]
 
 unless Rails.env.test?
@@ -165,4 +165,4 @@ help_articles.each do |topic, (title, body)|
   article.save!
 end
 
-puts "Seed complete. Set LEOPOLD_ADMIN_EMAIL/PASSWORD, DENNIS_ADMIN_EMAIL/PASSWORD and JOHANNES_ADMIN_EMAIL/PASSWORD to create the three internal accounts."
+puts "Seed complete. Set the three *_ADMIN_PASSWORD variables to create or update the internal accounts."

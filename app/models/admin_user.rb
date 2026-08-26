@@ -1,5 +1,5 @@
 class AdminUser < ApplicationRecord
-  PASSWORD_MINIMUM_LENGTH = 14
+  PASSWORD_MINIMUM_LENGTH = 16
   COMMON_PASSWORDS = %w[
     password password123 passwort passwort123 admin administrator
     qwerty123456 letmein123456 welcome123456 changeme123456
@@ -38,79 +38,7 @@ class AdminUser < ApplicationRecord
     active
   end
 
-  def mfa_enabled?
-    mfa_enabled_at.present? && mfa_secret_ciphertext.present?
-  end
-
-  def mfa_secret
-    return if mfa_secret_ciphertext.blank?
-
-    AdminSecurity::SecretCipher.decrypt(mfa_secret_ciphertext)
-  rescue ActiveSupport::MessageEncryptor::InvalidMessage
-    nil
-  end
-
-  def enable_mfa!(secret:, recovery_codes:)
-    update!(
-      mfa_secret_ciphertext: AdminSecurity::SecretCipher.encrypt(secret),
-      mfa_recovery_code_digests: recovery_codes.map { |code| AdminSecurity::RecoveryCodes.digest(code) },
-      mfa_last_used_at: nil,
-      mfa_enabled_at: Time.current
-    )
-  end
-
-  def reset_mfa!
-    update!(mfa_secret_ciphertext: nil, mfa_recovery_code_digests: [], mfa_last_used_at: nil, mfa_enabled_at: nil)
-  end
-
-  def verify_mfa_code(code, at: Time.current)
-    return unless mfa_enabled?
-
-    secret = mfa_secret
-    return if secret.blank?
-
-    normalized_code = code.to_s.delete(" ")
-    timestamp = ROTP::TOTP.new(secret, issuer: "Zapfe Admin").verify(
-      normalized_code,
-      drift_behind: 30,
-      drift_ahead: 30,
-      after: mfa_last_used_at,
-      at: at
-    )
-    if timestamp
-      update_column(:mfa_last_used_at, timestamp)
-      return :totp
-    end
-
-    consume_recovery_code(normalized_code) ? :recovery : nil
-  end
-
-  def provisioning_uri(secret)
-    ROTP::TOTP.new(secret, issuer: "Zapfe Admin").provisioning_uri(email)
-  end
-
-  def recovery_codes_remaining
-    mfa_recovery_code_digests.size
-  end
-
   private
-
-  def consume_recovery_code(code)
-    digest = AdminSecurity::RecoveryCodes.digest(code)
-    consumed = false
-
-    with_lock do
-      codes = mfa_recovery_code_digests.dup
-      index = codes.index { |stored| ActiveSupport::SecurityUtils.secure_compare(stored, digest) }
-      if index
-        codes.delete_at(index)
-        update_column(:mfa_recovery_code_digests, codes)
-        consumed = true
-      end
-    end
-
-    consumed
-  end
 
   def password_is_not_common
     normalized = password.to_s.downcase.gsub(/[^a-z0-9]/, "")
@@ -126,7 +54,7 @@ class AdminUser < ApplicationRecord
 
   def security_state_changing?
     will_save_change_to_password_digest? || will_save_change_to_role? ||
-      will_save_change_to_active? || will_save_change_to_mfa_secret_ciphertext?
+      will_save_change_to_active?
   end
 
   def rotate_session_version

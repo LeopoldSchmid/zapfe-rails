@@ -5,16 +5,15 @@
 
 <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
   <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-    <thead class="bg-slate-50 text-slate-600"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">E-Mail</th><th class="px-4 py-3">Rolle</th><th class="px-4 py-3">MFA</th><th class="px-4 py-3">Status</th><th class="px-4 py-3"></th></tr></thead>
+    <thead class="bg-slate-50 text-slate-600"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">E-Mail</th><th class="px-4 py-3">Rolle</th><th class="px-4 py-3">Status</th><th class="px-4 py-3"></th></tr></thead>
     <tbody class="divide-y divide-slate-100">
       <% @admin_users.each do |admin_user| %>
         <tr>
           <td class="px-4 py-3 font-medium"><%= admin_user.name %></td>
           <td class="px-4 py-3"><%= admin_user.email %></td>
           <td class="px-4 py-3"><%= admin_user.role.titleize %></td>
-          <td class="px-4 py-3"><%= admin_user.mfa_enabled? ? "Aktiv (#{admin_user.recovery_codes_remaining} Codes)" : "Einrichtung ausstehend" %></td>
           <td class="px-4 py-3"><%= admin_user.active? ? "Aktiv" : "Deaktiviert" %></td>
-          <td class="px-4 py-3 text-right"><div class="flex justify-end gap-3"><%= link_to "Bearbeiten", edit_admin_admin_user_path(admin_user), class: "admin-link" %><% if admin_user.mfa_enabled? %><%= button_to "MFA zurücksetzen", reset_mfa_admin_admin_user_path(admin_user), method: :post, class: "admin-link", form: { data: { turbo_confirm: "MFA wirklich zurücksetzen? Alle laufenden Sessions werden ungültig." } } %><% end %></div></td>
+          <td class="px-4 py-3 text-right"><%= link_to "Bearbeiten", edit_admin_admin_user_path(admin_user), class: "admin-link" %></td>
         </tr>
       <% end %>
     </tbody>

@@ -2,7 +2,6 @@ module AdminSecurity
   class Audit
     EVENT_TYPES = %w[
       login_succeeded login_failed logout
-      mfa_challenge_succeeded mfa_challenge_failed mfa_enrolled mfa_recovery_used mfa_reset
       password_reset_requested password_changed
       admin_user_created admin_user_updated authorization_denied
       system_settings_updated

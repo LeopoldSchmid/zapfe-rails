@@ -21,7 +21,6 @@ Rails.application.config.filter_parameters += [
   :crypt,
   :salt,
   :certificate,
-  :otp,
   :ssn,
   :cvv,
   :cvc

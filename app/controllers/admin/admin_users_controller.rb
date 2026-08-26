@@ -1,5 +1,5 @@
 class Admin::AdminUsersController < Admin::BaseController
-  before_action :set_admin_user, only: %i[edit update reset_mfa]
+  before_action :set_admin_user, only: %i[edit update]
 
   def index
     @admin_users = AdminUser.order(:name, :email)
@@ -37,13 +37,6 @@ class Admin::AdminUsersController < Admin::BaseController
     else
       render :edit, status: :unprocessable_entity
     end
-  end
-
-  def reset_mfa
-    @admin_user.reset_mfa!
-    AdminSecurity::Audit.log(event_type: :mfa_reset, actor: current_admin_user, target: @admin_user, request: request)
-    reset_session if @admin_user == current_admin_user
-    redirect_to admin_admin_users_path, notice: "MFA wurde zurückgesetzt. Beim nächsten Login ist eine neue Einrichtung erforderlich."
   end
 
   private
