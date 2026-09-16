@@ -25,7 +25,7 @@
               <span>Gesamtsumme</span>
               <span id="cart-total">€0,00</span>
             </div>
-            <p class="mt-3 text-xs text-slate-500">Die Auswahl wird in den Preisrechner übernommen.</p>
+            <p class="mt-3 text-xs text-slate-500">Preise inklusive gesetzlicher Mehrwertsteuer; Pfand separat. Die Auswahl wird in den Preisrechner übernommen.</p>
             <%= link_to "Zum Preisrechner", calculator_path, class: "btn-primary mt-4 block w-full text-center" %>
           </div>
         </aside>
@@ -141,6 +141,7 @@
             </div>
           </details>
         </div>
+        <p class="mb-4 text-xs text-slate-500">Alle Preise inklusive gesetzlicher Mehrwertsteuer. Pfand wird separat ausgewiesen.</p>
 
         <section class="space-y-4" data-drink-section>
           <div id="drinks-grid" class="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -204,6 +205,7 @@
                     <div>
                       <p class="drink-price text-lg font-bold text-slate-900"><%= number_to_currency(variants.first.price, unit: '€', separator: ',', delimiter: '.') %></p>
                       <p class="drink-price-per text-xs text-slate-500"><%= number_to_currency(variants.first.price.to_f / variants.first.size.to_f, unit: '€', separator: ',', delimiter: '.') %> /L</p>
+                      <p class="text-[11px] text-slate-500">inkl. gesetzlicher MwSt.</p>
                     </div>
                     <button type="button" class="add-to-cart grid h-9 w-9 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" title="Zum Warenkorb hinzufügen">
                       <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 8h-11zM6 6l-1-3H2M9 19.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm9 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>
@@ -245,7 +247,7 @@
             <span>Gesamtsumme</span>
             <span id="cart-total-mobile">€0,00</span>
           </div>
-          <p class="mt-3 text-xs text-slate-500">Die Auswahl wird in den Preisrechner übernommen.</p>
+          <p class="mt-3 text-xs text-slate-500">Preise inklusive gesetzlicher Mehrwertsteuer; Pfand separat. Die Auswahl wird in den Preisrechner übernommen.</p>
           <%= link_to "Zum Preisrechner", calculator_path, class: "btn-primary mt-4 block w-full text-center" %>
         </div>
       </aside>

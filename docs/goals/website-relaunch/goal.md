@@ -55,7 +55,7 @@ langfristig tragfähigen Neukonzeption der Zapfe!-Website Besprochene realisiert
     individuell.
   - Betreiber führen den täglichen Betrieb, Fasswechsel und Reinigung selbst;
     Zapfe! plant, installiert, weist ein und bietet vereinbarten Remote-Support.
-  - Veranstaltungsmiete: 300 EUR inklusive gesetzlicher Mehrwertsteuer für
+  - Veranstaltungsmiete: 290 EUR inklusive gesetzlicher Mehrwertsteuer für
     Freiburg und Umgebung, einschließlich Lieferung, Aufbau, Einweisung, Abbau
     und Reinigung; weitere Entfernung und Extras auf Anfrage.
   - Bei Bezahlfunktion wird ein Revenue-Share genannt, aber keine Prozentzahl.

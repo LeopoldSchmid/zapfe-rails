@@ -235,6 +235,7 @@ export default class extends Controller {
     return {
       rentalOption: rentalInput?.value,
       rentalBase,
+      pricesIncludeVat: true,
       days,
       rentalTotal,
       drinksTotal,
@@ -280,7 +281,7 @@ export default class extends Controller {
     }
 
     if (this.rentalSummaryEl) {
-      this.rentalSummaryEl.textContent = `${formatDateDE(this.startDate?.value)} bis ${formatDateDE(this.endDate?.value)} · ${formatCurrency(rentalTotal)} Miete`
+      this.rentalSummaryEl.textContent = `${formatDateDE(this.startDate?.value)} bis ${formatDateDE(this.endDate?.value)} · ${formatCurrency(rentalTotal)} Miete inkl. MwSt.`
     }
 
     if (this.totalPriceEl) this.totalPriceEl.textContent = formatCurrency(total)
@@ -297,7 +298,7 @@ export default class extends Controller {
 
     const options = []
     options.push(`Produkt: ${selectedProduct}`)
-    options.push(`Option: ${rentalLabel} (${formatCurrency(rentalBase)} pro Tag)`)
+    options.push(`Option: ${rentalLabel} (${formatCurrency(rentalBase)} pro Tag inkl. MwSt.)`)
     options.push(`Datum: ${formatDateDE(this.startDate?.value)} bis ${formatDateDE(this.endDate?.value)}`)
     options.push(`Getränke: ${ownDrinksSelected ? "selbst organisiert" : "über Zapfe!"}`)
 

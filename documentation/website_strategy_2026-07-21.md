@@ -142,7 +142,7 @@ Fertigstellungstermine werden nicht in die dauerhafte Website-Copy geschrieben.
 
 Regulaerer Preisrahmen:
 
-- 300 EUR inklusive gesetzlicher Mehrwertsteuer
+- 290 EUR inklusive gesetzlicher Mehrwertsteuer
 - fuer Veranstaltungen in Freiburg und Umgebung
 - weitere Entfernungen auf Anfrage
 
@@ -279,7 +279,7 @@ Inhalte:
 2. Ape im realen Einsatz
 3. Gastgeber-Modus und Bezahl-Modus
 4. enthaltener Leistungsumfang
-5. Preisorientierung ab 300 EUR inklusive Mehrwertsteuer
+5. Preisorientierung ab 290 EUR inklusive Mehrwertsteuer
 6. Ablauf von Anfrage bis Reinigung
 7. optionale Getraenke, Glaeser und Personal
 8. reale Veranstaltungseinsaetze
@@ -351,7 +351,7 @@ primaerer Navigationspunkt behandelt.
 
 Anforderungen:
 
-- Grundpreis 300 EUR inklusive gesetzlicher Mehrwertsteuer
+- Grundpreis 290 EUR inklusive gesetzlicher Mehrwertsteuer
 - enthaltende Leistungen direkt am Ergebnis erklaeren
 - Getraenkepreise inklusive Mehrwertsteuer
 - zusaetzliche Optionen und moegliche Kosten klar ausweisen

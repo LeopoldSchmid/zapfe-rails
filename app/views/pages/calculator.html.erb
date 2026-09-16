@@ -85,14 +85,16 @@
               <h2 class="mb-3 text-2xl font-semibold text-[var(--color-zapfe-navy)]">Variante wählen</h2>
               <div class="space-y-3">
                 <label class="flex items-start gap-3 rounded-md border border-slate-200 p-3">
-                  <input type="radio" name="rental_option" value="zapf" data-base="250" checked class="mt-1">
-                  <span><strong>Zapf (250€/Tag)</strong><br><span class="text-sm text-slate-500">Zapfanlage zur Selbstbedienung mit zwei Zapfhähnen</span></span>
+                  <input type="radio" name="rental_option" value="zapf" data-base="290" checked class="mt-1">
+                  <span><strong>Zapf (290 €/Tag inkl. gesetzlicher MwSt.)</strong><br><span class="text-sm text-slate-500">Zapfanlage zur Selbstbedienung mit zwei Zapfhähnen</span></span>
                 </label>
                 <label class="flex items-start gap-3 rounded-md border border-slate-200 p-3">
                   <input type="radio" name="rental_option" value="self" data-base="350" class="mt-1">
-                  <span><strong>Zapf & Pay (350€/Tag)</strong><br><span class="text-sm text-slate-500">Zapfanlage zur Selbstbedienung mit kontaktlosem Bezahlsystem</span></span>
+                  <span><strong>Zapf & Pay (350 €/Tag inkl. gesetzlicher MwSt.)</strong><br><span class="text-sm text-slate-500">Zapfanlage zur Selbstbedienung mit kontaktlosem Bezahlsystem. Bei direkter Bezahlung kommt ein umsatzabhängiger Anteil hinzu; die Konditionen vereinbaren wir vorab.</span></span>
                 </label>
               </div>
+              <p class="mt-3 text-xs text-slate-500">Alle Miet- und Getränkepreise inklusive gesetzlicher Mehrwertsteuer.</p>
+              <p class="mt-1 text-xs text-slate-500">Der Mietpreis gilt für Freiburg und Umgebung und umfasst Lieferung, Aufbau, Einweisung, Abbau und Reinigung. Weitere Entfernungen und Extras auf Anfrage.</p>
             </div>
 
             <div class="card-soft p-5 sm:p-6">
@@ -206,6 +208,7 @@
                     <div>
                       <p class="calc-price text-sm font-bold text-slate-900"><%= number_to_currency(variants.first.price, unit: "€", separator: ",", delimiter: ".") %></p>
                       <p class="calc-price-per text-xs text-slate-500"><%= number_to_currency(variants.first.price.to_f / variants.first.size.to_f, unit: "€", separator: ",", delimiter: ".") %>/L</p>
+                      <p class="text-[11px] text-slate-500">inkl. gesetzlicher MwSt.</p>
                     </div>
                     <button type="button" class="calc-add-drink grid h-8 w-8 place-content-center rounded-full bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" aria-label="Getränk hinzufügen">
                       <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -264,7 +267,7 @@
                     <span class="block text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300 sm:text-xs">Preisindikation</span>
                     <span class="flex items-baseline gap-2">
                       <strong id="total-price" class="text-lg sm:text-xl">€0,00</strong>
-                      <span class="truncate text-[11px] text-slate-300 sm:text-xs">unverbindlich</span>
+                      <span class="truncate text-[11px] text-slate-300 sm:text-xs">inkl. MwSt. · unverbindlich</span>
                     </span>
                   </span>
                 </summary>
@@ -283,7 +286,7 @@
                       <span id="pricing-total-detail">0,00 €</span>
                     </div>
                   </div>
-                  <p class="mt-3 text-[11px] text-slate-300">Orientierungswert für Veranstaltungen. Das finale Angebot stimmen wir mit dir direkt ab.</p>
+                  <p class="mt-3 text-[11px] text-slate-300">Alle Preisangaben inklusive gesetzlicher Mehrwertsteuer. Orientierungswert für Veranstaltungen; das finale Angebot stimmen wir mit dir direkt ab.</p>
                 </div>
               </details>
               <a href="#calculator-contact" class="grid h-10 w-10 shrink-0 place-content-center rounded-xl bg-[var(--color-zapfe-amber)] text-[var(--color-zapfe-navy)]" aria-label="Zur Anfrage">

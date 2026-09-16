@@ -6,12 +6,13 @@ class InquiryMailerTest < ActionMailer::TestCase
 
     mail = InquiryMailer.customer_confirmation(inquiry)
 
-    assert_equal [inquiry.email], mail.to
+    assert_equal [ inquiry.email ], mail.to
     assert_equal "Deine Anfrage bei Zapfe!", mail.subject
     assert_match inquiry.first_name, mail.body.encoded
     assert_match "Deine Anfrage im Überblick", mail.body.encoded
     assert_match "Mietzeitraum", mail.body.encoded
     assert_match "Geschätzter Gesamtpreis", mail.body.encoded
+    assert_match "inkl. gesetzlicher MwSt.", mail.body.encoded
   end
 
   test "customer confirmation includes the details of a contact inquiry" do
@@ -59,8 +60,8 @@ class InquiryMailerTest < ActionMailer::TestCase
     begin
       mail = InquiryMailer.admin_notification(inquiry)
 
-    assert_equal ["admin@zapfe.test"], mail.to
-    assert_equal [inquiry.email], mail.reply_to
+      assert_equal [ "admin@zapfe.test" ], mail.to
+      assert_equal [ inquiry.email ], mail.reply_to
       assert_equal "Neue Preisrechner-Anfrage", mail.subject
       assert_match inquiry.last_name, mail.body.encoded
       assert_match "Lieferadresse", mail.body.encoded

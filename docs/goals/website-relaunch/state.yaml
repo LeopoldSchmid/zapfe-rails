@@ -35,7 +35,7 @@ goal:
       - "Kegerator, Ape und individuelle Einbauten sind Formfaktoren desselben Systems."
       - "Host- und Bezahl-Modus werden je Bedarf erklärt."
       - "Standortmodell: Pilot, Miete oder Kauf; täglicher Betrieb beim Betreiber; Zapfe! plant, installiert, weist ein und supportet technisch."
-      - "Eventgrundpreis 300 EUR inklusive Mehrwertsteuer und inklusive Lieferung, Aufbau, Einweisung, Abbau und Reinigung in Freiburg und Umgebung."
+      - "Eventgrundpreis 290 EUR inklusive Mehrwertsteuer und inklusive Lieferung, Aufbau, Einweisung, Abbau und Reinigung in Freiburg und Umgebung."
       - "Revenue-Share wird ohne Prozentzahl genannt."
       - "Getränkesuche bleibt; Getränkepreise werden inklusive Mehrwertsteuer ausgewiesen."
       - "Logo und Kernfarben bleiben; übriges Frontend und UX dürfen grundlegend neu gestaltet werden."
@@ -156,13 +156,13 @@ tasks:
     assignee: PM
     status: queued
     reasoning_hint: high
-    objective: "Den vollständigen Veranstaltungs-Flow einschließlich Veranstaltungsseite, Leistungsumfang, 300-EUR-Preisorientierung, Gastgeber-/Bezahl-Modus und Eventanfrage neu umsetzen."
+    objective: "Den vollständigen Veranstaltungs-Flow einschließlich Veranstaltungsseite, Leistungsumfang, 290-EUR-Preisorientierung, Gastgeber-/Bezahl-Modus und Eventanfrage neu umsetzen."
     inputs:
       - "T001-T003 receipts"
       - "Website-Strategie: Für Veranstaltungen"
     constraints:
       - "Alle öffentlichen Preise inklusive gesetzlicher Mehrwertsteuer kennzeichnen."
-      - "300 EUR gelten für Freiburg und Umgebung; weitere Entfernungen auf Anfrage."
+      - "290 EUR gelten für Freiburg und Umgebung; weitere Entfernungen auf Anfrage."
       - "Keine Revenue-Share-Prozentzahl veröffentlichen."
       - "Bestehende Eventanfragedaten und Mail-/Admin-Nachvollziehbarkeit nicht verlieren."
       - "Keine Subagents starten."
@@ -178,7 +178,7 @@ tasks:
     assignee: PM
     status: queued
     reasoning_hint: high
-    objective: "Die vorhandene Getränkesuche und den Event-Preisrechner als eigenen kritischen Flow korrekt in die neue Website integrieren, inklusive 300-EUR-Grundpreis, vollständiger Mehrwertsteuerkennzeichnung und Regressionsschutz für gemeinsame Backoffice-Daten."
+    objective: "Die vorhandene Getränkesuche und den Event-Preisrechner als eigenen kritischen Flow korrekt in die neue Website integrieren, inklusive 290-EUR-Grundpreis, vollständiger Mehrwertsteuerkennzeichnung und Regressionsschutz für gemeinsame Backoffice-Daten."
     inputs:
       - "T001-T004 receipts"
       - "Website-Strategie: Getränke und Event-Preisrechner"

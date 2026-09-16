@@ -32,7 +32,7 @@
       <p><strong>Lieferadresse:</strong> <%= @inquiry.delivery_address %></p>
     <% end %>
     <% if @inquiry.total_price.present? %>
-      <p><strong>Geschätzter Gesamtpreis:</strong> <%= number_to_currency(@inquiry.total_price, unit: "€", separator: ",", delimiter: ".") %></p>
+      <p><strong>Geschätzter Gesamtpreis (inkl. gesetzlicher MwSt.):</strong> <%= number_to_currency(@inquiry.total_price, unit: "€", separator: ",", delimiter: ".") %></p>
     <% end %>
 
       <% if @inquiry.selected_option_lines.any? %>

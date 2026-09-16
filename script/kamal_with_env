@@ -18,6 +18,7 @@ required_vars=(
   KAMAL_REGISTRY_PASSWORD
   RAILS_MASTER_KEY
   SECRET_KEY_BASE
+  MONITORING_TOKEN
 )
 
 for var_name in "${required_vars[@]}"; do

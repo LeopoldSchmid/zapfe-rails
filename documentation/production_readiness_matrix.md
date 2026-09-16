@@ -52,7 +52,7 @@ und darf für eine Produktionsfreigabe nicht als grün gewertet werden.
 | LEG-005 | EXTERNES NO-GO | atomare Nummern/Korrekturen technisch grün; Steuerfreigabe fehlt |
 | LEG-006 | EXTERNES NO-GO | KoSIT-valide XRechnung/CreditNote; Kundenmix, Empfang und Archiv fehlen |
 | LEG-007 | EXTERNES NO-GO | realer B2C-Vertragsschluss-/Widerrufspfad nicht freigegeben |
-| LEG-008 | EXTERNES NO-GO | Preis als unverbindliche Indikation bezeichnet; vollständige Claim-/PAngV-Prüfung fehlt |
+| LEG-008 | EXTERNES NO-GO | Öffentliche 290-EUR-Preisindikation und MwSt.-Kennzeichnung technisch umgesetzt; vollständige Claim-/PAngV-/Steuerprüfung und Betreiberfreigabe fehlen |
 
 ## Betrieb
 

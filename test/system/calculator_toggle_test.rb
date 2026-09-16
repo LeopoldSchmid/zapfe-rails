@@ -19,7 +19,9 @@ class CalculatorToggleTest < ApplicationSystemTestCase
     visit calculator_path
 
     assert_text "PREISINDIKATION"
-    assert_text "250,00 €"
+    assert_text "290,00 €"
+    assert_text "290 €/Tag inkl. gesetzlicher MwSt."
+    assert_text "inkl. MwSt. · unverbindlich"
     page.execute_script("document.querySelector('#pricing-breakdown summary').click()") unless page.has_selector?("#pricing-breakdown[open]", wait: 1)
     assert_selector "#pricing-breakdown[open]"
     assert_text "Miete (Zapf)"
