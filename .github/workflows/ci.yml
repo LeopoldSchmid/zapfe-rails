@@ -52,7 +52,7 @@ jobs:
         run: docker build --pull=false --tag zapfe-rails:ci .
 
       - name: Scan OS and application packages
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: zapfe-rails:ci
           format: table
@@ -151,6 +151,17 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Playwright browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
 
       - name: Run System Tests
         env:
