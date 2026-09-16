@@ -22,6 +22,16 @@ RUN apt-get update -qq && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Ruby 3.4.10 still ships resolv 0.7.1 as a default gem. Replace its
+# pure-Ruby implementation with 0.7.2 until the base image includes the fix.
+RUN gem fetch --quiet --version 0.7.2 resolv && \
+    echo "626d044d975ab2daac759bf898416f1b51e2cb8dcd6727c2b5b5b28b97ead2e1  resolv-0.7.2.gem" | sha256sum --check - && \
+    gem unpack resolv-0.7.2.gem --target /tmp && \
+    cp /tmp/resolv-0.7.2/lib/resolv.rb /usr/local/lib/ruby/3.4.0/resolv.rb && \
+    rm -rf /usr/local/lib/ruby/gems/3.4.0/gems/resolv-0.7.1 \
+           /usr/local/lib/ruby/gems/3.4.0/specifications/default/resolv-0.7.1.gemspec \
+           /tmp/resolv-0.7.2 resolv-0.7.2.gem
+
 # Set production environment variables and enable jemalloc for reduced memory usage and latency.
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
