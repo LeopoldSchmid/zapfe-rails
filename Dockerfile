@@ -8,8 +8,8 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4.5
-ARG RUBY_IMAGE_DIGEST=sha256:80f389b6222196d76915f754158e0d92dc0c3d96f755bff7af1e360bb2f1a768
+ARG RUBY_VERSION=3.4.10
+ARG RUBY_IMAGE_DIGEST=sha256:adb947e4f5a72d749e0e062a50e0f0c5a0ebf73c0952566c059781acf79ba3fc
 FROM docker.io/library/ruby:$RUBY_VERSION-slim@$RUBY_IMAGE_DIGEST AS base
 
 # Rails app lives here
