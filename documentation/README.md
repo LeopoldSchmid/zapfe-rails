@@ -28,6 +28,8 @@ duerfen nicht als aktuelle Anweisung oder Produktentscheidung verwendet werden.
 - `production_readiness_matrix.md` – technischer Freigabestatus
 - `security_exception_admin_password_only_2026-08-24.md` – befristete
   Entscheidung für den Passwort-only-Adminzugang
+- `production_pilot_exception_2026-09-17.md` – befristete Ausnahme für den
+  Kollegentest auf Produktion
 - `operations.md` – aktueller Produktionsbetrieb und Monitoring
 - `deployment.md` – sicherer Deployment- und Migrationsablauf
 - `backup_restore.md` – Backup- und Restoreverfahren
