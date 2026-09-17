@@ -43,6 +43,10 @@ Rails.application.configure do
   # Prevent health checks from clogging up the logs.
   config.silence_healthcheck_path = "/up"
 
+  # Kamal Proxy probes the container directly and uses its short Docker ID as
+  # the Host header. Keep the exception limited to the liveness endpoint.
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
