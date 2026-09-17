@@ -1,4 +1,6 @@
 class MonitoringController < ApplicationController
+  skip_forgery_protection only: :deep
+
   def inquiry_flow
     return head :unauthorized unless monitoring_token_valid?
 
