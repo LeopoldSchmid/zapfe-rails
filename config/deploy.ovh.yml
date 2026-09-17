@@ -17,12 +17,12 @@ servers:
       memory: 512m
       cpus: 1.0
 
-# Initial validation stays private: no public DNS or TLS certificate request yet.
+# DNS must point to the OVH host before this target is deployed publicly.
 proxy:
   hosts:
     - zapfe.jetzt
     - www.zapfe.jetzt
-  ssl: false
+  ssl: true
   app_port: 3000
 
 registry:
@@ -66,6 +66,6 @@ builder:
   arch: amd64
 
 ssh:
-  user: deploy-zapfe
+  user: <%= ENV.fetch("KAMAL_SSH_USER", "deploy-zapfe") %>
   keys:
-    - /home/leo/.ssh/ovh_deploy_zapfe_ed25519
+    - <%= ENV.fetch("KAMAL_SSH_KEY") %>
